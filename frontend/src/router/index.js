@@ -6,6 +6,9 @@ import Full from '@/containers/Full'
 
 // Views
 import Dashboard from '@/views/Dashboard'
+import Shop from '@/views/Shop'
+import User from '@/views/User'
+import Checklist from '@/views/Checklist'
 
 Vue.use(Router)
 
@@ -22,10 +25,24 @@ export default new Router({
       children: [
         {
           path: 'dashboard',
-          name: 'Dashboard',
+          name: '대시보드',
           component: Dashboard
+        },
+        {
+          path: 'shop',
+          name: '점포관리',
+          component: Shop
+        },
+        {
+          path: 'user',
+          name: '사용자관리',
+          component: User
+        },
+        {
+          path: 'checklist',
+          name: '체크리스트 관리',
+          component: Checklist
         }
-
       ]
     }
   ]
