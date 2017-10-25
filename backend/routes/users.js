@@ -1,17 +1,36 @@
-var express = require('express');
-var router = express.Router();
-var users = require('../mockup/users.json');
+const express = require('express');
+const router = express.Router();
+const users = require('../mockup/users.json');
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res, next) => {
   res.send(users)
 });
 
-router.get('/:id', function (req, res, next) {
-  var id = parseInt(req.params.id, 10)
-  var movie = users.filter(function (movie) {
-    return movie.id === id
+router.get('/:id', (req, res, next) => {
+  const id = parseInt(req.params.id, 10)
+  const users = users.filter((user) => {
+    return user.id === id
   });
-  res.send(movie)
+
+  res.send(users)
 });
+
+router.post('/', (req, res, next) => {
+  return res.send({
+    success: true
+  })
+})
+
+router.put('/', (req, res, next) => {
+  return res.send({
+    success: true
+  })
+})
+
+router.delete('/:id', (req, res, next) => {
+  return res.send({
+    success: true
+  })
+})
 
 module.exports = router;

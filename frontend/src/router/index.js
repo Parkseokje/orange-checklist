@@ -44,6 +44,10 @@ export default new Router({
           component: Checklist
         }
       ]
+    },
+    {
+      path: '*',
+      redirect: '/'
     }
   ]
 })
