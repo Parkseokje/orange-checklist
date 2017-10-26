@@ -1,7 +1,7 @@
 <template>
   <footer class="app-footer">
-    <a href="http://coreui.io">CoreUI</a> &copy; 2017 creativeLabs.
-    <span class="float-right">Powered by <a href="http://coreui.io">CoreUI</a></span>
+    <a href="#">Orange Checklist</a> &copy; 2017 OrangeNamu.
+    <!--<span class="float-right">Powered by <a href="#">ORANGENAMU</a></span>-->
   </footer>
 </template>
 <script>

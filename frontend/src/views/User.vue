@@ -9,14 +9,14 @@
 
             <div class="row">
               <div class="col-md-3">
-                <b-form-fieldset horizontal label="페이지당 줄수" :label-cols="6">
+                <b-form-group horizontal label="페이지당 줄수" :label-cols="6">
                   <b-form-select :options="pageOptions" v-model="perPage" />
-                </b-form-fieldset>
+                </b-form-group>
               </div>
               <div class="col-md-3">
-                <b-form-fieldset horizontal label="필터" :label-cols="3">
+                <b-form-group horizontal label="필터" :label-cols="3">
                   <b-form-input v-model="filter" placeholder="검색어 입력" />
-                </b-form-fieldset>
+                </b-form-group>
               </div>
               <div class="col-md-2">
                 <b-button :disabled="!sortBy" @click="sortBy = null">기본정렬</b-button>
@@ -59,28 +59,99 @@
       title="사용자 등록"
       :header-bg-variant="modalVariants.headerBgVariant"
       :header-text-variant="modalVariants.headerTextVariant"
+      hide-footer
     >
-      <b-form>
-        <b-form-group id="userTypeInputGroup" label="구분" label-for="userTypeInput" description="">
-          <b-form-select id="userTypeInput" :options="userTypes" v-model="form.selected" required placeholder="이름을 입력하세요"></b-form-select>
+      <b-form @submit.prevent="onSubmit">
+        <b-form-group
+          label="구분"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+        >
+          <b-form-select id="userTypeInput" :options="userTypes"
+            :state="form.user_type.state"
+            v-model="form.user_type.value"
+            required placeholder="이름을 입력하세요"></b-form-select>
         </b-form-group>
-        <b-form-group id="nameInputGroup" label="이름" label-for="nameInput" description="">
-          <b-form-input id="name" type="text" required placeholder="이름을 입력하세요"></b-form-input>
+        <b-form-group
+          description=""
+          label="이름"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+        >
+          <b-form-input type="text"
+            :state="form.name.state"
+            :autocomplete="'off'"
+            v-model="form.name.value"
+            required placeholder="이름을 입력하세요"></b-form-input>
         </b-form-group>
-        <b-form-group id="cellNoInputGroup" label="핸드폰" label-for="cellNoInput" description="">
-          <b-form-input id="cellNoInput" type="text" required placeholder="핸드폰 번호를 입력하세요"></b-form-input>
+        <b-form-group
+          description="숫자만 입력하세요(예. 01012341234)"
+          label="핸드폰"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+          :feedback="form.cell_no.feedback"
+          :state="form.cell_no.state"
+        >
+          <b-form-input type="text"
+            :state="form.cell_no.state"
+            :autocomplete="'off'"
+            v-model="form.cell_no.value"
+            required placeholder="핸드폰 번호를 입력하세요"></b-form-input>
         </b-form-group>
-        <b-form-group id="passwordInputGroup" label="암호" label-for="passwordInput" description="">
-          <b-form-input id="passwordInput" type="password" required placeholder="암호를 입력하세요"></b-form-input>
+        <b-form-group
+          description="user@example.com"
+          label="이메일"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+          :feedback="form.email.feedback"
+        >
+          <b-form-input type="email"
+            :state="form.email.state"
+            :autocomplete="'off'"
+            v-model="form.email.value"
+            placeholder="이메일을 입력하세요"></b-form-input>
         </b-form-group>
-        <b-form-group id="passwordConfirmInputGroup" label="암호 재입력" label-for="passwordConfirmInput" description="">
-          <b-form-input id="passwordConfirmInput" type="password" required placeholder="위 암호를 다시 입력하세요"></b-form-input>
+        <b-form-group
+          description=""
+          label="암호"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+          :feedback="form.password.feedback"
+        >
+          <b-form-input type="password"
+            :state="form.password.state"
+            v-model="form.password.value"
+            required placeholder="암호를 입력하세요"></b-form-input>
         </b-form-group>
-        <b-form-textarea id="memoInput"
-          placeholder="메모를 입력하세요"
-          :rows="3"
-          :max-rows="6">
-        </b-form-textarea>
+        <b-form-group
+          description=""
+          label="암호 재확인"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+          :feedback="form.password_confirm.feedback"
+        >
+          <b-form-input type="password"
+            :state="form.password_confirm.state"
+            v-model="form.password_confirm.value"
+            required placeholder="암호를 다시 입력하세요"></b-form-input>
+        </b-form-group>
+        <b-form-group
+          description=""
+          label="메모"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+        >
+          <b-form-textarea id="memoInput"
+            v-model="form.memo.value"
+            placeholder="메모를 입력하세요"
+            :rows="3"
+            :max-rows="6">
+          </b-form-textarea>
+        </b-form-group>
+
+        <b-btn class="mt-3" block variant="primary" type="submit">저장</b-btn>
+        <b-btn class="mt-3" block variant="outline-secondary" @click="initializeForm" type="reset">초기화</b-btn>
+        <b-btn class="mt-3" block variant="outline-danger" @click="hideModal">취소</b-btn>
       </b-form>
     </b-modal>
   </div>
@@ -92,7 +163,8 @@ import { mapGetters, mapActions } from 'vuex'
 const fields = {
   user_type: { label: '구분', sortable: true, 'class': 'text-center' },
   name: { label: '이름', sortable: true, 'class': 'text-center' },
-  cell_no: { label: '핸드폰', 'class': 'text-center' },
+  // cell_no: { label: '핸드폰', 'class': 'text-center' },
+  // email: { label: '이메일' },
   actions: { label: 'Actions' }
 }
 
@@ -101,7 +173,6 @@ export default {
   data () {
     return {
       fields: fields,
-      // items: [],
       currentPage: 1,
       perPage: 5,
       totalRows: 0,
@@ -114,11 +185,9 @@ export default {
       sortDesc: false,
       filter: null,
       modalDetails: { index: '', data: '' },
-      form: {
-        selected: null
-      }
-      // headerBgVariant: 'dark',
-      // headerTextVariant: 'light'
+      form: null,
+      modalLabelCols: 2,
+      modalInputHorizontal: true
     }
   },
   methods: {
@@ -144,6 +213,39 @@ export default {
       this.modalDetails.index = ''
     },
 
+    hideModal () {
+      this.initializeForm()
+      this.$root.$emit('bv::hide::modal', 'modalCreateUser')
+    },
+
+    initializeForm () {
+      this.form = Object.assign({}, this.form, {
+        user_type: { value: null, state: null },
+        name: { value: null, state: null },
+        cell_no: { value: null, state: null, feedback: null },
+        email: { value: null, state: null, feedback: null },
+        password: { value: null, state: null, feedback: null },
+        password_confirm: { value: null, state: null, feedback: null },
+        memo: { value: null },
+        is_active: true
+      })
+    },
+
+    onSubmit () {
+      if (this.form.password.value !== this.form.password_confirm.value) {
+        this.form.password_confirm.state = false
+        this.form.password_confirm.feedback = '암호가 일치하지 않습니다'
+        return false
+      } else {
+        console.log('haha')
+        this.form.password_confirm.state = null
+        this.form.password_confirm.feedback = null
+      }
+
+      this.createUser(this.form)
+      this.hideModal()
+    },
+
     onFiltered (filteredItems) {
       this.totalRows = filteredItems.length
       this.currentPage = 1
@@ -151,6 +253,7 @@ export default {
   },
   created () {
     this.fetchUserLists()
+    this.initializeForm()
   },
   computed: {
     ...mapGetters({

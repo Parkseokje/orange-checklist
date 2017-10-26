@@ -1,2 +1,7 @@
-export const userTypes = state => state.userTypes
-export const modalVariants = state => state.modalVariants
+const userTypes = state => state.userTypes
+const modalVariants = state => state.modalVariants
+
+export {
+  userTypes,
+  modalVariants
+}

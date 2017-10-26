@@ -10,6 +10,10 @@ import Shop from '@/views/Shop'
 import User from '@/views/User'
 import Checklist from '@/views/Checklist'
 
+// Views - Pages
+import Page404 from '@/views/pages/Page404'
+import Page500 from '@/views/pages/Page500'
+
 Vue.use(Router)
 
 export default new Router({
@@ -46,8 +50,13 @@ export default new Router({
       ]
     },
     {
+      path: '/error',
+      component: Page500
+    },
+    {
       path: '*',
-      redirect: '/'
+      component: Page404
+      // redirect: '/'
     }
   ]
 })

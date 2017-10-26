@@ -1,8 +1,7 @@
 import {
   SET_USERS,
-  CREATE_USER,
   UPDATE_USER,
-  DELETE_USER
+  API_FAILURE
 } from '../mutation-types'
 import User from '../../services/UserService'
 
@@ -29,17 +28,17 @@ const usersModule = {
   },
 
   actions: {
-    async fetchUserLists ({ commit }) {
-      const response = await User.getUsers()
-
-      commit(SET_USERS, response.data)
+    fetchUserLists ({ commit }) {
+      User.getUsers(
+        (data) => commit(SET_USERS, data),
+        (err) => commit(API_FAILURE, err)
+      )
     },
-    async createUser ({ commit }, user) {
-      const response = await User.createUser(user)
-
-      if (response.data.success) {
-        commit(CREATE_USER, user)
-      }
+    createUser ({ dispatch, commit }, user) {
+      User.createUser(user,
+        (data) => dispatch('fetchUserLists'),
+        (err) => commit(API_FAILURE, err)
+      )
     },
     async updateUser ({ commit }, user) {
       const response = await User.updateUser(user)
@@ -48,12 +47,11 @@ const usersModule = {
         commit(UPDATE_USER, user)
       }
     },
-    async deleteUser ({ commit }, id) {
-      const response = await User.deleteUserById(id)
-
-      if (response.data.success) {
-        commit(DELETE_USER, id)
-      }
+    deleteUser ({ dispatch, commit }, id) {
+      User.deleteUserById(id,
+        (data) => dispatch('fetchUserLists'),
+        (err) => commit(API_FAILURE, err)
+      )
     }
   },
 
@@ -61,16 +59,9 @@ const usersModule = {
     [SET_USERS] (state, users) {
       state.users = users
     },
-    [CREATE_USER] (state, user) {
-      state.users.push(user)
-    },
     [UPDATE_USER] (state, user) {
       const foundIndex = state.users.findIndex(x => x.id === user.id)
       state.users[foundIndex] = user
-    },
-    [DELETE_USER] (state, id) {
-      const foundIndex = state.users.findIndex(x => x.id === id)
-      state.users.splice(foundIndex, 1)
     }
   }
 }
