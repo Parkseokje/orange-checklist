@@ -36,9 +36,9 @@ router.put('/', (req, res, next) => {
 
 router.delete('/:id', (req, res, next) => {
   const id = parseInt(req.params.id)
-  const foundIndex = users.findIndex(x => x.id === 1)
+  // const foundIndex = users.findIndex(x => x.id === 1)
 
-  users.splice(foundIndex, 1)
+  // users.splice(foundIndex, 1)
 
   return res.send({
     success: true

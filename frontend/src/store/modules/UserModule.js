@@ -1,6 +1,7 @@
 import {
   SET_USERS,
   UPDATE_USER,
+  DELETE_USER,
   API_FAILURE
 } from '../mutation-types'
 import User from '../../services/UserService'
@@ -49,7 +50,7 @@ const usersModule = {
     },
     deleteUser ({ dispatch, commit }, id) {
       User.deleteUserById(id,
-        (data) => dispatch('fetchUserLists'),
+        (data) => commit(DELETE_USER, id),
         (err) => commit(API_FAILURE, err)
       )
     }
@@ -62,6 +63,10 @@ const usersModule = {
     [UPDATE_USER] (state, user) {
       const foundIndex = state.users.findIndex(x => x.id === user.id)
       state.users[foundIndex] = user
+    },
+    [DELETE_USER] (state, id) {
+      const foundIndex = state.users.findIndex(x => x.id === id)
+      state.users.splice(foundIndex, 1)
     }
   }
 }
