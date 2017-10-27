@@ -59,18 +59,21 @@
       title="사용자 등록"
       :header-bg-variant="modalVariants.headerBgVariant"
       :header-text-variant="modalVariants.headerTextVariant"
+      :no-close-on-backdrop="true"
+      :no-close-on-esc="true"
+      @hide="initializeForm"
       hide-footer
-      no-enforce-focus
     >
-      <b-form @submit.prevent="onSubmit">
+      <b-form @submit.prevent="onSubmit" novalidate>
         <b-form-group
           label="구분"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
+          :feedback="validation.firstError('form.user_type')"
         >
           <b-form-select id="userTypeInput" :options="userTypes"
-            :state="form.user_type.state"
-            v-model="form.user_type.value"
+            :state="!validation.firstError('form.user_type')"
+            v-model="form.user_type"
             required placeholder="이름을 입력하세요"></b-form-select>
         </b-form-group>
         <b-form-group
@@ -78,11 +81,12 @@
           label="이름"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
+          :feedback="validation.firstError('form.name')"
         >
           <b-form-input type="text"
-            :state="form.name.state"
+            :state="!validation.firstError('form.name')"
             :autocomplete="'off'"
-            v-model="form.name.value"
+            v-model="form.name"
             required placeholder="이름을 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -90,13 +94,12 @@
           label="핸드폰"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="form.cell_no.feedback"
-          :state="form.cell_no.state"
+          :feedback="validation.firstError('form.cell_no')"
         >
           <b-form-input type="text"
-            :state="form.cell_no.state"
+            :state="!validation.hasError('form.cell_no')"
             :autocomplete="'off'"
-            v-model="form.cell_no.value"
+            v-model="form.cell_no"
             required placeholder="핸드폰 번호를 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -104,12 +107,12 @@
           label="이메일"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="form.email.feedback"
+          :feedback="validation.firstError('form.email')"
         >
           <b-form-input type="email"
-            :state="form.email.state"
+            :state="!validation.hasError('form.email')"
             :autocomplete="'off'"
-            v-model="form.email.value"
+            v-model="form.email"
             placeholder="이메일을 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -117,11 +120,11 @@
           label="암호"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="form.password.feedback"
+          :feedback="validation.firstError('form.password')"
         >
           <b-form-input type="password"
-            :state="form.password.state"
-            v-model="form.password.value"
+            :state="!validation.hasError('form.password')"
+            v-model="form.password"
             required placeholder="암호를 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -129,11 +132,11 @@
           label="암호 재확인"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="form.password_confirm.feedback"
+          :feedback="validation.firstError('form.password_confirm')"
         >
           <b-form-input type="password"
-            :state="form.password_confirm.state"
-            v-model="form.password_confirm.value"
+            :state="!validation.hasError('form.password_confirm')"
+            v-model="form.password_confirm"
             required placeholder="암호를 다시 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -141,18 +144,24 @@
           label="메모"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
+          :feedback="validation.firstError('form.memo')"
         >
           <b-form-textarea id="memoInput"
-            v-model="form.memo.value"
+            :state="!validation.hasError('form.memo')"
+            v-model="form.memo"
             placeholder="메모를 입력하세요"
             :rows="3"
             :max-rows="6">
           </b-form-textarea>
         </b-form-group>
 
-        <b-btn class="mt-3" block variant="primary" type="submit">저장</b-btn>
-        <b-btn class="mt-3" block variant="outline-secondary" @click="initializeForm" type="reset">초기화</b-btn>
-        <b-btn class="mt-3" block variant="outline-danger" @click="hideModal">취소</b-btn>
+        <b-container>
+          <b-row>
+            <b-col><b-btn block variant="primary" type="submit">저장</b-btn></b-col>
+            <b-col><b-btn block variant="secondary" @click="initializeForm" type="reset">초기화</b-btn></b-col>
+            <b-col><b-btn block variant="danger" @click="hideModal">취소</b-btn></b-col>
+          </b-row>
+        </b-container>
       </b-form>
     </b-modal>
   </div>
@@ -160,12 +169,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { Validator } from 'simple-vue-validator'
 
 const fields = {
   user_type: { label: '구분', sortable: true, 'class': 'text-center' },
   name: { label: '이름', sortable: true, 'class': 'text-center' },
-  // cell_no: { label: '핸드폰', 'class': 'text-center' },
-  // email: { label: '이메일' },
+  cell_no: { label: '핸드폰', 'class': 'text-center' },
+  email: { label: '이메일' },
   actions: { label: 'Actions' }
 }
 
@@ -191,6 +201,38 @@ export default {
       modalInputHorizontal: true
     }
   },
+
+  validators: {
+    'form.user_type' (value) {
+      return Validator.custom(() => {
+        if (Validator.isEmpty(value)) {
+          return '필수선택'
+        }
+      })
+    },
+    'form.name' (value) {
+      return Validator.value(value).required('필수입력')
+    },
+    'form.email' (value) {
+      return Validator.value(value).email('잘못된 형식입니다.')
+    },
+    'form.cell_no' (value) {
+      return Validator.value(value).required('필수입력').digit('숫자만 입력').length(11, '11자리 이상')
+    },
+    'form.password' (value) {
+      return Validator.value(value).required('필수입력').minLength(6, '6자리 이상')
+    },
+    'form.password_confirm, form.password' (repeat, password) {
+      if (this.validation.isTouched('form.password_confirm')) {
+        console.log('haha')
+        return Validator.value(repeat).required('필수입력').match(password, '암호 불일치')
+      }
+    },
+    'form.memo' (value) {
+      return Validator.value(value).maxLength(40, '40자 이내')
+    }
+  },
+
   methods: {
     ...mapActions([
       'fetchUserLists',
@@ -205,8 +247,21 @@ export default {
       this.$root.$emit('bv::show::modal', 'modalShowInfo', button)
     },
 
+    modify (item, index, button) {
+      this.form.id = item.id
+      this.form.user_type = item.user_type
+      this.form.name = item.name
+      this.form.cell_no = item.cell_no
+      this.form.email = item.email
+      this.form.memo = item.memo
+
+      this.$root.$emit('bv::show::modal', 'modalCreateUser', button)
+    },
+
     remove (item, index, button) {
-      this.deleteUser(item.id)
+      if (confirm('정말 삭제하시겠습니까?')) {
+        this.deleteUser(item.id)
+      }
     },
 
     resetModal () {
@@ -221,30 +276,39 @@ export default {
 
     initializeForm () {
       this.form = Object.assign({}, this.form, {
-        user_type: { value: null, state: null },
-        name: { value: null, state: null },
-        cell_no: { value: null, state: null, feedback: null },
-        email: { value: null, state: null, feedback: null },
-        password: { value: null, state: null, feedback: null },
-        password_confirm: { value: null, state: null, feedback: null },
-        memo: { value: null },
+        id: null,
+        user_type: null,
+        name: null,
+        cell_no: null,
+        email: null,
+        password: null,
+        password_confirm: null,
+        memo: null,
         is_active: true
       })
     },
 
     onSubmit () {
-      if (this.form.password.value !== this.form.password_confirm.value) {
-        this.form.password_confirm.state = false
-        this.form.password_confirm.feedback = '암호가 일치하지 않습니다'
-        return false
-      } else {
-        console.log('haha')
-        this.form.password_confirm.state = null
-        this.form.password_confirm.feedback = null
-      }
+      this.$validate()
+        .then(success => {
+          if (success) {
+            alert('success!')
+          } else {
+            console.log(this.validation.hasError('form.email.value'))
+          }
+        })
+      // if (this.form.password.value !== this.form.password_confirm.value) {
+      //   this.form.password_confirm.state = false
+      //   this.form.password_confirm.feedback = '암호가 일치하지 않습니다'
+      //   return false
+      // } else {
+      //   console.log('haha')
+      //   this.form.password_confirm.state = null
+      //   this.form.password_confirm.feedback = null
+      // }
 
-      this.createUser(this.form)
-      this.hideModal()
+      // this.createUser(this.form)
+      // this.hideModal()
     },
 
     onFiltered (filteredItems) {
@@ -252,10 +316,12 @@ export default {
       this.currentPage = 1
     }
   },
+
   created () {
     this.fetchUserLists()
     this.initializeForm()
   },
+
   computed: {
     ...mapGetters({
       items: 'all',
