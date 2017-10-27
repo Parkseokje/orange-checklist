@@ -26,7 +26,7 @@
               </div>
             </div>
 
-            <b-table striped hover show-empty
+            <b-table striped hover show-empty responsive
               :items="items"
               :fields="fields"
               :current-page="currentPage"
@@ -56,7 +56,7 @@
 
     <!-- 사용자 생성 모달 -->
     <b-modal id="modalCreateUser"
-      title="사용자 등록"
+      :title="form.title"
       :header-bg-variant="modalVariants.headerBgVariant"
       :header-text-variant="modalVariants.headerTextVariant"
       :no-close-on-backdrop="true"
@@ -90,7 +90,7 @@
             required placeholder="이름을 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
-          description="숫자만 입력하세요(예. 01012341234)"
+          description=""
           label="핸드폰"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
@@ -103,7 +103,7 @@
             required placeholder="핸드폰 번호를 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
-          description="user@example.com"
+          description=""
           label="이메일"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
@@ -224,7 +224,6 @@ export default {
     },
     'form.password_confirm, form.password' (repeat, password) {
       if (this.validation.isTouched('form.password_confirm')) {
-        console.log('haha')
         return Validator.value(repeat).required('필수입력').match(password, '암호 불일치')
       }
     },
@@ -248,12 +247,15 @@ export default {
     },
 
     modify (item, index, button) {
+      this.form.title = '사용자 수정'
       this.form.id = item.id
       this.form.user_type = item.user_type
       this.form.name = item.name
       this.form.cell_no = item.cell_no
       this.form.email = item.email
       this.form.memo = item.memo
+      this.form.password = item.password ? item.password : ''
+      this.form.password_confirm = this.form.password
 
       this.$root.$emit('bv::show::modal', 'modalCreateUser', button)
     },
@@ -276,6 +278,7 @@ export default {
 
     initializeForm () {
       this.form = Object.assign({}, this.form, {
+        title: '사용자 등록',
         id: null,
         user_type: null,
         name: null,
@@ -289,26 +292,23 @@ export default {
     },
 
     onSubmit () {
+      const $this = this
+
       this.$validate()
-        .then(success => {
+        .then(function (success) {
           if (success) {
-            alert('success!')
+            if (confirm('저장하시겠습니까?')) {
+              if ($this.form.id) {
+                $this.updateUser($this.form)
+              } else {
+                $this.createUser($this.form)
+              }
+              $this.hideModal()
+            }
           } else {
-            console.log(this.validation.hasError('form.email.value'))
+            alert('유효하지 않은 입력값이 존재합니다.')
           }
         })
-      // if (this.form.password.value !== this.form.password_confirm.value) {
-      //   this.form.password_confirm.state = false
-      //   this.form.password_confirm.feedback = '암호가 일치하지 않습니다'
-      //   return false
-      // } else {
-      //   console.log('haha')
-      //   this.form.password_confirm.state = null
-      //   this.form.password_confirm.feedback = null
-      // }
-
-      // this.createUser(this.form)
-      // this.hideModal()
     },
 
     onFiltered (filteredItems) {

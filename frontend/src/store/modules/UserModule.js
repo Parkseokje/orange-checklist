@@ -41,12 +41,11 @@ const usersModule = {
         (err) => commit(API_FAILURE, err)
       )
     },
-    async updateUser ({ commit }, user) {
-      const response = await User.updateUser(user)
-
-      if (response.data.success) {
-        commit(UPDATE_USER, user)
-      }
+    updateUser ({ commit }, user) {
+      User.createUser(user,
+        (data) => commit(UPDATE_USER, user),
+        (err) => commit(API_FAILURE, err)
+      )
     },
     deleteUser ({ dispatch, commit }, id) {
       User.deleteUserById(id,

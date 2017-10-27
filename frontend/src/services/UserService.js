@@ -15,12 +15,12 @@ export default {
   },
   createUser (user, cb, errorCb) {
     return axios.post(`/api/users`, {
-      user_type: user.user_type.value,
-      name: user.name.value,
-      cell_no: user.cell_no.value,
-      email: user.email.value,
-      password: user.password.value,
-      memo: user.memo.value,
+      user_type: user.user_type,
+      name: user.name,
+      cell_no: user.cell_no,
+      email: user.email,
+      password: user.password,
+      memo: user.memo,
       is_active: user.is_active
     })
       .then(response => {
