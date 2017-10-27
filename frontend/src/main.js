@@ -5,6 +5,7 @@ import router from './router'
 import { sync } from 'vuex-router-sync'
 import store from './store'
 import SimpleVueValidation from 'simple-vue-validator'
+import * as VueGoogleMaps from 'vue2-google-maps'
 
 // import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -12,6 +13,14 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 // Vue.prototype.$http = axios
 Vue.use(BootstrapVue)
 Vue.use(SimpleVueValidation)
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyCg6IbxG5vJfJuDMdgp71hRiZtVQuPMg0o',
+    libraries: 'places' // This is required if you use the Autocomplete plugin
+    // OR: libraries: 'places,drawing'
+    // OR: libraries: 'places,drawing,visualization'
+  }
+})
 // Vue.config.productionTip = false
 
 sync(store, router)
