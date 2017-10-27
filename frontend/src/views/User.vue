@@ -60,6 +60,7 @@
       :header-bg-variant="modalVariants.headerBgVariant"
       :header-text-variant="modalVariants.headerTextVariant"
       hide-footer
+      no-enforce-focus
     >
       <b-form @submit.prevent="onSubmit">
         <b-form-group
