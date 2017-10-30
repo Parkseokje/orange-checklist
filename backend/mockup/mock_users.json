@@ -1,12 +1,12 @@
 [
-  { "id": 1, "is_active": true, "user_type": "SV", "name": "Dickerson1", "email": "", "cell_no": "010-2009-1401", "memo": "blah blah" },
-  { "id": 2, "is_active": true, "user_type": "MS", "name": "Mystery John", "email": "", "cell_no": "010-2009-1402", "memo": "blah blah" },
-  { "id": 3, "is_active": true, "user_type": "SV", "name": "Dickerson", "email": "", "cell_no": "010-2009-1403", "memo": "blah blah" },
-  { "id": 4, "is_active": true, "user_type": "SV", "name": "Dicke2rson", "email": "", "cell_no": "010-2009-1404", "memo": "blah blah" },
-  { "id": 5, "is_active": true, "user_type": "SV", "name": "Dick3erson", "email": "", "cell_no": "010-2009-1405", "memo": "blah blah" },
-  { "id": 6, "is_active": true, "user_type": "SV", "name": "Dick12erson", "email": "", "cell_no": "010-2009-1406", "memo": "blah blah" },
-  { "id": 7, "is_active": true, "user_type": "SV", "name": "Dickerso33n", "email": "", "cell_no": "010-2009-1407", "memo": "blah blah" },
-  { "id": 8, "is_active": true, "user_type": "MS", "name": "Dickers12on", "email": "", "cell_no": "010-2009-1408", "memo": "blah blah" },
-  { "id": 9, "is_active": true, "user_type": "SV", "name": "Dicke1rson", "email": "", "cell_no": "010-2009-1409", "memo": "blah blah" },
-  { "id": 10, "is_active": true, "user_type": "MS", "name": "Di55ckerson", "email": "user@example.com", "cell_no": "010-2009-1410", "memo": "blah blah" }
+  { "id": 1, "is_active": true, "user_type": "SV", "name": "Dickerson1", "password": "111111", "email": "", "cell_no": "01020091401", "memo": "blah blah" },
+  { "id": 2, "is_active": true, "user_type": "MS", "name": "Mystery John", "password": "111111", "email": "", "cell_no": "01020091402", "memo": "blah blah" },
+  { "id": 3, "is_active": true, "user_type": "SV", "name": "Dickerson", "password": "111111", "email": "", "cell_no": "01020091403", "memo": "blah blah" },
+  { "id": 4, "is_active": true, "user_type": "SV", "name": "Dicke2rson", "password": "111111", "email": "", "cell_no": "01020091404", "memo": "blah blah" },
+  { "id": 5, "is_active": true, "user_type": "SV", "name": "Dick3erson", "password": "111111", "email": "", "cell_no": "01020091405", "memo": "blah blah" },
+  { "id": 6, "is_active": true, "user_type": "SV", "name": "Dick12erson", "password": "111111", "email": "", "cell_no": "01020091406", "memo": "blah blah" },
+  { "id": 7, "is_active": true, "user_type": "SV", "name": "Dickerso33n", "password": "111111", "email": "", "cell_no": "01020091407", "memo": "blah blah" },
+  { "id": 8, "is_active": true, "user_type": "MS", "name": "Dickers12on", "password": "111111", "email": "", "cell_no": "01020091408", "memo": "blah blah" },
+  { "id": 9, "is_active": true, "user_type": "SV", "name": "Dicke1rson", "password": "111111", "email": "", "cell_no": "01020091409", "memo": "blah blah" },
+  { "id": 10, "is_active": true, "user_type": "MS", "name": "Di55ckerson", "password": "111111", "email": "user@example.com", "cell_no": "010-2009-1410", "memo": "blah blah" }
 ]

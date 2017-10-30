@@ -26,7 +26,7 @@
               </div>
             </div>
 
-            <b-table striped hover show-empty responsive
+            <b-table striped hover responsive
               :items="items"
               :fields="fields"
               :current-page="currentPage"
@@ -75,6 +75,18 @@
             :state="!validation.firstError('form.user_type')"
             v-model="form.user_type"
             required placeholder="이름을 입력하세요"></b-form-select>
+        </b-form-group>
+        <b-form-group
+          label="점포"
+          :label-cols="modalLabelCols"
+          :horizontal="modalInputHorizontal"
+          v-if="displayShopSelect"
+        >
+          <v-select label="name"
+            v-model="selectedShop"
+            :options="shops"
+            placeholder="점포를 선택하세요"
+          ></v-select>
         </b-form-group>
         <b-form-group
           description=""
@@ -173,6 +185,7 @@ import { Validator } from 'simple-vue-validator'
 
 const fields = {
   user_type: { label: '구분', sortable: true, 'class': 'text-center' },
+  shop_name: { label: '점포', sortable: true, 'class': 'text-center' },
   name: { label: '이름', sortable: true, 'class': 'text-center' },
   cell_no: { label: '핸드폰', 'class': 'text-center' },
   email: { label: '이메일' },
@@ -183,6 +196,7 @@ export default {
   name: 'user',
   data () {
     return {
+      selectedShop: null,
       fields: fields,
       currentPage: 1,
       perPage: 5,
@@ -235,6 +249,7 @@ export default {
   methods: {
     ...mapActions([
       'fetchUserLists',
+      'fetchShopLists',
       'createUser',
       'updateUser',
       'deleteUser'
@@ -250,6 +265,8 @@ export default {
       this.form.title = '사용자 수정'
       this.form.id = item.id
       this.form.user_type = item.user_type
+      this.form.shop_id = item.shop_id
+      this.form.shop_name = item.shop_name
       this.form.name = item.name
       this.form.cell_no = item.cell_no
       this.form.email = item.email
@@ -281,6 +298,8 @@ export default {
         title: '사용자 등록',
         id: null,
         user_type: null,
+        shop_id: null,
+        shop_name: null,
         name: null,
         cell_no: null,
         email: null,
@@ -292,18 +311,26 @@ export default {
     },
 
     onSubmit () {
-      const $this = this
+      if (this.displayShopSelect) {
+        if (this.selectedShop === null) {
+          alert('점포를 선택하세요.')
+          return false
+        } else {
+          this.form.shop_id = this.selectedShop.id
+          this.form.shop_name = this.selectedShop.name
+        }
+      }
 
       this.$validate()
-        .then(function (success) {
+        .then(success => {
           if (success) {
             if (confirm('저장하시겠습니까?')) {
-              if ($this.form.id) {
-                $this.updateUser($this.form)
+              if (this.form.id) {
+                this.updateUser(this.form)
               } else {
-                $this.createUser($this.form)
+                this.createUser(this.form)
               }
-              $this.hideModal()
+              this.hideModal()
             }
           } else {
             alert('유효하지 않은 입력값이 존재합니다.')
@@ -319,15 +346,21 @@ export default {
 
   created () {
     this.fetchUserLists()
+    this.fetchShopLists()
     this.initializeForm()
   },
 
   computed: {
     ...mapGetters({
-      items: 'all',
+      items: 'getAllUsers',
+      shops: 'getAllShops',
       userTypes: 'userTypes',
       modalVariants: 'modalVariants'
-    })
+    }),
+
+    displayShopSelect () {
+      return !(this.form.user_type === null || this.form.user_type === 'MS')
+    }
   }
 }
 </script>

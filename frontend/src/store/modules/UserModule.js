@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import {
   SET_USERS,
   UPDATE_USER,
@@ -12,9 +13,10 @@ const usersModule = {
   },
 
   getters: {
-    all: state => {
+    getAllUsers: state => {
       return state.users
     },
+
     getUserById: (state, id) => {
       return state.users.find((user) => {
         return user.id === id
@@ -35,18 +37,21 @@ const usersModule = {
         (err) => commit(API_FAILURE, err)
       )
     },
+
     createUser ({ dispatch, commit }, user) {
       User.createUser(user,
         (data) => dispatch('fetchUserLists'),
         (err) => commit(API_FAILURE, err)
       )
     },
+
     updateUser ({ commit }, user) {
       User.createUser(user,
         (data) => commit(UPDATE_USER, user),
         (err) => commit(API_FAILURE, err)
       )
     },
+
     deleteUser ({ dispatch, commit }, id) {
       User.deleteUserById(id,
         (data) => commit(DELETE_USER, id),
@@ -59,10 +64,12 @@ const usersModule = {
     [SET_USERS] (state, users) {
       state.users = users
     },
+
     [UPDATE_USER] (state, user) {
       const foundIndex = state.users.findIndex(x => x.id === user.id)
-      state.users[foundIndex] = user
+      Vue.set(state.users, foundIndex, user)
     },
+
     [DELETE_USER] (state, id) {
       const foundIndex = state.users.findIndex(x => x.id === id)
       state.users.splice(foundIndex, 1)

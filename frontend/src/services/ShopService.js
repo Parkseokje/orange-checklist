@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 export default {
-  getUsers (cb, errorCb) {
-    axios.get('/api/users')
+  getShops (cb, errorCb) {
+    axios.get('/api/shops')
       .then(response => {
         if (response.status === 200 && response.data.length > 0) {
           cb(response.data)
@@ -10,20 +10,20 @@ export default {
       })
       .catch(error => errorCb(error))
   },
-  getUserById (id) {
-    return axios.get(`/api/users/${id}`)
+
+  getShopById (id) {
+    return axios.get(`/api/shops/${id}`)
   },
-  createUser (user, cb, errorCb) {
-    return axios.post(`/api/users`, {
-      user_type: user.user_type,
-      shop_id: user.shop_id,
-      shop_name: user.shop_name,
-      name: user.name,
-      cell_no: user.cell_no,
-      email: user.email,
-      password: user.password,
-      memo: user.memo,
-      is_active: user.is_active
+
+  createShop (shop, cb, errorCb) {
+    return axios.post(`/api/shops`, {
+      name: shop.name,
+      address: shop.address,
+      tel_no: shop.tel_no,
+      lat: shop.lat,
+      lng: shop.lng,
+      memo: shop.memo,
+      is_active: shop.is_active
     })
       .then(response => {
         if (response.status === 200) {
@@ -32,8 +32,9 @@ export default {
       })
       .catch(error => errorCb(error))
   },
-  updateUser (user, cb, errorCb) {
-    return axios.put(`/api/users`, user)
+
+  updateShop (user, cb, errorCb) {
+    return axios.put(`/api/shops`, user)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)
@@ -41,8 +42,9 @@ export default {
       })
       .catch(error => errorCb(error))
   },
-  deleteUserById (id, cb, errorCb) {
-    return axios.delete(`/api/users/${id}`)
+
+  deleteShopById (id, cb, errorCb) {
+    return axios.delete(`/api/shops/${id}`)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)

@@ -9,6 +9,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 
 // import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vSelect from 'vue-select'
 
 // Vue.prototype.$http = axios
 Vue.use(BootstrapVue)
@@ -22,6 +23,8 @@ Vue.use(VueGoogleMaps, {
   }
 })
 // Vue.config.productionTip = false
+
+Vue.component('v-select', vSelect)
 
 sync(store, router)
 
