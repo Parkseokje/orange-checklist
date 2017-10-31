@@ -7,7 +7,7 @@ import {
 } from '../mutation-types'
 import User from '../../services/UserService'
 
-const usersModule = {
+const userModule = {
   state: {
     users: []
   },
@@ -77,4 +77,4 @@ const usersModule = {
   }
 }
 
-export default usersModule
+export default userModule

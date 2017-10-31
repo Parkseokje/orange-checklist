@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var shops = require('./routes/shops');
+var categories = require('./routes/categories');
 
 var app = express();
 app.use(require('connect-history-api-fallback')())
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/api/users', users);
 app.use('/api/shops', shops);
+app.use('/api/categories', categories);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

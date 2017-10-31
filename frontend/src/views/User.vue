@@ -26,7 +26,8 @@
               </div>
             </div>
 
-            <b-table striped hover responsive
+            <b-table striped hover responsive show-empty
+              :empty-text="messages.emptyText"
               :items="items"
               :fields="fields"
               :current-page="currentPage"
@@ -355,7 +356,8 @@ export default {
       items: 'getAllUsers',
       shops: 'getAllShops',
       userTypes: 'userTypes',
-      modalVariants: 'modalVariants'
+      modalVariants: 'modalVariants',
+      messages: 'messages'
     }),
 
     displayShopSelect () {

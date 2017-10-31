@@ -27,6 +27,7 @@
             </div>
             <!-- 테이블 -->
             <b-table striped hover show-empty responsive
+              :empty-text="messages.emptyText"
               :items="items"
               :fields="fields"
               :current-page="currentPage"
@@ -284,27 +285,33 @@ export default {
     },
 
     onGmapChanged ({ lat, lng, name, address, tel_no: telNo }) {
-      if (confirm('지도의 정보로 변경하시겠습니까?')) {
-        this.form.name = name
-        this.form.address = address
+      console.log(this.form.id)
 
-        if (telNo !== undefined) {
-          this.form.tel_no = telNo.replace(/[^0-9]/g, '')
-        } else {
-          this.form.tel_no = null
+      if (this.form.id) {
+        if (!confirm('지도의 정보로 변경하시겠습니까?')) {
+          return false
         }
+      }
 
-        this.form.lat = lat
-        this.form.lng = lng
+      this.form.name = name
+      this.form.address = address
 
-        if (this.form.lat && this.form.lng) {
-          this.gmapDefaultPosition = {
-            lat: this.form.lat,
-            lng: this.form.lng
-          }
-        } else {
-          this.gmapDefaultPosition = undefined
+      if (telNo !== undefined) {
+        this.form.tel_no = telNo.replace(/[^0-9]/g, '')
+      } else {
+        this.form.tel_no = null
+      }
+
+      this.form.lat = lat
+      this.form.lng = lng
+
+      if (this.form.lat && this.form.lng) {
+        this.gmapDefaultPosition = {
+          lat: this.form.lat,
+          lng: this.form.lng
         }
+      } else {
+        this.gmapDefaultPosition = undefined
       }
     },
 
@@ -321,7 +328,8 @@ export default {
   computed: {
     ...mapGetters({
       items: 'getAllShops',
-      modalVariants: 'modalVariants'
+      modalVariants: 'modalVariants',
+      messages: 'messages'
     })
   }
 }

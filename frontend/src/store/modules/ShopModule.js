@@ -7,7 +7,7 @@ import {
 } from '../mutation-types'
 import Shop from '../../services/ShopService'
 
-const shopsModule = {
+const shopModule = {
   state: {
     shops: []
   },
@@ -70,4 +70,4 @@ const shopsModule = {
   }
 }
 
-export default shopsModule
+export default shopModule
