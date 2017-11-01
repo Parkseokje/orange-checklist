@@ -50,8 +50,6 @@ const categoryModule = {
     },
 
     updateCategory ({ commit }, category) {
-      console.log(category)
-
       Category.updateCategory(category,
         (data) => commit(UPDATE_CATEGORY, category),
         (err) => commit(API_FAILURE, err)

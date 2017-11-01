@@ -9,6 +9,7 @@ import Dashboard from '@/views/Dashboard'
 import Shop from '@/views/Shop'
 import User from '@/views/User'
 import Checklist from '@/views/Checklist'
+import ChecklistCreate from '@/views/ChecklistCreate'
 
 // Views - Pages
 import Page404 from '@/views/pages/Page404'
@@ -46,6 +47,11 @@ export default new Router({
           path: 'checklist',
           name: '체크리스트 관리',
           component: Checklist
+        },
+        {
+          path: 'checklist/create',
+          name: '체크리스트 추가',
+          component: ChecklistCreate
         }
       ]
     },

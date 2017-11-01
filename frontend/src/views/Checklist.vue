@@ -1,14 +1,12 @@
 <template>
   <div class="wrapper">
     <div class="animated fadeIn">
-      <div class="row">
-        <div class="col-12">
-          <b-card header="체크리스트 목록">
-            <b-btn v-b-modal.modalAddCategory variant="primary">분류 등록</b-btn>
-            <b-btn v-b-modal.modalAddChecklist variant="primary">체크리스트 등록</b-btn>
-          </b-card>
-        </div>
-      </div>
+      <b-card header="체크리스트 목록">
+        <b-btn v-b-modal.modalAddCategory variant="primary">분류 등록</b-btn>
+        <b-btn v-b-modal.modalAddChecklist variant="primary"
+          to="/checklist/create"
+        >체크리스트 등록</b-btn>
+      </b-card>
     </div>
     <!-- 분류 등록 -->
     <b-modal id="modalAddCategory" title="분류등록" size="lg"

@@ -23,7 +23,7 @@
         ></v-select>
       </b-col>
     </b-row>
-    <b-row class="my-1">
+    <b-row class="my-2">
       <b-col>
         <b-input-group>
           <b-form-input
@@ -85,6 +85,17 @@ export default {
       }, 100)
     },
 
+    initializeSelected () {
+      this.selected.id = null
+      this.selected.parent_id = null
+      this.selected.name = null
+      this.selected.is_active = true
+
+      // this.selected = Vue.util.extend({}, {
+      //   id: null, parent_id: null, name: null, is_active: true, depth: null
+      // })
+    },
+
     setParentId () {
       if (!this.selected.id) {
         if (this.categoryType === this.categoryTypes.middle.key) {
@@ -108,6 +119,7 @@ export default {
 
       if (confirm('추가하시겠습니까?')) {
         this.createCategory(Vue.util.extend({}, this.selected))
+        this.initializeSelected()
       }
     },
 
@@ -121,6 +133,7 @@ export default {
       if (this.selected.id) {
         if (confirm('수정하시겠습니까?')) {
           this.updateCategory(Vue.util.extend({}, this.selected))
+          this.initializeSelected()
         }
       }
     },
@@ -129,25 +142,25 @@ export default {
       if (this.selected.id) {
         if (confirm('삭제하시겠습니까?')) {
           this.deleteCategory(this.selected.id)
+          this.initializeSelected()
         }
       }
     },
 
     onCancel () {
-      this.selected.id = null
-      this.selected.name = null
+      this.initializeSelected()
     },
 
     onDropdown1Change (data) {
       this.dropdown1Selected = data
+      this.initializeSelected()
       this.setParentId()
-      this.onCancel()
     },
 
     onDropdown2Change (data) {
       this.dropdown2Selected = data
+      this.initializeSelected()
       this.setParentId()
-      this.onCancel()
     },
 
     onInputKeyEnter () {
@@ -164,7 +177,7 @@ export default {
       placeholder: null,
       label: null,
       fields: null,
-      selected: { id: null, name: null, is_active: true, depth: null },
+      selected: { id: null, parent_id: null, name: null, is_active: true, depth: null },
       dropdown1Selected: null,
       dropdown2Selected: null
     }
