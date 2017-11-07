@@ -1,142 +1,148 @@
 <template>
   <div class="wrapper">
-    <div class="animated fadeIn">
-      <div class="row">
-        <div class="col-12">
-          <b-card header="점포 목록">
-            <b-btn v-b-modal.modalCreateShop href="#" variant="primary">점포 등록</b-btn>
-            <br><br>
-            <!-- 테이블 toolbox -->
-            <div class="row">
-              <div class="col-md-3">
-                <b-form-group horizontal label="페이지당 줄수" :label-cols="6">
-                  <b-form-select :options="pageOptions" v-model="perPage" />
-                </b-form-group>
+    <v-loading loader="worker">
+      <template slot="spinner">
+        <pulse-loader :color="spinner.color" :height="spinner.height" :width="spinner.width"></pulse-loader>
+      </template>
+      <div class="animated fadeIn">
+        <div class="row">
+          <div class="col-12">
+            <b-card header="점포 목록">
+              <b-btn v-b-modal.modalCreateShop href="#" variant="primary">점포 등록</b-btn>
+              <br><br>
+              <!-- 테이블 toolbox -->
+              <div class="row">
+                <div class="col-md-3">
+                  <b-form-group horizontal label="페이지당 줄수" :label-cols="6">
+                    <b-form-select :options="pageOptions" v-model="perPage" />
+                  </b-form-group>
+                </div>
+                <div class="col-md-3">
+                  <b-form-group horizontal label="필터" :label-cols="3">
+                    <b-form-input v-model="filter" placeholder="검색어 입력" />
+                  </b-form-group>
+                </div>
+                <div class="col-md-2">
+                  <b-button :disabled="!sortBy" @click="sortBy = null">기본정렬</b-button>
+                </div>
+                <div class="col-md-4">
+                  <b-pagination align="right" :total-rows="totalRows" :per-page="perPage" v-model="currentPage" />
+                </div>
               </div>
-              <div class="col-md-3">
-                <b-form-group horizontal label="필터" :label-cols="3">
-                  <b-form-input v-model="filter" placeholder="검색어 입력" />
-                </b-form-group>
-              </div>
-              <div class="col-md-2">
-                <b-button :disabled="!sortBy" @click="sortBy = null">기본정렬</b-button>
-              </div>
-              <div class="col-md-4">
-                <b-pagination align="right" :total-rows="totalRows" :per-page="perPage" v-model="currentPage" />
-              </div>
-            </div>
-            <!-- 테이블 -->
-            <b-table striped hover show-empty responsive
-              :empty-text="messages.emptyText"
-              :items="items"
-              :fields="fields"
-              :current-page="currentPage"
-              :per-page="perPage"
-              :filter="filter"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              @filtered="onFiltered"
-            >
-              <template slot="actions" scope="row">
-                <b-btn variant="info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>
-                <b-btn variant="secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
-                <b-btn variant="danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
-              </template>
-            </b-table>
-          </b-card>
+              <!-- 테이블 -->
+              <b-table striped hover show-empty responsive
+                :empty-text="messages.emptyText"
+                :items="items"
+                :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                @filtered="onFiltered"
+              >
+                <template slot="actions" scope="row">
+                  <b-btn variant="info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>
+                  <b-btn variant="secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
+                  <b-btn variant="danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
+                </template>
+              </b-table>
+            </b-card>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- 점포 정보 보기 모달 -->
-    <b-modal id="modalShowInfo"
-      @hide="resetModal"
-    >
-      <h4 slot="modal-header">Index: {{ modalDetails.index }}</h4>
-      <pre>{{ modalDetails.data }}</pre>
-    </b-modal>
-    <!-- 점포 생성/수정 모달 -->
-    <b-modal id="modalCreateShop"
-      :title="form.title"
-      :header-bg-variant="modalVariants.headerBgVariant"
-      :header-text-variant="modalVariants.headerTextVariant"
-      :no-close-on-backdrop="true"
-      :no-close-on-esc="true"
-      @hide="initializeForm"
-      @shown="refreshGmap"
-      hide-footer
-    >
-      <google-map
-        :gmap-default-position="gmapDefaultPosition"
-        :gmap-show-auto-complete="gmapShowAutoComplete"
-        :gmap-search-text="gmapSearchText"
-        @changed="onGmapChanged"
-      ></google-map>
-      <br><br>
-      <b-form @submit.prevent="onSubmit" novalidate>
-        <b-form-group
-          description=""
-          label="점포명"
-          :label-cols="modalLabelCols"
-          :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.name')"
-        >
-          <b-form-input type="text"
-            :state="!validation.firstError('form.name')"
-            :autocomplete="'off'"
-            v-model="form.name"
-            required placeholder="점포명을 입력하세요"></b-form-input>
-        </b-form-group>
-        <b-form-group
-          description=""
-          label="주소"
-          :label-cols="modalLabelCols"
-          :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.address')"
-        >
-          <b-form-input type="text"
-            :state="!validation.firstError('form.address')"
-            :autocomplete="'off'"
-            v-model="form.address"
-            required placeholder="주소를 입력하세요"></b-form-input>
-        </b-form-group>
-        <b-form-group
-          description=""
-          label="전화번호"
-          :label-cols="modalLabelCols"
-          :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.tel')"
-        >
-          <b-form-input type="text"
-            :state="!validation.hasError('form.tel')"
-            :autocomplete="'off'"
-            v-model="form.tel"
-            required placeholder="전화번호를 입력하세요"></b-form-input>
-        </b-form-group>
-        <b-form-group
-          description=""
-          label="메모"
-          :label-cols="modalLabelCols"
-          :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.memo')"
-        >
-          <b-form-textarea id="memoInput"
-            :state="!validation.hasError('form.memo')"
-            v-model="form.memo"
-            placeholder="메모를 입력하세요"
-            :rows="3"
-            :max-rows="6">
-          </b-form-textarea>
-        </b-form-group>
 
-        <b-container>
-          <b-row>
-            <b-col><b-btn block variant="primary" type="submit">저장</b-btn></b-col>
-            <b-col><b-btn block variant="secondary" @click="initializeForm" type="reset">초기화</b-btn></b-col>
-            <b-col><b-btn block variant="danger" @click="hideModal">취소</b-btn></b-col>
-          </b-row>
-        </b-container>
-      </b-form>
-    </b-modal>
+      <!-- 점포 정보 보기 모달 -->
+      <b-modal id="modalShowInfo"
+        @hide="resetModal"
+      >
+        <h4 slot="modal-header">Index: {{ modalDetails.index }}</h4>
+        <pre>{{ modalDetails.data }}</pre>
+      </b-modal>
+      <!-- 점포 생성/수정 모달 -->
+      <b-modal id="modalCreateShop"
+        :title="form.title"
+        :header-bg-variant="modalVariants.headerBgVariant"
+        :header-text-variant="modalVariants.headerTextVariant"
+        :no-close-on-backdrop="true"
+        :no-close-on-esc="true"
+        @hide="initializeForm"
+        @shown="refreshGmap"
+        hide-footer
+      >
+        <google-map
+          :gmap-default-position="gmapDefaultPosition"
+          :gmap-show-auto-complete="gmapShowAutoComplete"
+          :gmap-search-text="gmapSearchText"
+          @changed="onGmapChanged"
+        ></google-map>
+        <br><br>
+        <b-form @submit.prevent="onSubmit" novalidate>
+          <b-form-group
+            description=""
+            label="점포명"
+            :label-cols="modalLabelCols"
+            :horizontal="modalInputHorizontal"
+            :feedback="validation.firstError('form.name')"
+          >
+            <b-form-input type="text"
+              :state="!validation.firstError('form.name')"
+              :autocomplete="'off'"
+              v-model="form.name"
+              required placeholder="점포명을 입력하세요"></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description=""
+            label="주소"
+            :label-cols="modalLabelCols"
+            :horizontal="modalInputHorizontal"
+            :feedback="validation.firstError('form.address')"
+          >
+            <b-form-input type="text"
+              :state="!validation.firstError('form.address')"
+              :autocomplete="'off'"
+              v-model="form.address"
+              required placeholder="주소를 입력하세요"></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description=""
+            label="전화번호"
+            :label-cols="modalLabelCols"
+            :horizontal="modalInputHorizontal"
+            :feedback="validation.firstError('form.tel')"
+          >
+            <b-form-input type="text"
+              :state="!validation.hasError('form.tel')"
+              :autocomplete="'off'"
+              v-model="form.tel"
+              required placeholder="전화번호를 입력하세요"></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description=""
+            label="메모"
+            :label-cols="modalLabelCols"
+            :horizontal="modalInputHorizontal"
+            :feedback="validation.firstError('form.memo')"
+          >
+            <b-form-textarea id="memoInput"
+              :state="!validation.hasError('form.memo')"
+              v-model="form.memo"
+              placeholder="메모를 입력하세요"
+              :rows="3"
+              :max-rows="6">
+            </b-form-textarea>
+          </b-form-group>
+
+          <b-container>
+            <b-row>
+              <b-col><b-btn block variant="primary" type="submit">저장</b-btn></b-col>
+              <b-col><b-btn block variant="secondary" @click="initializeForm" type="reset">초기화</b-btn></b-col>
+              <b-col><b-btn block variant="danger" @click="hideModal">취소</b-btn></b-col>
+            </b-row>
+          </b-container>
+        </b-form>
+      </b-modal>
+    </v-loading>
   </div>
 </template>
 
@@ -327,7 +333,8 @@ export default {
     ...mapGetters({
       items: 'getAllShops',
       modalVariants: 'modalVariants',
-      messages: 'messages'
+      messages: 'messages',
+      spinner: 'spinner'
     })
   }
 }

@@ -20,7 +20,9 @@ const AuthModule = {
   actions: {
     login ({ commit }, credentials) {
       Auth.signin(credentials,
-        (data) => commit(LOGIN_SUCCESS, data),
+        (data) => {
+          commit(LOGIN_SUCCESS, data)
+        },
         (err) => commit(API_FAILURE, err)
       )
     },

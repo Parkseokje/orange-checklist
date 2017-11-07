@@ -25,5 +25,10 @@ export default {
   },
   messages: {
     emptyText: '자료가 존재하지 않습니다'
+  },
+  spinner: {
+    color: '#3AB982',
+    height: '35px',
+    width: '4px'
   }
 }

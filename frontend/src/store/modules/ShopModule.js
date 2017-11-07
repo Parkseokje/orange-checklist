@@ -3,6 +3,7 @@ import {
   SET_SHOPS,
   UPDATE_SHOP,
   DELETE_SHOP,
+  API_START,
   API_FAILURE
 } from '../mutation-types'
 import Shop from '../../services/ShopService'
@@ -24,7 +25,8 @@ const shopModule = {
   },
 
   actions: {
-    fetchShopLists ({ commit }) {
+    fetchShopLists ({ commit, dispatch }) {
+      commit(API_START)
       Shop.getShops(
         (data) => commit(SET_SHOPS, data),
         (err) => commit(API_FAILURE, err)
@@ -32,6 +34,7 @@ const shopModule = {
     },
 
     createShop ({ dispatch, commit }, shop) {
+      commit(API_START)
       Shop.createShop(shop,
         (data) => dispatch('fetchShopLists'),
         (err) => commit(API_FAILURE, err)
@@ -39,6 +42,7 @@ const shopModule = {
     },
 
     updateShop ({ commit }, shop) {
+      commit(API_START)
       Shop.updateShop(shop,
         (data) => commit(UPDATE_SHOP, shop),
         (err) => commit(API_FAILURE, err)
@@ -46,6 +50,7 @@ const shopModule = {
     },
 
     deleteShop ({ dispatch, commit }, id) {
+      commit(API_START)
       Shop.deleteShopById(id,
         (data) => commit(DELETE_SHOP, id),
         (err) => commit(API_FAILURE, err)

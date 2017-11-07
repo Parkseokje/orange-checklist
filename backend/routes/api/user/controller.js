@@ -89,7 +89,7 @@ exports.update = (req, res) => {
       ' , email = ? ' +
       ' , phone = ? ' +
       ' , memo = ? ' +
-      ' , updated_dt = NOW() '
+      ' , updated_dt = NOW() ' +
       ' WHERE id = ?; '
 
     connection.query(sql, [ role, name, email, phone, memo, id ], (err, rows) => {

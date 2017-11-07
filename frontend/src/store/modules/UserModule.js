@@ -3,6 +3,7 @@ import {
   SET_USERS,
   UPDATE_USER,
   DELETE_USER,
+  API_START,
   API_FAILURE
 } from '../mutation-types'
 import User from '../../services/UserService'
@@ -31,7 +32,8 @@ const userModule = {
   },
 
   actions: {
-    fetchUserLists ({ commit }) {
+    fetchUserLists ({ commit, dispatch }) {
+      commit(API_START)
       User.getUsers(
         (data) => commit(SET_USERS, data),
         (err) => commit(API_FAILURE, err)
@@ -39,13 +41,15 @@ const userModule = {
     },
 
     createUser ({ dispatch, commit }, user) {
+      commit(API_START)
       User.createUser(user,
         (data) => dispatch('fetchUserLists'),
         (err) => commit(API_FAILURE, err)
       )
     },
 
-    updateUser ({ commit }, user) {
+    updateUser ({ commit, dispatch }, user) {
+      commit(API_START)
       User.updateUser(user,
         (data) => commit(UPDATE_USER, user),
         (err) => commit(API_FAILURE, err)
@@ -53,6 +57,7 @@ const userModule = {
     },
 
     deleteUser ({ dispatch, commit }, id) {
+      commit(API_START)
       User.deleteUserById(id,
         (data) => commit(DELETE_USER, id),
         (err) => commit(API_FAILURE, err)

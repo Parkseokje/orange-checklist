@@ -15,6 +15,7 @@ import vSelect from 'vue-select'
 import InputTag from 'vue-input-tag'
 import VueCookie from 'vue-cookie'
 import VueProgressBar from 'vue-progressbar'
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
 Vue.use(VueAxios, axios)
 Vue.use(BootstrapVue)
@@ -42,22 +43,21 @@ Vue.use(VueProgressBar, {
 
 Vue.component('v-select', vSelect)
 Vue.component('input-tag', InputTag)
+Vue.component('pulse-loader', PulseLoader)
 
 sync(store, router)
 
 router.beforeEach((to, from, next) => {
-  // if (to.meta.needsAuth && !store.getters.isAuthenticated) {
-  //   next({ path: '/login' })
-  // } else if (to.name === 'Login' && store.getters.isAuthenticated) {
-  //   next({ path: '/' })
-  // } else {
-  //  Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
-  next()
-  // }
+  if (to.meta.needsAuth && !store.getters.isAuthenticated) {
+    next({ path: '/login' })
+  } else if (to.name === 'Login' && store.getters.isAuthenticated) {
+    next({ path: '/' })
+  } else {
+    next()
+  }
 })
 
 Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
-
 Vue.router = router
 
 /* eslint-disable no-new */
