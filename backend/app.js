@@ -4,11 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var config = require('./config')
 
 var index = require('./routes/index');
-var users = require('./routes/users');
-var shops = require('./routes/shops');
-var categories = require('./routes/categories');
+// var users = require('./routes/users');
+// var shops = require('./routes/shops');
+// var categories = require('./routes/categories');
 
 var app = express();
 app.use(require('connect-history-api-fallback')())
@@ -16,6 +17,10 @@ app.use(require('connect-history-api-fallback')())
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+// set the secret key variable for jwt
+app.set('jwt-secret', config.jwtSecret)
+app.set('pwd-secret', config.pwdSecret)
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -26,9 +31,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/api/users', users);
-app.use('/api/shops', shops);
-app.use('/api/categories', categories);
+app.use('/api', require('./routes/api'))
+// app.use('/api/users', users);
+// app.use('/api/shops', shops);
+// app.use('/api/categories', categories);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

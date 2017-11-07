@@ -1,29 +1,29 @@
-import axios from 'axios'
+import Vue from 'vue'
 
 export default {
   getShops (cb, errorCb) {
-    axios.get('/api/shops')
+    Vue.axios.get('/api/shop/list')
       .then(response => {
-        if (response.status === 200 && response.data.length > 0) {
-          cb(response.data)
+        if (response.status === 200) {
+          cb(response.data.info.list)
         }
       })
       .catch(error => errorCb(error))
   },
 
   getShopById (id) {
-    return axios.get(`/api/shops/${id}`)
+    return Vue.axios.get(`/api/shop/${id}`)
   },
 
   createShop (shop, cb, errorCb) {
-    return axios.post(`/api/shops`, {
+    return Vue.axios.post(`/api/shop`, {
       name: shop.name,
       address: shop.address,
-      tel_no: shop.tel_no,
+      tel: shop.tel,
       lat: shop.lat,
       lng: shop.lng,
       memo: shop.memo,
-      is_active: shop.is_active
+      active: shop.is_active
     })
       .then(response => {
         if (response.status === 200) {
@@ -34,7 +34,7 @@ export default {
   },
 
   updateShop (user, cb, errorCb) {
-    return axios.put(`/api/shops`, user)
+    return Vue.axios.put(`/api/shop`, user)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)
@@ -44,7 +44,7 @@ export default {
   },
 
   deleteShopById (id, cb, errorCb) {
-    return axios.delete(`/api/shops/${id}`)
+    return Vue.axios.delete(`/api/shop/${id}`)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)

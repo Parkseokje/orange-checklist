@@ -62,7 +62,7 @@ export default {
           lng: place.geometry.location.lng(),
           name: this.place.name,
           address: this.place.formatted_address,
-          tel_no: this.place.formatted_phone_number
+          tel: this.place.formatted_phone_number
         })
       }
     }

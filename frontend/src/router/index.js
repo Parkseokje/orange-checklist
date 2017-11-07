@@ -12,6 +12,7 @@ import Checklist from '@/views/Checklist'
 import ChecklistCreate from '@/views/ChecklistCreate'
 
 // Views - Pages
+import Login from '@/views/pages/Login'
 import Page404 from '@/views/pages/Page404'
 import Page500 from '@/views/pages/Page500'
 
@@ -23,6 +24,12 @@ export default new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: [
     {
+      path: '/login',
+      name: 'Login',
+      meta: { needsAuth: false },
+      component: Login
+    },
+    {
       path: '/',
       redirect: '/dashboard',
       name: 'Home',
@@ -30,6 +37,7 @@ export default new Router({
       children: [
         {
           path: 'dashboard',
+          meta: { needsAuth: true },
           name: '대시보드',
           component: Dashboard
         },

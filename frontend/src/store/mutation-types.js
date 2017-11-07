@@ -1,13 +1,33 @@
-export const API_FAILURE = 'api/ERROR'
+const API_FAILURE = 'api/ERROR'
 
-export const SET_USERS = 'user/SET'
-export const UPDATE_USER = 'user/UPDATE'
-export const DELETE_USER = 'user/DELETE'
+const SET_USERS = 'user/SET'
+const UPDATE_USER = 'user/UPDATE'
+const DELETE_USER = 'user/DELETE'
 
-export const SET_SHOPS = 'shop/SET'
-export const UPDATE_SHOP = 'shop/UPDATE'
-export const DELETE_SHOP = 'shop/DELETE'
+const SET_SHOPS = 'shop/SET'
+const UPDATE_SHOP = 'shop/UPDATE'
+const DELETE_SHOP = 'shop/DELETE'
 
-export const SET_CATEGORIES = 'category/SET'
-export const UPDATE_CATEGORY = 'category/UPDATE'
-export const DELETE_CATEGORY = 'category/DELETE'
+const SET_CATEGORIES = 'category/SET'
+const UPDATE_CATEGORY = 'category/UPDATE'
+const DELETE_CATEGORY = 'category/DELETE'
+
+const LOGIN = 'auth/LOGIN'
+const LOGIN_SUCCESS = 'auth/LOGIN_SUCCES'
+const LOGOUT = 'auth/LOGOUT'
+
+export {
+  API_FAILURE,
+  SET_USERS,
+  UPDATE_USER,
+  DELETE_USER,
+  SET_SHOPS,
+  UPDATE_SHOP,
+  DELETE_SHOP,
+  SET_CATEGORIES,
+  UPDATE_CATEGORY,
+  DELETE_CATEGORY,
+  LOGIN,
+  LOGIN_SUCCESS,
+  LOGOUT
+}

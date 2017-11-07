@@ -1,12 +1,12 @@
 [
-  { "id": 1, "is_active": true, "user_type": "SV", "name": "Dickerson1", "password": "111111", "email": "", "cell_no": "01020091401", "memo": "blah blah" },
-  { "id": 2, "is_active": true, "user_type": "MS", "name": "Mystery John", "password": "111111", "email": "", "cell_no": "01020091402", "memo": "blah blah" },
-  { "id": 3, "is_active": true, "user_type": "SV", "name": "Dickerson", "password": "111111", "email": "", "cell_no": "01020091403", "memo": "blah blah" },
-  { "id": 4, "is_active": true, "user_type": "SV", "name": "Dicke2rson", "password": "111111", "email": "", "cell_no": "01020091404", "memo": "blah blah" },
-  { "id": 5, "is_active": true, "user_type": "SV", "name": "Dick3erson", "password": "111111", "email": "", "cell_no": "01020091405", "memo": "blah blah" },
-  { "id": 6, "is_active": true, "user_type": "SV", "name": "Dick12erson", "password": "111111", "email": "", "cell_no": "01020091406", "memo": "blah blah" },
-  { "id": 7, "is_active": true, "user_type": "SV", "name": "Dickerso33n", "password": "111111", "email": "", "cell_no": "01020091407", "memo": "blah blah" },
-  { "id": 8, "is_active": true, "user_type": "MS", "name": "Dickers12on", "password": "111111", "email": "", "cell_no": "01020091408", "memo": "blah blah" },
-  { "id": 9, "is_active": true, "user_type": "SV", "name": "Dicke1rson", "password": "111111", "email": "", "cell_no": "01020091409", "memo": "blah blah" },
-  { "id": 10, "is_active": true, "user_type": "MS", "name": "Di55ckerson", "password": "111111", "email": "user@example.com", "cell_no": "010-2009-1410", "memo": "blah blah" }
+  { "id": 1, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dickerson1", "password": "111111", "email": "", "phone": "01020091401", "memo": "blah blah" },
+  { "id": 2, "company_id": 1, "active": 1, "role": "shopper", "name": "Mystery John", "password": "111111", "email": "", "phone": "01020091402", "memo": "blah blah" },
+  { "id": 3, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dickerson", "password": "111111", "email": "", "phone": "01020091403", "memo": "blah blah" },
+  { "id": 4, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dicke2rson", "password": "111111", "email": "", "phone": "01020091404", "memo": "blah blah" },
+  { "id": 5, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dick3erson", "password": "111111", "email": "", "phone": "01020091405", "memo": "blah blah" },
+  { "id": 6, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dick12erson", "password": "111111", "email": "", "phone": "01020091406", "memo": "blah blah" },
+  { "id": 7, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dickerso33n", "password": "111111", "email": "", "phone": "01020091407", "memo": "blah blah" },
+  { "id": 8, "company_id": 1, "active": 1, "role": "shopper", "name": "Dickers12on", "password": "111111", "email": "", "phone": "01020091408", "memo": "blah blah" },
+  { "id": 9, "company_id": 1, "active": 1, "role": "supervisor", "name": "Dicke1rson", "password": "111111", "email": "", "phone": "01020091409", "memo": "blah blah" },
+  { "id": 10, "company_id": 1, "active": 1, "role": "shopper", "name": "Di55ckerson", "password": "111111", "email": "user@example.com", "phone": "010-2009-1410", "memo": "blah blah" }
 ]

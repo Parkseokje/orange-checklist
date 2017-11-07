@@ -70,11 +70,11 @@
           label="구분"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.user_type')"
+          :feedback="validation.firstError('form.role')"
         >
           <b-form-select id="userTypeInput" :options="userTypes"
-            :state="!validation.firstError('form.user_type')"
-            v-model="form.user_type"
+            :state="!validation.firstError('form.role')"
+            v-model="form.role"
             required placeholder="이름을 입력하세요"></b-form-select>
         </b-form-group>
         <b-form-group
@@ -107,12 +107,12 @@
           label="핸드폰"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.cell_no')"
+          :feedback="validation.firstError('form.phone')"
         >
           <b-form-input type="text"
-            :state="!validation.hasError('form.cell_no')"
+            :state="!validation.hasError('form.phone')"
             :autocomplete="'off'"
-            v-model="form.cell_no"
+            v-model="form.phone"
             required placeholder="핸드폰 번호를 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -134,6 +134,7 @@
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
           :feedback="validation.firstError('form.password')"
+          v-if="!form.id"
         >
           <b-form-input type="password"
             :state="!validation.hasError('form.password')"
@@ -146,6 +147,7 @@
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
           :feedback="validation.firstError('form.password_confirm')"
+          v-if="!form.id"
         >
           <b-form-input type="password"
             :state="!validation.hasError('form.password_confirm')"
@@ -185,12 +187,12 @@ import { mapGetters, mapActions } from 'vuex'
 import { Validator } from 'simple-vue-validator'
 
 const fields = {
-  user_type: { label: '구분', sortable: true, 'class': 'text-center' },
+  role: { label: '구분', sortable: true, 'class': 'text-center' },
   shop_name: { label: '점포', sortable: true, 'class': 'text-center' },
   name: { label: '이름', sortable: true, 'class': 'text-center' },
-  cell_no: { label: '핸드폰', 'class': 'text-center' },
+  phone: { label: '핸드폰', 'class': 'text-center' },
   email: { label: '이메일' },
-  actions: { label: 'Actions' }
+  actions: { label: '행동' }
 }
 
 export default {
@@ -218,7 +220,7 @@ export default {
   },
 
   validators: {
-    'form.user_type' (value) {
+    'form.role' (value) {
       return Validator.custom(() => {
         if (Validator.isEmpty(value)) {
           return '필수선택'
@@ -231,7 +233,7 @@ export default {
     'form.email' (value) {
       return Validator.value(value).email('잘못된 형식입니다.')
     },
-    'form.cell_no' (value) {
+    'form.phone' (value) {
       return Validator.value(value).required('필수입력').digit('숫자만 입력').length(11, '11자리 이상')
     },
     'form.password' (value) {
@@ -265,11 +267,11 @@ export default {
     modify (item, index, button) {
       this.form.title = '사용자 수정'
       this.form.id = item.id
-      this.form.user_type = item.user_type
+      this.form.role = item.role
       this.form.shop_id = item.shop_id
       this.form.shop_name = item.shop_name
       this.form.name = item.name
-      this.form.cell_no = item.cell_no
+      this.form.phone = item.phone
       this.form.email = item.email
       this.form.memo = item.memo
       this.form.password = item.password ? item.password : ''
@@ -298,16 +300,16 @@ export default {
       this.form = Object.assign({}, this.form, {
         title: '사용자 등록',
         id: null,
-        user_type: null,
+        role: null,
         shop_id: null,
         shop_name: null,
         name: null,
-        cell_no: null,
+        phone: null,
         email: null,
         password: null,
         password_confirm: null,
         memo: null,
-        is_active: true
+        active: true
       })
     },
 
@@ -361,7 +363,7 @@ export default {
     }),
 
     displayShopSelect () {
-      return !(this.form.user_type === null || this.form.user_type === 'MS')
+      return !(this.form.role === null || this.form.role !== 'shopkeeper')
     }
   }
 }

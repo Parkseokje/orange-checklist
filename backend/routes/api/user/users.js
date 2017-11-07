@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../mockup/mock_users.json');
+const jwt = require("jsonwebtoken");
 
 router.get('/', (req, res, next) => {
   res.send(users)
@@ -19,14 +20,6 @@ router.get('/:id', (req, res, next) => {
 
   res.send(users)
 });
-
-router.post('/', (req, res, next) => {
-  users.push(req.body)
-
-  return res.send({
-    success: true
-  })
-})
 
 router.put('/', (req, res, next) => {
   return res.send({

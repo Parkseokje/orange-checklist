@@ -12,6 +12,9 @@
       <AppAside/>
     </div>
     <AppFooter/>
+
+    <!-- set progressbar -->
+    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 
@@ -21,6 +24,7 @@ import { Header as AppHeader, Sidebar, Aside as AppAside, Footer as AppFooter, B
 
 export default {
   name: 'full',
+
   components: {
     AppHeader,
     Sidebar,
@@ -28,11 +32,13 @@ export default {
     AppFooter,
     Breadcrumb
   },
+
   data () {
     return {
       nav: nav.items
     }
   },
+
   computed: {
     name () {
       return this.$route.name
@@ -40,6 +46,14 @@ export default {
     list () {
       return this.$route.matched
     }
+  },
+
+  created () {
+    this.$Progress.start()
+  },
+
+  mounted () {
+    this.$Progress.finish()
   }
 }
 </script>

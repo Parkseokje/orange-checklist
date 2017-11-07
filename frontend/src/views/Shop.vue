@@ -104,12 +104,12 @@
           label="전화번호"
           :label-cols="modalLabelCols"
           :horizontal="modalInputHorizontal"
-          :feedback="validation.firstError('form.tel_no')"
+          :feedback="validation.firstError('form.tel')"
         >
           <b-form-input type="text"
-            :state="!validation.hasError('form.tel_no')"
+            :state="!validation.hasError('form.tel')"
             :autocomplete="'off'"
-            v-model="form.tel_no"
+            v-model="form.tel"
             required placeholder="전화번호를 입력하세요"></b-form-input>
         </b-form-group>
         <b-form-group
@@ -147,8 +147,8 @@ import { Validator } from 'simple-vue-validator'
 
 const fields = {
   name: { label: '점포명', sortable: true, 'class': 'text-center' },
-  tel_no: { label: '전화번호', 'class': 'text-center' },
-  actions: { label: 'Actions' }
+  tel: { label: '전화번호', 'class': 'text-center' },
+  actions: { label: '행동' }
 }
 
 export default {
@@ -181,7 +181,7 @@ export default {
     'form.name' (value) {
       return Validator.value(value).required('필수입력')
     },
-    'form.tel_no' (value) {
+    'form.tel' (value) {
       return Validator.value(value).digit('숫자만 입력').minLength(7, '지역번호 포함. 7자리 이상')
     },
     'form.memo' (value) {
@@ -212,7 +212,7 @@ export default {
       this.form.id = item.id
       this.form.name = item.name
       this.form.address = item.address
-      this.form.tel_no = item.tel_no
+      this.form.tel = item.tel
       this.form.memo = item.memo
       this.form.lat = item.lat
       this.form.lng = item.lng
@@ -253,11 +253,11 @@ export default {
         id: null,
         name: null,
         address: null,
-        tel_no: null,
+        tel: null,
         memo: null,
         lat: null,
         lng: null,
-        is_active: true
+        active: true
       })
     },
 
@@ -284,9 +284,7 @@ export default {
       this.currentPage = 1
     },
 
-    onGmapChanged ({ lat, lng, name, address, tel_no: telNo }) {
-      console.log(this.form.id)
-
+    onGmapChanged ({ lat, lng, name, address, tel: telNo }) {
       if (this.form.id) {
         if (!confirm('지도의 정보로 변경하시겠습니까?')) {
           return false
@@ -297,9 +295,9 @@ export default {
       this.form.address = address
 
       if (telNo !== undefined) {
-        this.form.tel_no = telNo.replace(/[^0-9]/g, '')
+        this.form.tel = telNo.replace(/[^0-9]/g, '')
       } else {
-        this.form.tel_no = null
+        this.form.tel = null
       }
 
       this.form.lat = lat

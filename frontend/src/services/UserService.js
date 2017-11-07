@@ -1,29 +1,28 @@
-import axios from 'axios'
+import Vue from 'vue'
 
 export default {
   getUsers (cb, errorCb) {
-    axios.get('/api/users')
+    Vue.axios.get('/api/user/list')
       .then(response => {
-        if (response.status === 200 && response.data.length > 0) {
-          cb(response.data)
+        if (response.status === 200) {
+          cb(response.data.info.list)
         }
       })
       .catch(error => errorCb(error))
   },
   getUserById (id) {
-    return axios.get(`/api/users/${id}`)
+    return Vue.axios.get(`/api/user/${id}`)
   },
   createUser (user, cb, errorCb) {
-    return axios.post(`/api/users`, {
-      user_type: user.user_type,
-      shop_id: user.shop_id,
-      shop_name: user.shop_name,
+    return Vue.axios.post(`/api/user`, {
+      company_id: 1,
+      role: user.role,
       name: user.name,
-      cell_no: user.cell_no,
+      phone: user.phone,
       email: user.email,
       password: user.password,
       memo: user.memo,
-      is_active: user.is_active
+      active: user.active
     })
       .then(response => {
         if (response.status === 200) {
@@ -33,7 +32,7 @@ export default {
       .catch(error => errorCb(error))
   },
   updateUser (user, cb, errorCb) {
-    return axios.put(`/api/users`, user)
+    return Vue.axios.put(`/api/user`, user)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)
@@ -42,7 +41,7 @@ export default {
       .catch(error => errorCb(error))
   },
   deleteUserById (id, cb, errorCb) {
-    return axios.delete(`/api/users/${id}`)
+    return Vue.axios.delete(`/api/user/${id}`)
       .then(response => {
         if (response.status === 200) {
           cb(response.data)

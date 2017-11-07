@@ -46,7 +46,7 @@ const userModule = {
     },
 
     updateUser ({ commit }, user) {
-      User.createUser(user,
+      User.updateUser(user,
         (data) => commit(UPDATE_USER, user),
         (err) => commit(API_FAILURE, err)
       )
