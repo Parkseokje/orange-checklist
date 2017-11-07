@@ -16,12 +16,6 @@ import InputTag from 'vue-input-tag'
 import VueCookie from 'vue-cookie'
 import VueProgressBar from 'vue-progressbar'
 
-// axios.interceptors.request.use(() => {
-//   console.log('intercepted')
-//   axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
-//   return true
-// })
-
 Vue.use(VueAxios, axios)
 Vue.use(BootstrapVue)
 Vue.use(SimpleVueValidation)
@@ -52,14 +46,14 @@ Vue.component('input-tag', InputTag)
 sync(store, router)
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.needsAuth && !store.getters.isAuthenticated) {
-    next({ path: '/login' })
+  // if (to.meta.needsAuth && !store.getters.isAuthenticated) {
+  //   next({ path: '/login' })
   // } else if (to.name === 'Login' && store.getters.isAuthenticated) {
   //   next({ path: '/' })
-  } else {
-    // Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
-    next()
-  }
+  // } else {
+  //  Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
+  next()
+  // }
 })
 
 Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
