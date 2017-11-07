@@ -6,7 +6,12 @@
       <main class="main">
         <breadcrumb :list="list"/>
         <div class="container-fluid">
-          <router-view></router-view>
+          <v-loading loader="worker">
+            <template slot="spinner">
+              <pulse-loader :color="spinner.color" :height="spinner.height" :width="spinner.width"></pulse-loader>
+            </template>
+          </v-loading>
+          <router-view v-show="!$isLoading('worker')"></router-view>
         </div>
       </main>
       <AppAside/>
@@ -21,6 +26,7 @@
 <script>
 import nav from '../_nav'
 import { Header as AppHeader, Sidebar, Aside as AppAside, Footer as AppFooter, Breadcrumb } from '../components/'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'full',
@@ -40,9 +46,14 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      spinner: 'spinner'
+    }),
+
     name () {
       return this.$route.name
     },
+
     list () {
       return this.$route.matched
     }

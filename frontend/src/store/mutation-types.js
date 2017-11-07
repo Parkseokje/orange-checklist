@@ -1,4 +1,3 @@
-const API_START = 'api/START'
 const API_FAILURE = 'api/ERROR'
 
 const SET_USERS = 'user/SET'
@@ -17,7 +16,6 @@ const LOGIN_SUCCESS = 'auth/LOGIN_SUCCES'
 const LOGOUT = 'auth/LOGOUT'
 
 export {
-  API_START,
   API_FAILURE,
   SET_USERS,
   UPDATE_USER,

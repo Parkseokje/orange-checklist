@@ -17,6 +17,23 @@ import VueCookie from 'vue-cookie'
 import VueProgressBar from 'vue-progressbar'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
+axios.interceptors.request.use(config => {
+  config.headers.common['x-access-token'] = localStorage.getItem('token')
+  store.dispatch('startLoader')
+  return config
+}, error => {
+  store.dispatch('endLoader')
+  return Promise.reject(error)
+})
+
+axios.interceptors.response.use(config => {
+  store.dispatch('endLoader')
+  return config
+}, error => {
+  store.dispatch('endLoader')
+  return Promise.reject(error)
+})
+
 Vue.use(VueAxios, axios)
 Vue.use(BootstrapVue)
 Vue.use(SimpleVueValidation)
@@ -28,7 +45,7 @@ Vue.use(VueGoogleMaps, {
 })
 Vue.use(VueCookie)
 Vue.use(VueProgressBar, {
-  color: '#f9d423', // '#bffaf3',
+  color: '#f9d423',
   failedColor: '#874b4b',
   thickness: '5px',
   transition: {
@@ -57,7 +74,6 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-Vue.axios.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
 Vue.router = router
 
 /* eslint-disable no-new */
