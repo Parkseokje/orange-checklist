@@ -1,6 +1,6 @@
 export default {
   userTypes: [
-    { text: '구분을 선택하세요', value: null },
+    { text: '선택하세요', value: null },
     { text: '슈퍼바이져', value: 'supervisor' },
     { text: '미스테리 쇼퍼', value: 'shopper' },
     { text: '모니터링 요원', value: 'agent' },
@@ -9,10 +9,10 @@ export default {
     { text: '전체 관리자', value: 'admin' }
   ],
   checkListTypes: [
-    { text: '구분을 선택하세요', value: null },
-    { text: '슈퍼바이져용', value: 'A' },
-    { text: '미스터리 쇼퍼용', value: 'B' },
-    { text: '교육기관 현장점검용', value: 'C' }
+    { text: '선택하세요', value: null },
+    { text: '슈퍼바이져용', value: 'supervisor' },
+    { text: '미스터리 쇼퍼용', value: 'shopper' },
+    { text: '교육기관 현장점검용', value: 'agent' }
   ],
   modalVariants: {
     headerBgVariant: 'dark',
@@ -30,5 +30,23 @@ export default {
     color: '#3AB982',
     height: '35px',
     width: '4px'
+  },
+  editorOption: {
+    // theme: 'bubble',
+    placeholder: '텍스트를 입력하세요',
+    modules: {
+      toolbar: [
+        ['bold', 'underline'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'color': [] }],
+        // [{ 'font': [] }],
+        [{ 'size': ['small', false, 'large'] }],
+        [{ 'align': [] }]
+        // ['link']
+        // ['image'],
+        // ['clean']
+      ]
+    }
   }
 }

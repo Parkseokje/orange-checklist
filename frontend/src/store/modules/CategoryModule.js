@@ -18,7 +18,11 @@ const categoryModule = {
     },
     // 대분류
     getBigCategories: state => {
-      return state.categories.filter(category => category.depth === 1)
+      if (state.categories.length > 0) {
+        return state.categories.filter(category => category.depth === 1)
+      } else {
+        return []
+      }
     },
     // 중분류
     getMiddleCategories: state => {
