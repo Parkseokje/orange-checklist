@@ -9,6 +9,8 @@ exports.list = (req, res) => {
     const sql = 'SELECT * FROM `shops` WHERE `company_id` = ? AND `active` = 1; '
 
     connection.query(sql, [ req.decoded.company_id ], (err, rows) => {
+      connection.release()
+
       if (err) {
         console.log(err)
         res.sendStatus(400)
@@ -86,8 +88,6 @@ exports.update = (req, res) => {
 
     let q = connection.query(sql, [ name, tel, address, memo, lat, lng, id ], (err, rows) => {
       connection.release()
-
-      console.log(q.sql)
 
       if (err) {
         console.log(err)
