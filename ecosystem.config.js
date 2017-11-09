@@ -17,7 +17,7 @@ module.exports = {
       ref: 'origin/master',
       repo: 'git@github.com:Parkseokje/orange-checklist.git',
       path: '/home/ubuntu/orange-checklist',
-      'post-deploy': 'cd ./backend && npm install && pm2 startOrRestart ../ecosystem.config.js'
+      'post-deploy': 'cd ./backend && npm install && pm2 startOrRestart ../ecosystem.config.js --watch'
     }
   }
 }
