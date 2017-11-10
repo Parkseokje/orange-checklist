@@ -8,41 +8,48 @@ import Auth from '../../services/AuthService'
 
 const AuthModule = {
   state: {
-    isAuthenticated: !!localStorage.getItem('token')
+    isAuthenticated: false,
+    profile: null
   },
 
   getters: {
     isAuthenticated: state => {
       return state.isAuthenticated
+    },
+
+    getProfile: state => {
+      return state.profile ? state.profile : ''
     }
   },
 
   actions: {
     login ({ commit }, credentials) {
       Auth.signin(credentials,
-        (data) => {
-          commit(LOGIN_SUCCESS, data)
-        },
+        (data) => commit(LOGIN_SUCCESS, data),
         (err) => commit(API_FAILURE, err)
       )
     },
 
     logout ({ commit }) {
-      localStorage.removeItem('token')
       commit(LOGOUT)
     }
   },
 
   mutations: {
-    [LOGIN_SUCCESS] (state, token) {
+    [LOGIN_SUCCESS] (state, { name, email, token }) {
       localStorage.setItem('token', token)
-      Vue.axios.defaults.headers.common['x-access-token'] = token
+      state.isAuthenticated = true
+      state.profile = { name, email }
+
       Vue.router.push('/dashboard')
     },
 
     [LOGOUT] (state) {
       localStorage.removeItem('token')
-      Vue.axios.defaults.headers.common['x-access-token'] = null
+      state.isAuthenticated = false
+      state.profile = null
+
+      Vue.router.push('/login')
     }
   }
 }

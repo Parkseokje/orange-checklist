@@ -102,6 +102,7 @@ export default {
             }
 
             this.login(this.credentials)
+            this.$router.push('/')
           } else {
             alert('이메일/암호를 다시 확인해주세요.')
           }

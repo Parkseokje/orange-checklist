@@ -39,7 +39,7 @@ const categoryModule = {
   },
 
   actions: {
-    fetchCategoryLists ({ commit }) {
+    fetchCategoryLists ({ commit, getters }) {
       Category.getCategories(
         (data) => commit(SET_CATEGORIES, data),
         (err) => commit(API_FAILURE, err)

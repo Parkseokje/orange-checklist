@@ -5,6 +5,7 @@ const messages = state => state.messages
 const checkListTypes = state => state.checkListTypes
 const spinner = state => state.spinner
 const editorOption = state => state.editorOption
+const editorOption2 = state => state.editorOption2
 
 export {
   userTypes,
@@ -13,5 +14,6 @@ export {
   messages,
   checkListTypes,
   spinner,
-  editorOption
+  editorOption,
+  editorOption2
 }

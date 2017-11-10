@@ -65,9 +65,9 @@ Vue.component('pulse-loader', PulseLoader)
 sync(store, router)
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.needsAuth && !store.getters.isAuthenticated) {
+  if (to.meta.needsAuth && !localStorage.getItem('token')) {
     next({ path: '/login' })
-  } else if (to.name === 'Login' && store.getters.isAuthenticated) {
+  } else if (to.name === 'Login' && !!localStorage.getItem('token')) {
     next({ path: '/' })
   } else {
     next()

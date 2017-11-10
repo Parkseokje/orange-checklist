@@ -8,7 +8,7 @@ export default {
     })
       .then(response => {
         if (response.status === 200) {
-          cb(response.data.info.token)
+          cb(response.data.info)
         }
       })
       .catch(error => errorCb(error))

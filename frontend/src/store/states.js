@@ -9,7 +9,7 @@ export default {
     { text: '전체 관리자', value: 'admin' }
   ],
   checkListTypes: [
-    { text: '선택하세요', value: null },
+    // { text: '선택하세요', value: null },
     { text: '슈퍼바이져용', value: 'supervisor' },
     { text: '미스터리 쇼퍼용', value: 'shopper' },
     { text: '교육기관 현장점검용', value: 'agent' }
@@ -32,20 +32,22 @@ export default {
     width: '4px'
   },
   editorOption: {
-    // theme: 'bubble',
     placeholder: '텍스트를 입력하세요',
     modules: {
       toolbar: [
-        ['bold', 'underline'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline'],
         [{ 'color': [] }],
-        // [{ 'font': [] }],
-        [{ 'size': ['small', false, 'large'] }],
         [{ 'align': [] }]
-        // ['link']
-        // ['image'],
-        // ['clean']
+      ]
+    }
+  },
+  editorOption2: {
+    placeholder: '입력예시',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'color': [] }],
+        [{ 'align': [] }]
       ]
     }
   }
