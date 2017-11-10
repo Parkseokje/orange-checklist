@@ -60,8 +60,9 @@ exports.signin = (req, res) => {
             subject: 'userInfo'
           },
           (err, token) => {
-            callback(err, token)
-        })
+            callback(err, { user, token })
+          }
+        )
       } else {
         callback({
           message: '사용자 정보가 없습니다.'
@@ -72,7 +73,7 @@ exports.signin = (req, res) => {
     async.waterfall([
       verifyCredetials,
       jwtSign
-    ], (err, result) => {
+    ], (err, results) => {
       if (err) {
         console.log(err)
         res.status(401).json({
@@ -85,7 +86,10 @@ exports.signin = (req, res) => {
         res.send({
           success: true,
           info: {
-            token: result
+            name: results.user.name,
+            email: results.user.email,
+            role: results.user.role,
+            token: results.token
           }
         })
       }
