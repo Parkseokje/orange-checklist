@@ -24,7 +24,7 @@ const shopModule = {
   },
 
   actions: {
-    fetchShopLists ({ commit, dispatch }) {
+    fetchShopList ({ commit, dispatch }) {
       Shop.getShops(
         (data) => commit(SET_SHOPS, data),
         (err) => commit(API_FAILURE, err)
@@ -33,7 +33,7 @@ const shopModule = {
 
     createShop ({ dispatch, commit }, shop) {
       Shop.createShop(shop,
-        (data) => dispatch('fetchShopLists'),
+        (data) => dispatch('fetchShopList'),
         (err) => commit(API_FAILURE, err)
       )
     },

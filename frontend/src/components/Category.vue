@@ -87,7 +87,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'fetchCategoryLists',
+      'fetchCategoryList',
       'createCategory',
       'updateCategory',
       'deleteCategory'
@@ -298,7 +298,7 @@ export default {
   },
 
   created () {
-    this.fetchCategoryLists()
+    this.fetchCategoryList()
 
     const fieldTypes = {
       name: { label: `${this.categoryType.value}명`, sortable: true, 'class': 'text-center' },

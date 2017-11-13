@@ -39,7 +39,7 @@ const categoryModule = {
   },
 
   actions: {
-    fetchCategoryLists ({ commit, getters }) {
+    fetchCategoryList ({ commit, getters }) {
       Category.getCategories(
         (data) => commit(SET_CATEGORIES, data),
         (err) => commit(API_FAILURE, err)
@@ -48,7 +48,7 @@ const categoryModule = {
 
     createCategory ({ dispatch, commit }, category) {
       Category.createCategory(category,
-        (data) => dispatch('fetchCategoryLists'),
+        (data) => dispatch('fetchCategoryList'),
         (err) => commit(API_FAILURE, err)
       )
     },

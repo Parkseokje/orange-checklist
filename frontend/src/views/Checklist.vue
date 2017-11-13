@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <b-card header="체크리스트 목록">
-        <b-btn v-b-modal.modalAddChecklist variant="primary" to="/checklist/create">체크리스트 등록</b-btn>
+        <b-btn variant="primary" to="/checklist/create">체크리스트 등록</b-btn>
         <b-btn v-b-toggle.collapseCategory :variant="collapseCategoryVariant" :pressed.sync="collapseCategoryPressed">{{ collapseCategoryPressed ? '분류등록 취소' : '분류등록' }}</b-btn>
 
         <b-card border-variant="light" v-show="collapseCategoryPressed">

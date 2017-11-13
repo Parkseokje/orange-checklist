@@ -57,6 +57,7 @@ Vue.use(VueProgressBar, {
   location: 'top',
   inverse: false
 })
+Vue.use(require('vue-moment'))
 
 Vue.component('v-select', vSelect)
 Vue.component('input-tag', InputTag)

@@ -17,21 +17,15 @@ const userModule = {
       return state.users
     },
 
-    getUserById: (state, id) => {
-      return state.users.find((user) => {
-        return user.id === id
+    filterUserList: state => {
+      return role => state.users.filter(user => {
+        return user.role === role
       })
     }
-    // supervisorList: state => {
-    //   return state.users.filter(user => user.user_type === 'SV')
-    // },
-    // shopperList: state => {
-    //   return state.users.filter(user => user.user_type === 'MS')
-    // }
   },
 
   actions: {
-    fetchUserLists ({ commit, dispatch }) {
+    fetchUserList ({ commit, dispatch }) {
       User.getUsers(
         (data) => commit(SET_USERS, data),
         (err) => commit(API_FAILURE, err)
@@ -40,7 +34,7 @@ const userModule = {
 
     createUser ({ dispatch, commit }, user) {
       User.createUser(user,
-        (data) => dispatch('fetchUserLists'),
+        (data) => dispatch('fetchUserList'),
         (err) => commit(API_FAILURE, err)
       )
     },

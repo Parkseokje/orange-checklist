@@ -252,8 +252,8 @@ export default {
 
   methods: {
     ...mapActions([
-      'fetchUserLists',
-      'fetchShopLists',
+      'fetchUserList',
+      'fetchShopList',
       'createUser',
       'updateUser',
       'deleteUser'
@@ -349,10 +349,10 @@ export default {
   },
 
   created () {
-    this.fetchUserLists()
+    this.fetchUserList()
 
     if (this.shops.length === 0) {
-      this.fetchShopLists()
+      this.fetchShopList()
     }
 
     this.initializeForm()

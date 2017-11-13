@@ -6,6 +6,7 @@ const checkListTypes = state => state.checkListTypes
 const spinner = state => state.spinner
 const editorOption = state => state.editorOption
 const editorOption2 = state => state.editorOption2
+const datePickerOptions = state => state.datePickerOptions
 
 export {
   userTypes,
@@ -15,5 +16,6 @@ export {
   checkListTypes,
   spinner,
   editorOption,
-  editorOption2
+  editorOption2,
+  datePickerOptions
 }
