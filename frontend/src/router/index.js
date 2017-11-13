@@ -10,12 +10,12 @@ import Shop from '@/views/Shop'
 import User from '@/views/User'
 import Checklist from '@/views/Checklist'
 import ChecklistCreate from '@/views/ChecklistCreate'
+import ChecklistStart from '@/views/ChecklistStart'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
 import Page404 from '@/views/pages/Page404'
 import Page500 from '@/views/pages/Page500'
-import Test from '@/views/pages/Test'
 
 Vue.use(Router)
 
@@ -61,12 +61,13 @@ export default new Router({
           path: 'checklist/create',
           name: '체크리스트 추가',
           component: ChecklistCreate
+        },
+        {
+          path: 'checklist-start',
+          name: '체크리스트 진행',
+          component: ChecklistStart
         }
       ]
-    },
-    {
-      path: '/test',
-      component: Test
     },
     {
       path: '/error',

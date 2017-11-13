@@ -19,6 +19,11 @@ export default {
       name: '체크리스트 관리',
       url: '/checklist',
       icon: 'icon-puzzle'
+    },
+    {
+      name: '체크리스트 진행',
+      url: '/checklist-start',
+      icon: 'icon-puzzle'
     }
   ]
 }
