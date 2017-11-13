@@ -16,8 +16,15 @@ const shopModule = {
     getAllShops: state => {
       return state.shops
     },
+
     getShopById: (state, id) => {
       return state.shops.find(shop => {
+        return shop.id === id
+      })
+    },
+
+    fiterShopById: state => {
+      return id => state.shops.filter(shop => {
         return shop.id === id
       })
     }

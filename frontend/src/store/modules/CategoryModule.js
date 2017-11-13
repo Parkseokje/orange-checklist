@@ -35,6 +35,12 @@ const categoryModule = {
       return parentId => state.categories.filter(category => {
         return category.parent_id === parentId && category.depth === 3
       })
+    },
+
+    fiterCategoryById: state => {
+      return id => state.categories.filter(category => {
+        return category.id === id
+      })
     }
   },
 

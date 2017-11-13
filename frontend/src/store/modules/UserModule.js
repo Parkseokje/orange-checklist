@@ -21,6 +21,12 @@ const userModule = {
       return role => state.users.filter(user => {
         return user.role === role
       })
+    },
+
+    fiterUserById: state => {
+      return id => state.users.filter(user => {
+        return user.id === id
+      })
     }
   },
 

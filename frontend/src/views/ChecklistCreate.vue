@@ -66,7 +66,7 @@
         <!-- 항목 영역 -->
         <b-row>
           <b-col lg="6">
-            <b-card header="평가항목 추가">
+            <b-card id="cardAddItem" header="평가항목 추가" header-bg-variant="info">
               <b-form-group horizontal label="유형">
                 <b-form-radio-group v-model="inputOptions.itemType">
                   <b-form-radio value="multiple">객관식</b-form-radio>
@@ -83,6 +83,7 @@
                 </b-form-group>
                 <b-form-group label="중분류 (선택)" horizontal>
                   <v-select label="name" placeholder="선택하세요"
+                    :value.sync = "dropdown2Selected"
                     v-model="dropdown2Selected"
                     :options="dropDown2Items"
                     :reset-on-options-change="true"
@@ -97,12 +98,14 @@
                 </b-form-group>
               </div>
               <b-form-group label="평가사항 (필수)">
-                <b-form-input placeholder="텍스트를 입력하세요" v-model="inputOptions.itemTitle" ref="inputItemTitle"></b-form-input>
+                <b-form-input placeholder="텍스트를 입력하세요" v-model="inputOptions.itemTitle" ref="inputItemTitle"
+                  @keyup.enter.native="onInputItemTitleKeyEnter"
+                ></b-form-input>
               </b-form-group>
 
               <div role="tablist">
                 <!-- 기재사항 -->
-                <b-card class="mb-1" border-variant="primary" sub-title="기재사항" v-show="showItem1Input || showItem2Input">
+                <b-card class="mb-3" border-variant="primary" sub-title="기재사항" v-show="showItem1Input || showItem2Input">
                   <b-btn size="sm" :variant="accordion1Variant" v-b-toggle.accordion1 :pressed.sync="accordion1Pressed">{{ accordion1Pressed ? '닫기' : '열기' }}</b-btn>
                   <b-collapse id="accordion1" accordion="my-accordion" role="tabpanel">
                     <b-card-body class="px-0">
@@ -138,19 +141,22 @@
                   unchecked-value="0">
                   파일 첨부 가능
                 </b-form-checkbox>
-                <b-btn variant="primary" @click="addNewItem">추가</b-btn>
+                <div>
+                  <b-btn variant="primary" @click="addNewItem" v-show="!itemIsModifing">추가</b-btn>
+                  <b-btn variant="secondary" @click="modifyItem" v-show="itemIsModifing">수정</b-btn>
+                </div>
               </div>
             </b-card>
           </b-col>
           <b-col>
-            <b-card header="평가항목 목록">
+            <b-card header="평가항목 목록" header-bg-variant="info">
               <draggable v-model="form.items" :options="draggableOptions">
                 <transition-group name="no" class="list-group">
                   <li class="list-group-item d-flex justify-content-between align-items-center" role="tab" v-for="(item, index) in form.items" :key="index">
                     <span><i class="icon-cursor-move"></i>   {{item.title}}</span>
                     <div>
-                      <b-btn size="sm" variant="outline-secondary" @click="onItemModify(item)">수정</b-btn>
-                      <b-btn size="sm" variant="outline-danger" @click="onItemRemove(item)">삭제</b-btn>
+                      <b-btn size="sm" variant="outline-secondary" @click="onItemModify(item, index)">수정</b-btn>
+                      <b-btn size="sm" variant="outline-danger" @click="onItemRemove(index)">삭제</b-btn>
                     </div>
                   </li>
                 </transition-group>
@@ -161,7 +167,7 @@
 
         <b-row>
           <b-col lg="6">
-            <b-card header="평가 배정">
+            <b-card id="cardAddUser" header="평가 배정" header-bg-variant="success">
               <b-form-group label="담당자 (필수)" horizontal>
                 <v-select v-model="inputOptions.userSelected" :options="inputOptions.userList" label="name"></v-select>
               </b-form-group>
@@ -189,11 +195,14 @@
               <b-form-group label="전달사항 (선택)">
                 <quill-editor :options="editorOption" v-model="inputOptions.userMemo"></quill-editor>
               </b-form-group>
-              <b-btn variant="primary" @click="addNewUser">추가</b-btn>
+              <div>
+                <b-btn variant="primary" @click="addNewUser" v-show="!userIsModifing">추가</b-btn>
+                <b-btn variant="secondary" @click="modifyUser" v-show="userIsModifing">수정</b-btn>
+              </div>
             </b-card>
           </b-col>
           <b-col>
-            <b-card header="평가배정 목록">
+            <b-card header="평가배정 목록" header-bg-variant="success">
               <b-table striped hover responsive show-empty
                 :empty-text="messages.emptyText"
                 :items="form.users"
@@ -213,6 +222,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import { quillEditor } from 'vue-quill-editor'
 import draggable from 'vuedraggable'
@@ -256,6 +266,10 @@ export default {
         items: [],
         users: []
       },
+      itemIsModifing: false,
+      itemSelected: null,
+      userIsModifing: false,
+      userSelected: null,
       inputOptions: {
         input1Active: false, // 항목별 기재사항1 활성화 여부
         input1Title: null, // 항목별 기재사항1
@@ -308,13 +322,32 @@ export default {
       this.form.scoring.reverse()
     },
 
-    addNewItem () {
-      // validation
+    validateItem () {
       if (!this.inputOptions.itemTitle) {
         alert('평가사항을 입력하세요')
-        this.$refs.inputItemTitle.focus()
+        // this.$refs.inputItemTitle.focus()
         return false
       }
+
+      return true
+    },
+
+    validateUser () {
+      if (!this.inputOptions.userSelected) {
+        alert('담당자를 선택하세요')
+        return false
+      }
+
+      if (!this.inputOptions.userShopSelected) {
+        alert('점포를 선택하세요')
+        return false
+      }
+
+      return true
+    },
+
+    addNewItem () {
+      if (!this.validateItem()) return false
 
       this.form.items.push({
         item_type: this.inputOptions.itemType,
@@ -337,30 +370,67 @@ export default {
       this.inputOptions.itemFileAttach = 0
     },
 
-    addNewUser () {
-      // 담당자 배정
-      if (!this.inputOptions.userShopSelected) {
-        alert('점포를 선택하세요')
-        return false
-      }
+    modifyItem () {
+      if (!this.validateItem()) return false
 
-      if (!this.inputOptions.userSelected) {
-        alert('담당자를 선택하세요')
-        return false
-      }
+      Vue.set(this.form.items, this.itemSelected.index, {
+        item_type: this.inputOptions.itemType,
+        category1: this.dropdown1Selected ? this.dropdown1Selected.id : null,
+        category2: this.dropdown2Selected ? this.dropdown2Selected.id : null,
+        category3: this.dropdown3Selected ? this.dropdown3Selected.id : null,
+        title: this.inputOptions.itemTitle,
+        example1: this.inputOptions.itemInput1Content,
+        example2: this.inputOptions.itemInput2Content,
+        notice1: this.inputOptions.itemOutput1Content,
+        notice2: this.inputOptions.itemOutput2Content,
+        file_yn: this.inputOptions.itemFileAttach
+      })
+
+      this.inputOptions.itemTitle = null
+      this.inputOptions.itemInput1Content = null
+      this.inputOptions.itemInput2Content = null
+      this.inputOptions.itemOutput1Content = null
+      this.inputOptions.itemOutput2Content = null
+      this.inputOptions.itemFileAttach = 0
+
+      this.itemSelected = null
+      this.itemIsModifing = false
+    },
+
+    addNewUser () {
+      if (!this.validateUser()) return false
 
       this.form.users.push({
         shop_id: this.inputOptions.userShopSelected.id,
         user_id: this.inputOptions.userSelected.id,
         shop_name: this.inputOptions.userShopSelected.name,
         user_name: this.inputOptions.userSelected.name,
-        from_date: this.inputOptions.userFromDate,
-        to_date: this.inputOptions.userToDate,
+        from_date: moment(this.inputOptions.userFromDate).format('YYYY-MM-DD'),
+        to_date: moment(this.inputOptions.userToDate).format('YYYY-MM-DD'),
         memo: this.inputOptions.userMemo
       })
 
       this.inputOptions.userShopSelected = null
       // this.inputOptions.userSelected = null
+    },
+
+    modifyUser () {
+      if (!this.validateUser()) return false
+
+      Vue.set(this.form.users, this.userSelected.index, {
+        shop_id: this.inputOptions.userShopSelected.id,
+        user_id: this.inputOptions.userSelected.id,
+        shop_name: this.inputOptions.userShopSelected.name,
+        user_name: this.inputOptions.userSelected.name,
+        from_date: moment(this.inputOptions.userFromDate).format('YYYY-MM-DD'),
+        to_date: moment(this.inputOptions.userToDate).format('YYYY-MM-DD'),
+        memo: this.inputOptions.userMemo
+      })
+
+      this.inputOptions.userShopSelected = null
+
+      this.userSelected = null
+      this.userIsModifing = false
     },
 
     onEditorChange ({ editor, html, text }) {
@@ -424,24 +494,67 @@ export default {
       }
     },
 
-    onItemModify (item) {
-      console.log(item.id, item.name)
+    onItemModify (item, index) {
+      this.inputOptions.itemType = item.item_type
+
+      if (item.category1) {
+        this.dropdown1Selected = this.fiterCategoryById(item.category1)[0]
+      }
+      if (item.category2) {
+        setTimeout(() => {
+          this.dropdown2Selected = this.fiterCategoryById(item.category2)[0]
+        }, 100)
+      }
+      if (item.category3) {
+        setTimeout(() => {
+          this.dropdown3Selected = this.fiterCategoryById(item.category3)[0]
+        }, 100)
+      }
+
+      this.inputOptions.itemTitle = item.title
+      this.inputOptions.itemInput1Content = item.example1
+      this.inputOptions.itemInput2Content = item.example2
+      this.inputOptions.itemOutput1Content = item.notice1
+      this.inputOptions.itemOutput2Content = item.notice2
+      this.inputOptions.itemFileAttach = item.file_yn
+
+      this.itemIsModifing = true
+      this.itemSelected = { index }
     },
 
-    onItemRemove (item) {
-      console.log(item.id, item.name)
+    onItemRemove (index) {
+      if (!confirm('항목을 삭제하시겠습니까?')) return false
+      this.form.items.splice(index, 1)
     },
 
     onUserModify (item, index, button) {
-      // console.log(item.id, item.name)
+      if (item.shop_id) {
+        this.inputOptions.userShopSelected = this.fiterShopById(item.shop_id)[0]
+      }
+      if (item.user_id) {
+        this.inputOptions.userSelected = this.fiterUserById(item.user_id)[0]
+      }
+
+      this.inputOptions.userFromDate = item.from_date
+      this.inputOptions.userToDate = item.to_date
+      this.inputOptions.userMemo = item.memo
+
+      this.userIsModifing = true
+      this.userSelected = { index }
     },
 
     onUserRemove (item, index, button) {
-      // console.log(item.id, item.name)
+      if (!confirm('배정을 취소하시겠습니까?')) return false
+      this.form.users.splice(index, 1)
     },
 
     onSubmit () {
       // validation
+      if (!this.form.list_type) {
+        alert('타입을 입력하세요')
+        return false
+      }
+
       if (!this.form.title) {
         alert('제목을 입력하세요')
         this.$refs.checklistTitle.focus()
@@ -450,7 +563,7 @@ export default {
 
       if (this.form.scoring.length === 0) {
         alert('배점을 입력하세요')
-        this.$refs.checklistScoring.focus()
+        // this.$refs.checklistScoring.focus()
         return false
       }
 
@@ -478,10 +591,26 @@ export default {
         return false
       }
 
+      if (this.form.items.length === 0) {
+        alert('평가할 항목이 없습니다.')
+        this.$scrollTo('#cardAddItem')
+        return false
+      }
+
+      if (this.form.users.length === 0) {
+        alert('평가배정 내역이 없습니다.')
+        this.$scrollTo('#cardAddUser')
+        return false
+      }
+
       this.form.example1_title = this.inputOptions.input1Active ? this.inputOptions.input1Title : null
       this.form.example2_title = this.inputOptions.input2Active ? this.inputOptions.input2Title : null
       this.form.notice1_title = this.inputOptions.output1Active ? this.inputOptions.output1Title : null
       this.form.notice2_title = this.inputOptions.output2Active ? this.inputOptions.output2Title : null
+    },
+
+    onInputItemTitleKeyEnter () {
+      this.addNewItem()
     }
   },
 
@@ -498,7 +627,10 @@ export default {
       messages: 'messages',
       datePickerOptions: 'datePickerOptions',
       allUsers: 'getAllUsers',
-      filterUserList: 'filterUserList'
+      filterUserList: 'filterUserList',
+      fiterCategoryById: 'fiterCategoryById',
+      fiterShopById: 'fiterShopById',
+      fiterUserById: 'fiterUserById'
     }),
 
     dropDown1Items () {
@@ -570,8 +702,8 @@ export default {
 
     // this.onChecklistTypeChange(this.form.list_type)
 
-    this.inputOptions.userFromDate = moment().format('YYYY-MM-DD')
-    this.inputOptions.userToDate = moment().add(1, 'months').format('YYYY-MM-DD')
+    this.inputOptions.userFromDate = moment().format()
+    this.inputOptions.userToDate = moment().add(1, 'months').format()
   }
 }
 </script>

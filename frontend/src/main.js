@@ -16,6 +16,7 @@ import InputTag from 'vue-input-tag'
 import VueCookie from 'vue-cookie'
 import VueProgressBar from 'vue-progressbar'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import VueScrollTo from 'vue-scrollto'
 
 axios.interceptors.request.use(config => {
   config.headers.common['x-access-token'] = localStorage.getItem('token')
@@ -58,6 +59,17 @@ Vue.use(VueProgressBar, {
   inverse: false
 })
 Vue.use(require('vue-moment'))
+Vue.use(VueScrollTo, {
+  container: 'body',
+  duration: 3000,
+  easing: 'ease',
+  offset: 0,
+  cancelable: true,
+  onDone: false,
+  onCancel: false,
+  x: false,
+  y: true
+})
 
 Vue.component('v-select', vSelect)
 Vue.component('input-tag', InputTag)
