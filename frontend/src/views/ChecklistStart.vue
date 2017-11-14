@@ -27,12 +27,13 @@
               <b-btn :pressed.sync="btnShowFileInput" size="sm" variant="outline-dark" v-b-toggle.collapse-file-input><i class="icon-camera"></i></b-btn>
               <b-btn :pressed.sync="btnShowTextInput" size="sm" variant="outline-dark" v-b-toggle.collapse-text-input><i class="icon-pencil"></i></b-btn>
               <b-btn :pressed.sync="btnShowHelpMessages" size="sm" variant="outline-dark" v-b-toggle.collapse-card-body><i class="icon-question"></i></b-btn>
+              <b-btn @click="closeAllCards" class="ml-1" size="sm" variant="outline-danger" v-show="showCloseAllCards"><i class="icon-close"></i></b-btn>
             </b-button-group>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
-            <b-collapse id="collapse-text-input">
+            <b-collapse id="collapse-text-input" v-model="collapseTextInput">
               <b-card>
                 <b-form-group label="기재사항">
                   <b-form-input></b-form-input>
@@ -43,7 +44,7 @@
         </b-row>
         <b-row>
           <b-col>
-            <b-collapse id="collapse-file-input">
+            <b-collapse id="collapse-file-input" v-model="collapseFileInput">
               <b-card>
                 <b-form-group label="파일선택">
                   <b-form-file accept="image/*" :plain="true"></b-form-file>
@@ -54,8 +55,8 @@
         </b-row>
         <b-row>
           <b-col>
-            <b-collapse id="collapse-card-body">
-              <b-card>
+            <b-collapse id="collapse-card-body" v-model="collapseHelpMessages">
+              <b-card class="overflow-scroll">
                 <carousel
                   :perPage="1"
                   :navigationEnabled="true"
@@ -77,7 +78,6 @@
             </b-collapse>
           </b-col>
         </b-row>
-        <!--</b-card-body>-->
       </b-card>
     </div>
   </div>
@@ -99,6 +99,9 @@ export default {
       btnShowFileInput: false,
       btnShowTextInput: false,
       btnShowHelpMessages: false,
+      collapseFileInput: false,
+      collapseTextInput: false,
+      collapseHelpMessages: false,
       selected: 'radio1',
       options: [
         { text: '1', value: 'radio1' },
@@ -113,9 +116,19 @@ export default {
   },
 
   methods: {
-    runFileInput () {
-      // console.log(this.$refs.fileInput)
-      this.$refs.fileInput1.click()
+    closeAllCards () {
+      this.btnShowFileInput = false
+      this.btnShowTextInput = false
+      this.btnShowHelpMessages = false
+      this.collapseFileInput = false
+      this.collapseTextInput = false
+      this.collapseHelpMessages = false
+    }
+  },
+
+  computed: {
+    showCloseAllCards () {
+      return this.btnShowFileInput || this.btnShowTextInput || this.btnShowHelpMessages
     }
   }
 }
