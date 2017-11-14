@@ -9,7 +9,7 @@
       </b-col>
     </b-row>
     <b-row class="pb-2">
-      <b-col lg="3">
+      <b-col lg="6">
         <h6>고객맞이 인사태도</h6>
       </b-col>
       <b-col lg="6">
@@ -26,6 +26,7 @@
           <b-btn @click="pressTextInput" :pressed="showTextInput" size="sm" variant="outline-dark" v-b-toggle.collapse-text-input><i class="icon-pencil"></i></b-btn>
           <b-btn @click="pressHelpMessages" :pressed="showHelpMessages" size="sm" variant="outline-dark" v-b-toggle.collapse-card-body><i class="icon-question"></i></b-btn>
           <b-btn @click="closeAllCards" class="ml-1" size="sm" variant="outline-danger" v-show="showCloseAllCards"><i class="icon-close"></i></b-btn>
+          <b-btn @click="saveCard" class="ml-1" size="sm" variant="primary"><i class="fa fa-save"></i></b-btn>
         </b-button-group>
       </b-col>
     </b-row>
@@ -79,7 +80,6 @@
     </b-row>
   </b-card>
 </template>
-
 
 <script>
 import { Carousel, Slide } from 'vue-carousel'
@@ -143,6 +143,10 @@ export default {
       this.collapseFileInput = false
       this.collapseTextInput = false
       this.collapseHelpMessages = false
+    },
+
+    saveCard () {
+
     }
   },
 
@@ -159,5 +163,11 @@ export default {
     position: relative;
     max-height: 250px;
     overflow-y: scroll;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0
   }
 </style>

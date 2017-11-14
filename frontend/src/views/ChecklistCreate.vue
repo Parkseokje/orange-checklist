@@ -2,7 +2,6 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <b-card header="체크리스트 정보">
-        <b-btn class="mb-3" variant="primary" @click="onSubmit">체크리스트 생성하기</b-btn>
         <b-row>
           <b-col lg="3">
             <b-form-group label="타입">
@@ -216,6 +215,7 @@
             </b-card>
           </b-col>
         </b-row>
+        <b-btn class="mb-3" variant="primary" @click="onSubmit">체크리스트 생성하기</b-btn>
       </b-card>
     </div>
   </div>
@@ -315,7 +315,9 @@ export default {
     ...mapActions([
       'fetchCategoryList',
       'fetchShopList',
-      'fetchUserList'
+      'fetchUserList',
+      'createChecklist',
+      'updateChecklist'
     ]),
 
     reversSampleAnswers () {
@@ -607,6 +609,9 @@ export default {
       this.form.example2_title = this.inputOptions.input2Active ? this.inputOptions.input2Title : null
       this.form.notice1_title = this.inputOptions.output1Active ? this.inputOptions.output1Title : null
       this.form.notice2_title = this.inputOptions.output2Active ? this.inputOptions.output2Title : null
+
+      // 자료를 저장한다.
+      this.createChecklist(this.form)
     },
 
     onInputItemTitleKeyEnter () {

@@ -12,6 +12,10 @@ const SET_CATEGORIES = 'category/SET'
 const UPDATE_CATEGORY = 'category/UPDATE'
 const DELETE_CATEGORY = 'category/DELETE'
 
+const SET_CHECKLISTS = 'checklist/SET'
+const UPDATE_CHECKLIST = 'checklist/UPDATE'
+const DELETE_CHECKLIST = 'checklist/DELETE'
+
 const LOGIN_SUCCESS = 'auth/LOGIN_SUCCES'
 const LOGOUT = 'auth/LOGOUT'
 
@@ -26,6 +30,9 @@ export {
   SET_CATEGORIES,
   UPDATE_CATEGORY,
   DELETE_CATEGORY,
+  SET_CHECKLISTS,
+  UPDATE_CHECKLIST,
+  DELETE_CHECKLIST,
   LOGIN_SUCCESS,
   LOGOUT
 }

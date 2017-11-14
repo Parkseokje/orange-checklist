@@ -1,7 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="animated fadeIn">
-      <checklist-item></checklist-item>
+      <!--<b-container fluid>-->
+        <b-row>
+          <b-col lg="4">
+            <checklist-item></checklist-item>
+          </b-col>
+          <b-col lg="4">
+            <checklist-item></checklist-item>
+          </b-col>
+          <b-col lg="4">
+            <checklist-item></checklist-item>
+          </b-col>
+        </b-row>
+      <!--</b-container>-->
     </div>
   </div>
 </template>
