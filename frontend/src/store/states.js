@@ -51,8 +51,11 @@ export default {
     modules: {
       toolbar: [
         ['bold', 'italic', 'underline'],
-        [{ 'color': [] }],
-        [{ 'align': [] }]
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        [{'indent': '-1'}, {'indent': '+1'}],
+        [{'size': ['small', false, 'large', 'huge']}],
+        [{'color': []}],
+        [{'align': []}]
       ]
     }
   },

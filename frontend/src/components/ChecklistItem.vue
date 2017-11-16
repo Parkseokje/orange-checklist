@@ -3,14 +3,14 @@
     <b-row class="pb-2">
       <b-col>
         <h6>
-          <b-badge variant="primary">{{info.category2_name}} / {{info.category3_name}}</b-badge>
+          <b-badge variant="primary">{{info.item.category2_name}} / {{info.item.category3_name}}</b-badge>
           <b-badge v-if="selected" variant="danger">{{selected}}점</b-badge>
         </h6>
       </b-col>
     </b-row>
     <b-row class="pb-2">
       <b-col lg="12">
-        <h6>{{info.title}}</h6>
+        <h6>{{info.item.title}}</h6>
       </b-col>
     </b-row>
     <b-row>
@@ -68,11 +68,11 @@
               :navigationClickTargetSize="4">
               <slide class="overflow-scroll" v-if="info.notice1_title">
                 <b>{{info.notice1_title}}</b><br>
-                {{info.notice1}}
+                <div v-html="info.item.notice1"></div>
               </slide>
               <slide class="overflow-scroll" v-if="info.notice2_title">
                 <b>{{info.notice2_title}}</b><br>
-                {{info.notice2}}
+                <div v-html="info.item.notice2"></div>
               </slide>
             </carousel>
           </b-card>
@@ -89,25 +89,7 @@ export default {
 
   props: {
     info: {
-      type: Object,
-      default () {
-        return {
-          list_id: null,
-          item_type: null,
-          title: '고객맞이 인사태도',
-          example1_title: '1',
-          example2_title: '2',
-          example1: '1',
-          example2: '2',
-          notice1_title: '1',
-          notice2_title: '2',
-          notice1: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas consequatur ea, doloremque maxime facilis suscipit! Id debitis nemo necessitatibus dolor ullam architecto quo! Maxime modi necessitatibus molestiae reiciendis incidunt. Iste.',
-          notice2: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam, recusandae qui vitae consectetur, saepe provident quos soluta repellendus blanditiis distinctio veniam illo dolore tempora consequatur quibusdam ut aspernatur quam consequuntur.',
-          category2_name: '식사중 응대',
-          category3_name: '테이블관리',
-          file_yn: true
-        }
-      }
+      type: Object
     }
   },
 
@@ -182,7 +164,7 @@ export default {
     },
 
     showFileInput () {
-      return this.info.file_yn
+      return this.info.item.file_yn
     },
 
     showTextInput () {

@@ -1,6 +1,7 @@
 const pool = require('../../../database')
 const async = require('async')
 
+// 체크리스트 목록 조회
 exports.list = (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -27,7 +28,7 @@ exports.list = (req, res) => {
 }
 
 // 사용자 체크리스트 조회
-exports.userlist = (req, res) => {
+exports.userList = (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.log(error)
@@ -70,7 +71,7 @@ exports.userlist = (req, res) => {
   })
 }
 
-
+// 체크리스트 평가항목, 배정자 목록 조회
 exports.detail = (req, res) => {
   const {
     id
@@ -121,6 +122,63 @@ exports.detail = (req, res) => {
   })
 }
 
+// 사용자 체크리스트 평가항목 자료 조회
+exports.userDetail = (req, res) => {
+  const {
+    id: listId,
+  } = req.params
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const getChecklistItems = callback => {
+      const sql = `
+        SELECT ci.item_type, ci.title, ci.example1, ci.example2, ci.notice1, ci.notice2, ci.file_yn
+             , (SELECT name FROM categories WHERE id = ci.category1) AS category1_name
+             , (SELECT name FROM categories WHERE id = ci.category2) AS category2_name
+             , (SELECT name FROM categories WHERE id = ci.category3) AS category3_name
+             , ca.checklist_user_id, ca.score, ca.answer, ca.example1_answer, ca.example2_answer
+             , ca.updated_dt
+          FROM checklist_items AS ci
+          LEFT JOIN checklist_user_item_answers AS ca
+            ON ci.id = ca.item_id
+           AND ca.user_id = ?
+         WHERE ci.list_id = ?
+           AND active = 1
+         ORDER BY turn;
+        `
+      connection.query(sql, [ req.decoded.id, listId ], (err, rows) => {
+        callback(err, rows)
+      })
+    }
+
+    async.series([
+      getChecklistItems
+    ], (err, results) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        return res.status(500).send({
+          success: false,
+          message: err
+        });
+      } else {
+        res.send({
+          success: true,
+          info: {
+            list: results[0]
+          }
+        })
+      }
+    }) // async.waterfall
+
+  })
+}
+
+// 체크리스트 생성
 exports.create = (req, res) => {
   const {
     title,
@@ -162,19 +220,19 @@ exports.create = (req, res) => {
             notice2_title,
             memo
           )
-          VALUES (
-            ${company_id},
-            '${title}',
-            '${list_type}',
-            '${scoring}',
-            '${example1_title}',
-            '${example2_title}',
-            '${notice1_title}',
-            '${notice2_title}',
-            '${memo}'
-          );
+          VALUES (?,?,?,?,?,?,?,?,?);
         `
-        connection.query(sql, [], (err, result) => {
+        connection.query(sql, [
+          company_id,
+          title,
+          list_type,
+          scoring.toString(),
+          example1_title,
+          example2_title,
+          notice1_title,
+          notice2_title,
+          memo
+        ], (err, result) => {
           callback(err, result.insertId)
         })
       }
@@ -206,9 +264,9 @@ exports.create = (req, res) => {
             example2,
             notice1,
             notice2,
-            category1_id,
-            category2_id,
-            category3_id,
+            category1,
+            category2,
+            category3,
             file_yn,
             turn
           )
@@ -281,6 +339,7 @@ exports.create = (req, res) => {
   }) // getConnection
 }
 
+// 체크리스트 수정
 exports.update = (req, res) => {
   const {
     id,
@@ -329,17 +388,27 @@ exports.update = (req, res) => {
       const insertChecklist = callback => {
         const sql = `
           UPDATE checklists SET
-            title = '${title}',
-            list_type = '${list_type}',
-            scoring = '${scoring}',
-            example1_title = '${example1_title}',
-            example2_title = '${example2_title}',
-            notice1_title = '${notice1_title}',
-            notice2_title = '${notice2_title}',
-            memo = '${memo}'
-           WHERE id = '${id}';
+            title = ?,
+            list_type = ?,
+            scoring = ?,
+            example1_title = ?,
+            example2_title = ?,
+            notice1_title = ?,
+            notice2_title = ?,
+            memo = ?
+           WHERE id = ?;
         `
-        connection.query(sql, [], (err, result) => {
+        connection.query(sql, [
+          title,
+          list_type,
+          scoring.toString(),
+          example1_title,
+          example2_title,
+          notice1_title,
+          notice2_title,
+          memo,
+          id
+        ], (err, result) => {
           callback(err, result)
         })
       }
@@ -375,9 +444,9 @@ exports.update = (req, res) => {
               example2,
               notice1,
               notice2,
-              category1_id,
-              category2_id,
-              category3_id,
+              category1,
+              category2,
+              category3,
               file_yn,
               turn,
               active
@@ -400,9 +469,9 @@ exports.update = (req, res) => {
             example2 = ?,
             notice1 = ?,
             notice2 = ?,
-            category1_id = ?,
-            category2_id = ?,
-            category3_id = ?,
+            category1 = ?,
+            category2 = ?,
+            category3 = ?,
             file_yn = ?,
             turn = ?,
             active = ?
@@ -532,6 +601,7 @@ exports.update = (req, res) => {
   }) // getConnection
 }
 
+// 체크리스트 삭제
 exports.delete = (req, res) => {
   const {
     id

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import {
   SET_CHECKLISTS,
   SET_USER_CHECKLIST,
+  SET_USER_CHECKLIST_DETAILS,
   UPDATE_CHECKLIST,
   DELETE_CHECKLIST,
   API_FAILURE
@@ -11,7 +12,8 @@ import Checklist from '../../services/ChecklistService'
 const checklistModule = {
   state: {
     checklists: [],
-    user_checklist: []
+    user_checklist: [],
+    user_checklist_details: []
   },
 
   getters: {
@@ -21,6 +23,10 @@ const checklistModule = {
 
     getAllUserChecklist: state => {
       return state.user_checklist
+    },
+
+    getAllUserChecklistDetails: state => {
+      return state.user_checklist_details
     },
 
     fiterChecklistById: state => {
@@ -47,6 +53,13 @@ const checklistModule = {
     fetchUserCheckList ({ commit }) {
       Checklist.getUserChecklist(
         (data) => commit(SET_USER_CHECKLIST, data),
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    fetchUserCheckListDetails ({ commit }, id) {
+      Checklist.getUserChecklistDetails(id,
+        (data) => commit(SET_USER_CHECKLIST_DETAILS, data),
         (err) => commit(API_FAILURE, err)
       )
     },
@@ -88,6 +101,10 @@ const checklistModule = {
       if (Vue.router.history.current.path !== '/user-checklist') {
         Vue.router.push('/user-checklist')
       }
+    },
+
+    [SET_USER_CHECKLIST_DETAILS] (state, data) {
+      state.user_checklist_details = data
     },
 
     [UPDATE_CHECKLIST] (state, checklist) {

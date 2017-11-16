@@ -58,7 +58,7 @@
             </b-col>
           </b-row>
         </b-form-group>
-        <b-form-group label="비고 (선택)">
+        <b-form-group label="공지사항 (선택)">
           <quill-editor :options="editorOption" v-model="form.memo"></quill-editor>
         </b-form-group>
 
@@ -751,23 +751,9 @@ export default {
   },
 
   created () {
-    if (this.$route.params.id && this.allChecklists.length === 0) {
-      // 수정상태에서 새로고침 시 체크리스트를 다시 가져와야 하므로 부모 라우트로 이동시킴
-      Vue.router.push('/checklist')
-    } else {
-      // this.fetchCheckListDetails(this.$route.params.id)
+    if (this.$route.params.id && this.allChecklists.length !== 0) {
       const id = this.$route.params.id
-      ChecklistService.getChecklistDetails(id,
-        (data) => {
-          this.form.items = data.items
-          this.form.users = data.users
-        },
-        (err) => this.API_FAILURE(err)
-      )
-    }
-
-    if (this.$route.params.id) {
-      const data = this.fiterChecklistById(this.$route.params.id)[0]
+      const data = this.fiterChecklistById(id)[0]
 
       if (data) {
         this.form.id = data.id
@@ -781,9 +767,17 @@ export default {
         this.form.notice1_title = data.notice1_title
         this.form.notice2_title = data.notice2_title
       }
-    }
 
-    // this.onChecklistTypeChange(this.form.list_type)
+      ChecklistService.getChecklistDetails(id,
+        (data) => {
+          this.form.items = data.items
+          this.form.users = data.users
+        },
+        (err) => API_FAILURE(err)
+      )
+    } else if (this.allChecklists.length === 0) {
+      Vue.router.push('/checklist')
+    }
 
     this.inputOptions.userFromDate = moment().format()
     this.inputOptions.userToDate = moment().add(1, 'months').format()
