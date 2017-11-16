@@ -3,75 +3,76 @@
     <b-row class="pb-2">
       <b-col>
         <h6>
-          <b-badge variant="primary">식사중 응대 / 테이블관리</b-badge>
-          <b-badge variant="danger">5점</b-badge>
+          <b-badge variant="primary">{{info.category2_name}} / {{info.category3_name}}</b-badge>
+          <b-badge v-if="selected" variant="danger">{{selected}}점</b-badge>
         </h6>
       </b-col>
     </b-row>
     <b-row class="pb-2">
-      <b-col lg="6">
-        <h6>고객맞이 인사태도</h6>
+      <b-col lg="12">
+        <h6>{{info.title}}</h6>
       </b-col>
-      <b-col lg="6">
-        <b-form-radio-group id="btnradios2"
+    </b-row>
+    <b-row>
+      <b-col lg="12">
+        <b-form-radio-group
           button-variant="outline-dark"
           v-model="selected"
           :options="options"
-          name="radioBtnOutline"
         />
       </b-col>
-      <b-col>
-        <b-button-group>
-          <b-btn @click="pressFileInput" :pressed="showFileInput" size="sm" variant="outline-dark" v-b-toggle.collapse-file-input><i class="icon-camera"></i></b-btn>
-          <b-btn @click="pressTextInput" :pressed="showTextInput" size="sm" variant="outline-dark" v-b-toggle.collapse-text-input><i class="icon-pencil"></i></b-btn>
-          <b-btn @click="pressHelpMessages" :pressed="showHelpMessages" size="sm" variant="outline-dark" v-b-toggle.collapse-card-body><i class="icon-question"></i></b-btn>
+    </b-row>
+    <b-row>
+      <b-col lg="12">
+        <b-button-group class="pb-1">
+          <b-btn v-if="showFileInput" @click="pressFileInput" :pressed="fileInputPressed" size="sm" variant="outline-dark"><i class="icon-camera"></i></b-btn>
+          <b-btn v-if="showTextInput" @click="pressTextInput" :pressed="textInputPressed" size="sm" variant="outline-dark"><i class="icon-pencil"></i></b-btn>
+          <b-btn v-if="showHelpMessages" @click="pressHelpMessages" :pressed="helpMessagedPressed" size="sm" variant="outline-dark"><i class="icon-question"></i></b-btn>
           <b-btn @click="closeAllCards" class="ml-1" size="sm" variant="outline-danger" v-show="showCloseAllCards"><i class="icon-close"></i></b-btn>
-          <b-btn @click="saveCard" class="ml-1" size="sm" variant="primary"><i class="fa fa-save"></i></b-btn>
+          <!--<b-btn @click="saveCard" size="sm" variant="primary"><i class="fa fa-save"></i></b-btn>-->
         </b-button-group>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="showFileInput">
       <b-col>
-        <b-collapse id="collapse-text-input" v-model="collapseTextInput">
-          <b-card>
-            <b-form-group label="기재사항">
-              <b-form-input ref="example1Answer"></b-form-input>
-            </b-form-group>
-          </b-card>
-        </b-collapse>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-collapse id="collapse-file-input" v-model="collapseFileInput">
+        <b-collapse id="collapseFileInput" v-model="fileInputPressed">
           <b-card>
             <b-form-group label="파일선택">
-              <b-form-file accept="image/*" :plain="true"></b-form-file>
+              <input type="file" ref="fileInput" accept="image/*" />
             </b-form-group>
           </b-card>
         </b-collapse>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="showTextInput">
       <b-col>
-        <b-collapse id="collapse-card-body" v-model="collapseHelpMessages">
-          <b-card class="overflow-scroll">
+        <b-collapse id="collapseTextInput" v-model="textInputPressed">
+          <b-card>
+            <b-form-group v-if="info.example1_title" :label="info.example1_title">
+              <b-form-textarea v-model="form.example1Answer" :rows="3"></b-form-textarea>
+            </b-form-group>
+            <b-form-group v-if="info.example2_title" :label="info.example2_title">
+              <b-form-textarea v-model="form.example2Answer" :rows="3"></b-form-textarea>
+            </b-form-group>
+          </b-card>
+        </b-collapse>
+      </b-col>
+    </b-row>
+    <b-row v-if="showHelpMessages">
+      <b-col>
+        <b-collapse id="collapseHelpMessages" v-model="helpMessagedPressed">
+          <b-card>
             <carousel
               :perPage="1"
               :navigationEnabled="true"
-              :navigationClickTargetSize="4"
-              class="p-2">
-              <slide>
-                <b>제재기준</b>
-                <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis asperiores, temporibus magni reiciendis blanditiis excepturi ipsum iure suscipit tempore assumenda modi consectetur voluptatem voluptatibus, officiis dolorem praesentium ipsa quisquam velit.
-                </p>
+              :navigationClickTargetSize="4">
+              <slide class="overflow-scroll" v-if="info.notice1_title">
+                <b>{{info.notice1_title}}</b><br>
+                {{info.notice1}}
               </slide>
-              <slide>
-                <b>평가기준</b>
-                <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis asperiores, temporibus magni reiciendis blanditiis excepturi ipsum iure suscipit tempore assumenda modi consectetur voluptatem voluptatibus, officiis dolorem praesentium ipsa quisquam velit.
-                </p>
+              <slide class="overflow-scroll" v-if="info.notice2_title">
+                <b>{{info.notice2_title}}</b><br>
+                {{info.notice2}}
               </slide>
             </carousel>
           </b-card>
@@ -86,6 +87,30 @@ import { Carousel, Slide } from 'vue-carousel'
 export default {
   name: 'checklist-item',
 
+  props: {
+    info: {
+      type: Object,
+      default () {
+        return {
+          list_id: null,
+          item_type: null,
+          title: '고객맞이 인사태도',
+          example1_title: '1',
+          example2_title: '2',
+          example1: '1',
+          example2: '2',
+          notice1_title: '1',
+          notice2_title: '2',
+          notice1: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas consequatur ea, doloremque maxime facilis suscipit! Id debitis nemo necessitatibus dolor ullam architecto quo! Maxime modi necessitatibus molestiae reiciendis incidunt. Iste.',
+          notice2: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam, recusandae qui vitae consectetur, saepe provident quos soluta repellendus blanditiis distinctio veniam illo dolore tempora consequatur quibusdam ut aspernatur quam consequuntur.',
+          category2_name: '식사중 응대',
+          category3_name: '테이블관리',
+          file_yn: true
+        }
+      }
+    }
+  },
+
   components: {
     Carousel,
     Slide
@@ -93,56 +118,57 @@ export default {
 
   data () {
     return {
-      showFileInput: false,
-      showTextInput: false,
-      showHelpMessages: false,
-      collapseFileInput: false,
-      collapseTextInput: false,
-      collapseHelpMessages: false,
-      selected: 'radio1',
+      fileInputPressed: false,
+      textInputPressed: false,
+      helpMessagedPressed: false,
+      selected: null,
       options: [
-        { text: '1', value: 'radio1' },
-        { text: '2', value: 'radio2' },
-        { text: '3', value: 'radio3' },
-        { text: '4', value: 'radio4' },
-        { text: '5', value: 'radio5' },
-        { text: '6', value: 'radio6' },
-        { text: '7', value: 'radio7' }
-      ]
+        { text: '1', value: 1 },
+        { text: '2', value: 2 },
+        { text: '3', value: 3 },
+        { text: '4', value: 4 },
+        { text: '5', value: 5 },
+        { text: '6', value: 6 },
+        { text: '7', value: 7 }
+      ],
+      form: {
+        score: 0,
+        files: [],
+        example1Answer: null,
+        example2Answer: null
+      }
     }
   },
 
   methods: {
     pressFileInput () {
-      if (!this.showFileInput) {
+      if (!this.fileInputPressed) {
         this.closeAllCards()
+        this.$refs.fileInput.click()
       }
-      this.showFileInput = !this.showFileInput
+
+      this.fileInputPressed = !this.fileInputPressed
     },
 
     pressTextInput () {
-      if (!this.showTextInput) {
+      if (!this.textInputPressed) {
         this.closeAllCards()
       }
 
-      this.showTextInput = !this.showTextInput
-      this.$refs.example1Answer.focus()
+      this.textInputPressed = !this.textInputPressed
     },
 
     pressHelpMessages () {
-      if (!this.showHelpMessages) {
+      if (!this.helpMessagedPressed) {
         this.closeAllCards()
       }
-      this.showHelpMessages = !this.showHelpMessages
+      this.helpMessagedPressed = !this.helpMessagedPressed
     },
 
     closeAllCards () {
-      this.showFileInput = false
-      this.showTextInput = false
-      this.showHelpMessages = false
-      this.collapseFileInput = false
-      this.collapseTextInput = false
-      this.collapseHelpMessages = false
+      this.fileInputPressed = false
+      this.textInputPressed = false
+      this.helpMessagedPressed = false
     },
 
     saveCard () {
@@ -152,8 +178,25 @@ export default {
 
   computed: {
     showCloseAllCards () {
-      return this.showFileInput || this.showTextInput || this.showHelpMessages
+      return this.fileInputPressed || this.textInputPressed || this.helpMessagedPressed
+    },
+
+    showFileInput () {
+      return this.info.file_yn
+    },
+
+    showTextInput () {
+      return this.info.example1_title || this.info.example2_title
+    },
+
+    showHelpMessages () {
+      return this.info.notice1_title || this.info.notice2_title
     }
+  },
+
+  created () {
+    this.form.example1Answer = this.info.example1
+    this.form.example2Answer = this.info.example2
   }
 }
 </script>
@@ -161,13 +204,7 @@ export default {
 <style scoped>
   .overflow-scroll {
     position: relative;
-    max-height: 250px;
+    max-height: 150px;
     overflow-y: scroll;
-  }
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0
   }
 </style>

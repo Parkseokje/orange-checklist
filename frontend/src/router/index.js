@@ -9,8 +9,9 @@ import Dashboard from '@/views/Dashboard'
 import Shop from '@/views/Shop'
 import User from '@/views/User'
 import Checklist from '@/views/Checklist'
-import ChecklistCreate from '@/views/ChecklistCreate'
+import ChecklistCreateOrModify from '@/views/ChecklistCreateOrModify'
 import ChecklistStart from '@/views/ChecklistStart'
+import UserChecklist from '@/views/UserChecklist'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
@@ -60,11 +61,21 @@ export default new Router({
         {
           path: 'checklist/create',
           name: '체크리스트 추가',
-          component: ChecklistCreate
+          component: ChecklistCreateOrModify
         },
         {
-          path: 'checklist-start',
+          path: 'checklist/:id',
+          name: '체크리스트 수정',
+          component: ChecklistCreateOrModify
+        },
+        {
+          path: 'user-checklist',
           name: '체크리스트 진행',
+          component: UserChecklist
+        },
+        {
+          path: 'user-checklist/:id',
+          name: '체크리스트 시작',
           component: ChecklistStart
         }
       ]

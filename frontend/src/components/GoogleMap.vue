@@ -7,6 +7,7 @@
     </gmap-autocomplete>
     <br>
     <gmap-map
+      v-if="!!position.lat && !!position.lng"
       :center="position"
       :zoom="15"
       map-type-id="roadmap"

@@ -38,7 +38,7 @@
               @filtered="onFiltered"
             >
               <template slot="actions" scope="row">
-                <b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>
+                <!--<b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>-->
                 <b-btn variant="outline-secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
                 <b-btn variant="outline-danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
               </template>
@@ -154,7 +154,7 @@ const fields = {
 
 export default {
   name: 'shop',
-  data: function () {
+  data () {
     return {
       gmapDefaultPosition: undefined,
       gmapShowAutoComplete: true,
@@ -196,7 +196,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'fetchShopLists',
+      'fetchShopList',
       'createShop',
       'updateShop',
       'deleteShop'
@@ -320,7 +320,10 @@ export default {
   },
 
   created () {
-    this.fetchShopLists()
+    if (this.items.length === 0) {
+      this.fetchShopList()
+    }
+
     this.initializeForm()
   },
 

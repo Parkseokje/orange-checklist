@@ -87,7 +87,6 @@ export default {
 
   methods: {
     ...mapActions([
-      'fetchCategoryList',
       'createCategory',
       'updateCategory',
       'deleteCategory'
@@ -298,8 +297,6 @@ export default {
   },
 
   created () {
-    this.fetchCategoryList()
-
     const fieldTypes = {
       name: { label: `${this.categoryType.value}명`, sortable: true, 'class': 'text-center' },
       children: { label: '개수', 'class': 'text-center' },

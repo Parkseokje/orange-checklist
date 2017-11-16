@@ -38,7 +38,7 @@
               @filtered="onFiltered"
             >
               <template slot="actions" scope="row">
-                <b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>
+                <!--<b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>-->
                 <b-btn variant="outline-secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
                 <b-btn variant="outline-danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
               </template>
@@ -349,7 +349,9 @@ export default {
   },
 
   created () {
-    this.fetchUserList()
+    if (this.items.length === 0) {
+      this.fetchUserList()
+    }
 
     if (this.shops.length === 0) {
       this.fetchShopList()

@@ -11,8 +11,24 @@ export default {
       .catch(error => errorCb(error))
   },
 
-  getChecklistById (id) {
+  getChecklistDetails (id, cb, errorCb) {
     return axios.get(`/api/checklist/${id}`)
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  getUserChecklist (cb, errorCb) {
+    return axios.get(`/api/checklist/user`)
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info.list)
+        }
+      })
+      .catch(error => errorCb(error))
   },
 
   createChecklist (checklist, cb, errorCb) {

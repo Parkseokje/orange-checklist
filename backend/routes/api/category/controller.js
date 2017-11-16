@@ -9,7 +9,7 @@ exports.list = (req, res) => {
     const sql = 'SELECT * FROM `categories` WHERE `company_id` = ? AND `active` = 1; '
     connection.query(sql, [ req.decoded.company_id ], (err, rows) => {
       connection.release()
-      
+
       if (err) {
         console.log(err)
         res.sendStatus(400)

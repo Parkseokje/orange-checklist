@@ -17,6 +17,7 @@ import VueCookie from 'vue-cookie'
 import VueProgressBar from 'vue-progressbar'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import VueScrollTo from 'vue-scrollto'
+import moment from 'moment'
 
 axios.interceptors.request.use(config => {
   config.headers.common['x-access-token'] = localStorage.getItem('token')
@@ -58,7 +59,9 @@ Vue.use(VueProgressBar, {
   location: 'top',
   inverse: false
 })
-Vue.use(require('vue-moment'))
+Vue.use(require('vue-moment'), {
+  moment
+})
 Vue.use(VueScrollTo, {
   container: 'body',
   duration: 3000,

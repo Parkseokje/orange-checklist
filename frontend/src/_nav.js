@@ -22,7 +22,7 @@ export default {
     },
     {
       name: '체크리스트 진행',
-      url: '/checklist-start',
+      url: '/user-checklist',
       icon: 'icon-puzzle'
     }
   ]
