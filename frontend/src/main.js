@@ -18,13 +18,20 @@ import VueProgressBar from 'vue-progressbar'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import VueScrollTo from 'vue-scrollto'
 import moment from 'moment'
+import lambdaConfig from './lambda.config'
 
 axios.interceptors.request.use(config => {
-  config.headers.common['x-access-token'] = localStorage.getItem('token')
-  store.dispatch('startLoader')
+  if (config.url !== lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT) {
+    config.headers.common['X-access-token'] = localStorage.getItem('token')
+    store.dispatch('startLoader')
+  }
+
   return config
 }, error => {
-  store.dispatch('endLoader')
+  if (error.url !== lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT) {
+    store.dispatch('endLoader')
+  }
+
   return Promise.reject(error)
 })
 

@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <div class="mb-3">
-        <b-btn :pressed="showCollapse" v-b-toggle.collapseNotice :variant="showCollapse ? 'danger' : 'primary'">공지사항 {{ showCollapse ? '닫기' : '보기' }}</b-btn>
+        <b-btn size="sm" :pressed="showCollapse" v-b-toggle.collapseNotice :variant="showCollapse ? 'danger' : 'primary'">공지사항 {{ showCollapse ? '닫기' : '보기' }}</b-btn>
         <b-collapse id="collapseNotice" class="mt-2" v-model="showCollapse">
           <b-alert v-if="checklist" show variant="info">
             <h4 class="alert-heading">{{checklist.title}}</h4>
@@ -11,17 +11,17 @@
           </b-alert>
         </b-collapse>
       </div>
-      <!-- <b-row class="my-2">
+      <b-row class="my-2">
         <b-col>
           <b-form-input
             :placeholder="'평가 항목명을 입력하세요'"
             v-model="searchText">
           </b-form-input>
         </b-col>
-      </b-row> -->
+      </b-row>
       <!--<b-container fluid>-->
         <b-row>
-          <b-col lg="3" :key="item.id" v-for="item in items">
+          <b-col lg="3" :key="item.id" v-for="item in filteredItems ">
             <checklist-item :info="getWrappedInfo(item)"></checklist-item>
           </b-col>
         </b-row>
@@ -57,8 +57,7 @@ export default {
   data () {
     return {
       searchText: null,
-      filteredNumbers: [],
-      numbers: [ 1, 2, 3, 4, 5 ],
+      // filteredItems: null,
       showCollapse: true,
       form: {
         items: []
@@ -68,9 +67,7 @@ export default {
 
   // watch: {
   //   searchText () {
-  //     if (!this.searchText) {
-  //       this.filteredNumbers = []
-  //     }
+
   //   }
   // },
 
@@ -82,15 +79,17 @@ export default {
     },
 
     getWrappedInfo (item) {
-      return {
+      const info = {
         list_id: this.checklist.list_id,
         example1_title: this.checklist.example1_title,
         example2_title: this.checklist.example2_title,
         notice1_title: this.checklist.notice1_title,
         notice2_title: this.checklist.notice2_title,
-        scoring: JSON.parse('[' + this.checklist.scroring + ']'),
+        scoring: JSON.parse('[' + this.checklist.scoring + ']'),
         item: item
       }
+
+      return info
     },
 
     ...mapActions([
@@ -99,13 +98,13 @@ export default {
   },
 
   computed: {
-    items () {
+    filteredItems () {
       if (this.searchText) {
-        return this.numbers.filter(value => {
-          return value.toString() === this.searchText
+        return this.items.filter(item => {
+          return item.category2_name.concat(item.category3_name).toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
         })
       } else {
-        return this.numbers
+        return this.items
       }
     },
 

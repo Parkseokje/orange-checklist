@@ -18,7 +18,7 @@
         <b-form-radio-group
           button-variant="outline-dark"
           v-model="selected"
-          :options="options"
+          :options="info.scoring"
         />
       </b-col>
     </b-row>
@@ -37,9 +37,7 @@
       <b-col>
         <b-collapse id="collapseFileInput" v-model="fileInputPressed">
           <b-card>
-            <b-form-group label="파일선택">
-              <input type="file" ref="fileInput" accept="image/*" />
-            </b-form-group>
+            <dropzone v-on:complete="onFileUploadComplete"></dropzone>
           </b-card>
         </b-collapse>
       </b-col>
@@ -66,11 +64,11 @@
               :perPage="1"
               :navigationEnabled="true"
               :navigationClickTargetSize="4">
-              <slide class="overflow-scroll" v-if="info.notice1_title">
+              <slide class="overflow-scroll" v-if="info.notice1_title && info.item.notice1">
                 <b>{{info.notice1_title}}</b><br>
                 <div v-html="info.item.notice1"></div>
               </slide>
-              <slide class="overflow-scroll" v-if="info.notice2_title">
+              <slide class="overflow-scroll" v-if="info.notice2_title && info.item.notice2">
                 <b>{{info.notice2_title}}</b><br>
                 <div v-html="info.item.notice2"></div>
               </slide>
@@ -84,6 +82,8 @@
 
 <script>
 import { Carousel, Slide } from 'vue-carousel'
+import Dropzone from '../components/Dropzone'
+
 export default {
   name: 'checklist-item',
 
@@ -95,7 +95,8 @@ export default {
 
   components: {
     Carousel,
-    Slide
+    Slide,
+    Dropzone
   },
 
   data () {
@@ -126,7 +127,7 @@ export default {
     pressFileInput () {
       if (!this.fileInputPressed) {
         this.closeAllCards()
-        this.$refs.fileInput.click()
+        // this.$refs.fileInput.click()
       }
 
       this.fileInputPressed = !this.fileInputPressed
@@ -155,6 +156,10 @@ export default {
 
     saveCard () {
 
+    },
+
+    onFileUploadComplete (accessUrl) {
+      console.log(accessUrl)
     }
   },
 
@@ -172,7 +177,7 @@ export default {
     },
 
     showHelpMessages () {
-      return this.info.notice1_title || this.info.notice2_title
+      return (this.info.notice1_title && this.info.item.notice1) || (this.info.notice2_title && this.info.item.notice2)
     }
   },
 
