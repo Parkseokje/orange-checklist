@@ -32,6 +32,7 @@ export default {
       url: '/',
       maxFilesize: 3,
       maxFiles: 1,
+      resizeQuality: 0.8,
       // Since we're going to do a `PUT` upload to S3 directly
       method: 'put',
       // Hijack the xhr.send since Dropzone always upload file by using formData
