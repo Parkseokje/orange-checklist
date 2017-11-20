@@ -4,6 +4,7 @@ import {
   SET_USER_CHECKLIST,
   SET_USER_CHECKLIST_DETAILS,
   UPDATE_CHECKLIST,
+  UPDATE_CHECKLIST_ITEM_ANSWER,
   DELETE_CHECKLIST,
   API_FAILURE
 } from '../mutation-types'
@@ -78,6 +79,18 @@ const checklistModule = {
       )
     },
 
+    updateChecklistItemAnswer ({ commit }, answer) {
+      Checklist.updateChecklistItemAnswer(answer,
+        (data) => {
+          if (!answer.item_answer_id) {
+            answer.item_answer_id = data.item_answer_id
+          }
+          commit(UPDATE_CHECKLIST_ITEM_ANSWER, answer)
+        },
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
     deleteChecklist ({ commit }, id) {
       Checklist.deleteChecklistById(id,
         (data) => commit(DELETE_CHECKLIST, id),
@@ -112,6 +125,11 @@ const checklistModule = {
       Vue.set(state.checklists, foundIndex, checklist)
 
       Vue.router.push('/checklist')
+    },
+
+    [UPDATE_CHECKLIST_ITEM_ANSWER] (state, answer) {
+      const foundIndex = state.user_checklist_details.findIndex(x => x.item_id === answer.item_id)
+      Vue.set(state.user_checklist_details, foundIndex, answer)
     },
 
     [DELETE_CHECKLIST] (state, id) {

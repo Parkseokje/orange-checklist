@@ -135,18 +135,20 @@ exports.userDetail = (req, res) => {
 
     const getChecklistItems = callback => {
       const sql = `
-        SELECT ci.item_type, ci.title, ci.example1, ci.example2, ci.notice1, ci.notice2, ci.file_yn
+        SELECT ci.list_id, ci.id AS item_id, cu.id AS checklist_user_id, ca.id AS item_answer_id, ci.item_type, ci.title, ci.example1, ci.example2, ci.notice1, ci.notice2, ci.file_yn
              , (SELECT name FROM categories WHERE id = ci.category1) AS category1_name
              , (SELECT name FROM categories WHERE id = ci.category2) AS category2_name
              , (SELECT name FROM categories WHERE id = ci.category3) AS category3_name
-             , ca.checklist_user_id, ca.score, ca.answer, ca.example1_answer, ca.example2_answer
-             , ca.updated_dt
+             , ca.score, ca.answer, ca.example1_answer, ca.example2_answer, ca.updated_dt
           FROM checklist_items AS ci
+         INNER JOIN checklist_users AS cu
+            ON ci.list_id = cu.list_id
+           AND cu.user_id = ?
           LEFT JOIN checklist_user_item_answers AS ca
-            ON ci.id = ca.item_id
-           AND ca.user_id = ?
+            ON cu.id = ca.checklist_user_id
+           AND ci.id = ca.item_id
          WHERE ci.list_id = ?
-           AND active = 1
+           AND ci.active = 1
          ORDER BY turn;
         `
       connection.query(sql, [ req.decoded.id, listId ], (err, rows) => {
@@ -592,6 +594,184 @@ exports.update = (req, res) => {
             } else {
               res.send({
                 success: true
+              })
+            }
+          })
+        }
+      }) // async.waterfall
+    }) // beginTransaction
+  }) // getConnection
+}
+
+// 체크리스트 평가항목별 정답 수정
+exports.updateAnswer = (req, res) => {
+  const {
+    list_id,
+    item_id,
+    item_answer_id,
+    checklist_user_id,
+    answer,
+    score,
+    example1_answer,
+    example2_answer,
+    file = null,
+    user_id = req.decoded.id,
+    company_id = req.decoded.company_id
+  } = req.body
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    connection.beginTransaction(err => {
+      if (err) {
+        return res.status(500).send({
+          success: false,
+          message: err
+        });
+      }
+
+      const insertAnswer = callback => {
+        const sql = `
+          INSERT checklist_user_item_answers (
+            company_id,
+            list_id,
+            item_id,
+            user_id,
+            checklist_user_id,
+            score,
+            answer,
+            example1_answer,
+            example2_answer
+          )
+          VALUES (?,?,?,?,?,?,?,?,?)
+        `
+        connection.query(sql, [
+          company_id,
+          list_id,
+          item_id,
+          user_id,
+          checklist_user_id,
+          score,
+          answer,
+          example1_answer,
+          example2_answer
+        ], (err, result) => {
+          callback(err, result.insertId)
+        })
+      }
+
+      const insertFiles = (checklist_user_item_answer_id, callback) => {
+        if (!file) {
+          callback(null, checklist_user_item_answer_id)
+        } else {
+          const sql = `
+            INSERT INTO checklist_user_item_files (
+              company_id,
+              list_id,
+              item_id,
+              user_id,
+              checklist_user_id,
+              checklist_user_item_answer_id,
+              file_name,
+              access_url
+            )
+            VALUES (?,?,?,?,?,?,?,?);
+          `
+
+          connection.query(sql, [
+            company_id,
+            list_id,
+            item_id,
+            user_id,
+            checklist_user_id,
+            checklist_user_item_answer_id,
+            file.file_name,
+            file.access_url
+          ], (err, result) => {
+            callback(err, null)
+          })
+        }
+      }
+
+      const deleteFiles = (checklist_user_item_answer_id, callback) => {
+        if (!file) {
+          callback(null, checklist_user_item_answer_id)
+        } else {
+          const sql = `
+            DELETE FROM checklist_user_item_files
+             WHERE checklist_user_item_answer_id = ?
+          `
+
+          connection.query(sql, [ checklist_user_item_answer_id ], (err, result) => {
+            callback(err, checklist_user_item_answer_id)
+          })
+        }
+      }
+
+      const updateAnswer = (callback) => {
+        const sql = `
+          UPDATE checklist_user_item_answers SET
+            score = ?,
+            answer = ?,
+            example1_answer = ?,
+            example2_answer = ?
+           WHERE id = ?;
+        `
+
+        connection.query(sql, [
+          score,
+          answer,
+          example1_answer,
+          example2_answer,
+          item_answer_id
+        ], (err, result) => {
+          callback(err, item_answer_id)
+        })
+      }
+
+      let series = []
+
+      if (!item_answer_id) {
+        series.push(insertAnswer)
+
+        if (file) {
+          series.push(insertFiles)
+        }
+      } else {
+        series.push(updateAnswer)
+
+        console.log(file)
+
+        if (file) {
+          series.push(deleteFiles)
+          series.push(insertFiles)
+        }
+      }
+
+      async.waterfall(series, (err, checklist_user_item_answer_id) => {
+        connection.release()
+
+        if (err) {
+          console.log(err)
+          connection.rollback(() => {
+            return res.status(500).send({
+              success: false,
+              message: err
+            });
+          });
+        } else {
+          connection.commit((err) => {
+            if (err) {
+              return res.status(500).send({
+                success: false,
+                message: err
+              });
+            } else {
+              res.send({
+                success: true,
+                item_answer_id: checklist_user_item_answer_id
               })
             }
           })

@@ -4,7 +4,7 @@
       <b-col>
         <h6>
           <b-badge variant="primary">{{info.item.category2_name}} / {{info.item.category3_name}}</b-badge>
-          <b-badge v-if="selected" variant="danger">{{selected}}점</b-badge>
+          <b-badge v-if="form.score" variant="danger">{{form.score}}점</b-badge>
         </h6>
       </b-col>
     </b-row>
@@ -17,7 +17,7 @@
       <b-col lg="12">
         <b-form-radio-group
           button-variant="outline-dark"
-          v-model="selected"
+          v-model="form.score"
           :options="info.scoring"
         />
       </b-col>
@@ -29,7 +29,7 @@
           <b-btn v-if="showTextInput" @click="pressTextInput" :pressed="textInputPressed" size="sm" variant="outline-dark"><i class="icon-pencil"></i></b-btn>
           <b-btn v-if="showHelpMessages" @click="pressHelpMessages" :pressed="helpMessagedPressed" size="sm" variant="outline-dark"><i class="icon-question"></i></b-btn>
           <b-btn @click="closeAllCards" class="ml-1" size="sm" variant="outline-danger" v-show="showCloseAllCards"><i class="icon-close"></i></b-btn>
-          <!--<b-btn @click="saveCard" size="sm" variant="primary"><i class="fa fa-save"></i></b-btn>-->
+          <b-btn @click="saveCard" size="sm" variant="primary" :disabled="!isDirty"><i class="fa fa-save"></i></b-btn>
         </b-button-group>
       </b-col>
     </b-row>
@@ -81,8 +81,10 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { Carousel, Slide } from 'vue-carousel'
 import Dropzone from '../components/Dropzone'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'checklist-item',
@@ -116,10 +118,30 @@ export default {
       ],
       form: {
         score: 0,
-        files: [],
+        file: [],
+        answer: null,
         example1Answer: null,
         example2Answer: null
-      }
+      },
+      isDirty: false
+    }
+  },
+
+  watch: {
+    'form.score' () {
+      this.isDirty = true
+    },
+    'form.file' () {
+      this.isDirty = true
+    },
+    'form.answer' () {
+      this.isDirty = true
+    },
+    'form.example1Answer' () {
+      this.isDirty = true
+    },
+    'form.example2Answer' () {
+      this.isDirty = true
     }
   },
 
@@ -155,12 +177,28 @@ export default {
     },
 
     saveCard () {
+      let item = Vue.util.extend({}, this.info.item)
 
+      item.file = this.form.file
+      item.answer = this.form.answer
+      item.score = this.form.score
+      item.example1_answer = this.form.example1Answer
+      item.example2_answer = this.form.example2Answer
+
+      this.updateChecklistItemAnswer(item)
+      this.isDirty = false
     },
 
-    onFileUploadComplete (accessUrl) {
-      console.log(accessUrl)
-    }
+    onFileUploadComplete (data) {
+      this.form.file = data
+      // this.form.file.push(data)
+      this.fileInputPressed = false
+      this.saveCard()
+    },
+
+    ...mapActions([
+      'updateChecklistItemAnswer'
+    ])
   },
 
   computed: {
@@ -182,8 +220,11 @@ export default {
   },
 
   created () {
-    this.form.example1Answer = this.info.example1
-    this.form.example2Answer = this.info.example2
+    this.form.score = this.info.item.score
+    this.form.answer = this.info.item.answer
+    // this.form.file = this.info.item.file || []
+    this.form.example1Answer = this.info.item.example1_answer ? this.info.item.example1_answer : this.info.item.example1
+    this.form.example2Answer = this.info.item.example2_answer ? this.info.item.example2_answer : this.info.item.example2
   }
 }
 </script>

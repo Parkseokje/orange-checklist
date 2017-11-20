@@ -72,6 +72,16 @@ export default {
       .catch(error => errorCb(error))
   },
 
+  updateChecklistItemAnswer (answer, cb, errorCb) {
+    return axios.put(`/api/checklist/answer`, answer)
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
   deleteChecklistById (id, cb, errorCb) {
     return axios.delete(`/api/checklist/${id}`)
       .then(response => {
