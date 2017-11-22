@@ -65,7 +65,7 @@
         <!-- 항목 영역 -->
         <b-row>
           <b-col lg="6">
-            <b-card id="cardAddItem" header="평가항목 추가" header-bg-variant="info">
+            <b-card id="cardAddItem" header="<i class='icon-plus'></i>  평가항목 추가" header-bg-variant="primary">
               <b-form-group horizontal label="유형">
                 <b-form-radio-group v-model="inputOptions.itemType">
                   <b-form-radio value="multiple">객관식</b-form-radio>
@@ -109,7 +109,8 @@
                   <b-collapse id="accordion1" accordion="my-accordion" role="tabpanel">
                     <b-card-body class="px-0">
                       <b-form-group :label="inputOptions.input1Title" v-show="showItem1Input">
-                        <quill-editor :options="editorOption2" v-model="inputOptions.itemInput1Content"></quill-editor>
+                        <b-form-input placeholder="입력 예시" v-model="inputOptions.itemInput1Content"></b-form-input>
+                        <!-- <quill-editor :options="editorOption2" v-model="inputOptions.itemInput1Content"></quill-editor> -->
                       </b-form-group>
                       <b-form-group :label="inputOptions.input2Title" v-show="showItem2Input">
                         <quill-editor :options="editorOption2" v-model="inputOptions.itemInput2Content"></quill-editor>
@@ -142,20 +143,20 @@
                 </b-form-checkbox>
                 <div>
                   <b-btn variant="primary" @click="addNewItem" v-show="!itemIsModifing">추가</b-btn>
-                  <b-btn variant="secondary" @click="modifyItem" v-show="itemIsModifing">수정</b-btn>
+                  <b-btn variant="secondary" @click="modifyItem" v-show="itemIsModifing">적용</b-btn>
                 </div>
               </div>
             </b-card>
           </b-col>
           <b-col>
-            <b-card header="평가항목 목록" header-bg-variant="info">
+            <b-card header="<i class='icon-grid'></i>  평가항목 목록" header-bg-variant="primary">
               <draggable v-model="form.items" :options="draggableOptions">
                 <transition-group name="no" class="list-group">
                   <li class="list-group-item d-flex justify-content-between align-items-center" :class="!item.active ? 'list-group-item-danger' : ''"
                     role="tab" v-for="(item, index) in form.items" :key="index">
                     <span><i class="icon-cursor-move"></i>   {{item.title}}</span>
                     <div>
-                      <b-btn v-show="item.active"size="sm" variant="outline-secondary" @click="onItemModify(item, index)">수정</b-btn>
+                      <b-btn v-show="item.active"size="sm" variant="outline-secondary" @click="onItemModify(item, index)">선택</b-btn>
                       <b-btn v-show="item.active"size="sm" variant="outline-danger" @click="onItemRemove(item, index)">삭제</b-btn>
                       <b-btn v-show="!item.active" size="sm" variant="outline-danger" @click="onItemRemoveCancel(item, index)">삭제취소</b-btn>
                     </div>
@@ -168,7 +169,7 @@
 
         <b-row>
           <b-col lg="6">
-            <b-card id="cardAddUser" header="평가 배정" header-bg-variant="success">
+            <b-card id="cardAddUser" header="<i class='icon-plus'></i>  담당자 배정" header-bg-variant="primary">
               <b-form-group label="담당자 (필수)" horizontal>
                 <v-select v-model="inputOptions.userSelected" :options="inputOptions.userList" label="name"></v-select>
               </b-form-group>
@@ -198,12 +199,12 @@
               </b-form-group>
               <div>
                 <b-btn variant="primary" @click="addNewUser" v-show="!userIsModifing">추가</b-btn>
-                <b-btn variant="secondary" @click="modifyUser" v-show="userIsModifing">수정</b-btn>
+                <b-btn variant="secondary" @click="modifyUser" v-show="userIsModifing">적용</b-btn>
               </div>
             </b-card>
           </b-col>
           <b-col>
-            <b-card header="평가배정 목록" header-bg-variant="success">
+            <b-card header="<i class='icon-grid'></i>  담당자 배정 목록" header-bg-variant="primary">
               <b-table striped hover responsive show-empty
                 :empty-text="messages.emptyText"
                 :items="form.users"
@@ -222,7 +223,7 @@
                   {{ row.item.to_date | moment('YYYY-MM-DD')  }}
                 </template>
                 <template slot="actions" scope="row">
-                  <b-btn v-show="row.item.active" variant="outline-secondary" size="sm" @click.stop="onUserModify(row.item,row.index,$event.target)">수정</b-btn>
+                  <b-btn v-show="row.item.active" variant="outline-secondary" size="sm" @click.stop="onUserModify(row.item,row.index,$event.target)">선택</b-btn>
                   <b-btn v-show="row.item.active" variant="outline-danger" size="sm" @click.stop="onUserRemove(row.item,row.index,$event.target)">삭제</b-btn>
                   <b-btn v-show="!row.item.active" variant="outline-danger" size="sm" @click.stop="onUserRemoveCancel(row.item,row.index,$event.target)">삭제취소</b-btn>
                 </template>
@@ -762,10 +763,30 @@ export default {
         this.onChecklistTypeChange(this.form.list_type)
         this.form.scoring = JSON.parse('[' + data.scoring + ']')
         this.form.memo = data.memo
+
         this.form.example1_title = data.example1_title
+        if (this.form.example1_title) {
+          this.inputOptions.input1Active = true
+          this.inputOptions.input1Title = this.form.example1_title
+        }
+
         this.form.example2_title = data.example2_title
+        if (this.form.example2_title) {
+          this.inputOptions.input2Active = true
+          this.inputOptions.input2Title = this.form.example2_title
+        }
+
         this.form.notice1_title = data.notice1_title
+        if (this.form.notice1_title) {
+          this.inputOptions.output1Active = true
+          this.inputOptions.output1Title = this.form.notice1_title
+        }
+
         this.form.notice2_title = data.notice2_title
+        if (this.form.notice2_title) {
+          this.inputOptions.output2Active = true
+          this.inputOptions.output2Title = this.form.notice2_title
+        }
       }
 
       ChecklistService.getChecklistDetails(id,

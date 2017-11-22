@@ -27,6 +27,192 @@ exports.list = (req, res) => {
   })
 }
 
+// 체크리스트 결과 조회
+exports.result = (req, res) => {
+  const {
+    id,
+    byshop = parseInt(byshop),
+    view = 'month',
+    company_id = req.decoded.company_id
+  } = req.query
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    let sql = `
+      SELECT @checklist_user_id := cu.id AS checklist_user_id
+           , s.name AS shop_name
+           , cu.shop_id
+           , u.name AS user_name
+           , cu.total_score
+           , cu.from_date
+           , cu.to_date
+           , cu.updated_dt
+           , (
+              SELECT group_concat(concat(i.title, '@', ia.answer) separator '|')
+                FROM checklist_user_item_answers AS ia
+               INNER JOIN checklist_items AS i
+                  ON ia.item_id = i.id
+               WHERE ia.checklist_user_id = @checklist_user_id
+                 AND i.item_type = 'short'
+                 AND i.active = 1
+               GROUP BY ia.list_id
+             ) AS opinions
+           , (
+              SELECT group_concat(concat(f.file_name, '@', f.access_url) separator '|')
+                FROM checklist_user_item_files AS f
+               INNER JOIN checklist_items AS i
+                  ON f.item_id = i.id
+                 AND i.active = 1
+               WHERE f.checklist_user_id = @checklist_user_id
+                 AND i.file_yn = 1
+               GROUP BY f.list_id
+             ) AS files
+           , false AS _showDetails
+        FROM checklist_users AS cu
+       INNER JOIN shops AS s
+          ON cu.shop_id = s.id
+       INNER JOIN users AS u
+          ON cu.user_id = u.id
+       WHERE cu.company_id = ? `
+
+    if (view === 'month') {
+      sql += `  AND DATE_FORMAT(NOW(), \'%Y-%m\') BETWEEN DATE_FORMAT(cu.from_date, \'%Y-%m\') AND DATE_FORMAT(cu.to_date,\'%Y-%m\') `
+    }
+
+    if (byshop == 1) {
+      sql += `  AND cu.shop_id = ? `
+    } else {
+      sql += `  AND cu.list_id = ? `
+    }
+    sql += ` ORDER BY shop_name, from_date; `
+
+    connection.query(sql, [ company_id, id ], (err, rows) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        res.sendStatus(400)
+      } else {
+        res.send({
+          success: true,
+          info: {
+            list: rows
+          }
+        })
+      }
+    })
+  })
+}
+
+// 체크리스트 상세결과 조회
+exports.resultDetail = (req, res) => {
+  const {
+    id: checklist_user_id,
+    company_id = req.decoded.company_id
+  } = req.params
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const sql = `
+      SELECT ci.title, ia.score
+           , example1_title, ia.example1_answer
+           , example2_title, ia.example2_answer
+        FROM checklist_user_item_answers AS ia
+       INNER JOIN checklist_items AS ci
+          ON ia.item_id = ci.id
+         AND ci.item_type = 'multiple'
+         AND ci.active = 1
+       INNER JOIN checklists AS c
+          ON ia.list_id = c.id
+       WHERE ia.checklist_user_id = ?
+       ORDER BY ci.turn;
+    `
+
+    connection.query(sql, [ id ], (err, rows) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        res.sendStatus(400)
+      } else {
+        res.send({
+          success: true,
+          info: {
+            list: rows
+          }
+        })
+      }
+    })
+  })
+}
+
+// 엑셀다운로드용 체크리스트 상세결과 조회
+exports.resultDetailExcel = (req, res) => {
+  const {
+    id: list_id,
+    company_id = req.decoded.company_id
+  } = req.params
+
+  const {
+    view = 'month'
+  } = req.query
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    let sql = `
+      SELECT ci.title, ia.score
+           , example1_title, ia.example1_answer
+           , example2_title, ia.example2_answer
+           , s.name AS shop_name
+           , u.name AS user_name
+           , cu.id AS checklist_user_id
+        FROM checklist_users AS cu
+       INNER JOIN shops AS s
+          ON cu.shop_id = s.id
+       INNER JOIN users AS u
+          ON cu.user_id = u.id
+       INNER JOIN checklist_user_item_answers AS ia
+          ON cu.id = ia.checklist_user_id
+       INNER JOIN checklist_items AS ci
+          ON ia.item_id = ci.id
+         AND ci.item_type = 'multiple'
+         AND ci.active = 1
+       INNER JOIN checklists AS c
+          ON ia.list_id = c.id
+       WHERE cu.list_id = ? `
+
+    if (view === 'month') {
+      sql += `  AND DATE_FORMAT(NOW(), \'%Y-%m\') BETWEEN DATE_FORMAT(cu.from_date, \'%Y-%m\') AND DATE_FORMAT(cu.to_date,\'%Y-%m\') `
+    }
+    sql += ` ORDER BY shop_name, user_name, cu.id, ci.turn; `
+
+    connection.query(sql, [ list_id ], (err, rows) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        res.sendStatus(400)
+      } else {
+        res.send({
+          success: true,
+          info: {
+            list: rows
+          }
+        })
+      }
+    })
+  })
+}
+
 // 사용자 체크리스트 조회
 exports.userList = (req, res) => {
   pool.getConnection((err, connection) => {
@@ -36,13 +222,17 @@ exports.userList = (req, res) => {
 
     const sql = `
       SELECT c.id AS list_id, c.title, c.list_type, c.scoring, c.example1_title
-           , c.example2_title, c.notice1_title, c.notice2_title, c.memo
-           , cu.id AS user_list_id, cu.shop_id, s.name AS shop_name, cu.user_id, cu.from_date, cu.to_date
+           , c.example2_title, c.notice1_title, c.notice2_title, c.memo, cu.memo AS user_memo
+           , cu.id AS checklist_user_id, cu.shop_id, s.name AS shop_name, cu.user_id, cu.from_date, cu.to_date
            , cu.updated_dt
-           , CASE WHEN cu.to_date <= NOW() THEN '종료'
+           , CASE WHEN cu.to_date < NOW() THEN '종료'
                   WHEN cu.updated_dt IS NULL THEN '진행전'
                   ELSE '진행중'
              END AS status
+           , CASE WHEN cu.to_date < NOW() THEN 'success'
+                  WHEN cu.updated_dt IS NULL THEN 'danger'
+                  ELSE NULL
+             END AS _rowVariant
         FROM checklist_users AS cu
        INNER JOIN shops AS s
           ON cu.shop_id = s.id
@@ -125,7 +315,7 @@ exports.detail = (req, res) => {
 // 사용자 체크리스트 평가항목 자료 조회
 exports.userDetail = (req, res) => {
   const {
-    id: listId,
+    id: checklist_user_id
   } = req.params
 
   pool.getConnection((err, connection) => {
@@ -143,15 +333,14 @@ exports.userDetail = (req, res) => {
           FROM checklist_items AS ci
          INNER JOIN checklist_users AS cu
             ON ci.list_id = cu.list_id
-           AND cu.user_id = ?
+           AND cu.id = ?
           LEFT JOIN checklist_user_item_answers AS ca
             ON cu.id = ca.checklist_user_id
            AND ci.id = ca.item_id
-         WHERE ci.list_id = ?
-           AND ci.active = 1
-         ORDER BY turn;
-        `
-      connection.query(sql, [ req.decoded.id, listId ], (err, rows) => {
+         WHERE ci.active = 1
+         ORDER BY turn; `
+
+      connection.query(sql, [ checklist_user_id ], (err, rows) => {
         callback(err, rows)
       })
     }
@@ -287,7 +476,8 @@ exports.create = (req, res) => {
           user.shop_id,
           user.user_id,
           user.from_date + ' ' + '00:00:00',
-          user.to_date + ' ' + '23:59:59'
+          user.to_date + ' ' + '23:59:59',
+          user.memo
         ])
 
         const sql = `
@@ -297,7 +487,8 @@ exports.create = (req, res) => {
             shop_id,
             user_id,
             from_date,
-            to_date
+            to_date,
+            memo
           )
           VALUES ?;
         `
@@ -545,6 +736,7 @@ exports.update = (req, res) => {
             user_id = ?,
             from_date = ?,
             to_date = ?,
+            memo = ?,
             active = ?
            WHERE id = ?;
         `
@@ -554,6 +746,7 @@ exports.update = (req, res) => {
           user.user_id,
           user.from_date.substring(0, 10) + ' ' + '00:00:00',
           user.to_date.substring(0, 10) + ' ' + '23:59:59',
+          user.memo,
           user.active,
           user.id
         ], (err, result) => {
@@ -632,6 +825,7 @@ exports.updateAnswer = (req, res) => {
         });
       }
 
+      // 정답 입력
       const insertAnswer = callback => {
         const sql = `
           INSERT checklist_user_item_answers (
@@ -662,6 +856,7 @@ exports.updateAnswer = (req, res) => {
         })
       }
 
+      // 파일 추가
       const insertFiles = (checklist_user_item_answer_id, callback) => {
         if (!file) {
           callback(null, checklist_user_item_answer_id)
@@ -695,6 +890,7 @@ exports.updateAnswer = (req, res) => {
         }
       }
 
+      // 파일 삭제
       const deleteFiles = (checklist_user_item_answer_id, callback) => {
         if (!file) {
           callback(null, checklist_user_item_answer_id)
@@ -710,6 +906,7 @@ exports.updateAnswer = (req, res) => {
         }
       }
 
+      // 정답 수정
       const updateAnswer = (callback) => {
         const sql = `
           UPDATE checklist_user_item_answers SET
@@ -731,6 +928,22 @@ exports.updateAnswer = (req, res) => {
         })
       }
 
+      // 종합정수 계산
+      const updateTotalScore = (checklist_user_item_answer_id, callback) => {
+        const sql = `
+          UPDATE checklist_users SET
+            total_score = (SELECT SUM(IFNULL(score, 0)) FROM checklist_user_item_answers WHERE checklist_user_id = checklist_users.id),
+            updated_dt = NOW()
+           WHERE id = ?;
+        `
+
+        connection.query(sql, [
+          checklist_user_id
+        ], (err, result) => {
+          callback(err, checklist_user_item_answer_id)
+        })
+      }
+
       let series = []
 
       if (!item_answer_id) {
@@ -742,13 +955,14 @@ exports.updateAnswer = (req, res) => {
       } else {
         series.push(updateAnswer)
 
-        console.log(file)
-
         if (file) {
           series.push(deleteFiles)
           series.push(insertFiles)
         }
       }
+
+      // 종합정수 계산
+      series.push(updateTotalScore)
 
       async.waterfall(series, (err, checklist_user_item_answer_id) => {
         connection.release()

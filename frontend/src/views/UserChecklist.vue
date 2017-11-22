@@ -115,7 +115,7 @@ export default {
     },
 
     startChecklist (item, index, button) {
-      this.$router.push({name: '체크리스트 시작', params: { id: item.list_id }})
+      this.$router.push({name: '체크리스트 시작', params: { id: item.checklist_user_id }})
     },
 
     ...mapActions([

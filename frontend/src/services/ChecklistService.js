@@ -11,8 +11,48 @@ export default {
       .catch(error => errorCb(error))
   },
 
+  getChecklistResult ({ id, byshop, view }, cb, errorCb) {
+    axios.get(`/api/checklist/result`, {
+      params: {
+        id,
+        byshop,
+        view
+      }
+    })
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info.list)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  getChecklistResultDetails (id, cb, errorCb) {
+    axios.get(`/api/checklist/result-detail/${id}`)
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info.list)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  getChecklistResultDetailsExcel ({ id, view }, cb, errorCb) {
+    axios.get(`/api/checklist/result-detail-excel/${id}`, {
+      params: {
+        view
+      }
+    })
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info.list)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
   getChecklistDetails (id, cb, errorCb) {
-    return axios.get(`/api/checklist/${id}`)
+    axios.get(`/api/checklist/${id}`)
       .then(response => {
         if (response.status === 200) {
           cb(response.data.info)

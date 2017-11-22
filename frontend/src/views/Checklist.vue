@@ -154,6 +154,10 @@ export default {
       this.currentPage = 1
     },
 
+    details (item, index, button) {
+      Vue.router.push({name: '체크리스트 결과', params: { id: item.id, checklist: item }})
+    },
+
     modify (item, index, button) {
       Vue.router.push({name: '체크리스트 수정', params: { id: item.id }})
     },

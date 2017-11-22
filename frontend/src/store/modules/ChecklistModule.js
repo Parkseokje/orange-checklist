@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import {
   SET_CHECKLISTS,
+  SET_CHECKLIST_RESULT,
+  SET_CHECKLIST_RESULT_DETAILS,
+  SET_CHECKLIST_RESULT_DETAILS_EXCEL,
   SET_USER_CHECKLIST,
   SET_USER_CHECKLIST_DETAILS,
   UPDATE_CHECKLIST,
@@ -13,6 +16,8 @@ import Checklist from '../../services/ChecklistService'
 const checklistModule = {
   state: {
     checklists: [],
+    checklist_results: [],
+    checklist_results_excel: [],
     user_checklist: [],
     user_checklist_details: []
   },
@@ -20,6 +25,20 @@ const checklistModule = {
   getters: {
     getAllChecklists: state => {
       return state.checklists
+    },
+
+    getAllChecklistResult: state => {
+      return state.checklist_results
+    },
+
+    getAllChecklistResultExcel: state => {
+      return state.checklist_results_excel
+    },
+
+    getAllChecklistResultExcelByChecklistUserId: state => {
+      return id => state.checklist_results_excel.filter(item => {
+        return item.checklist_user_id === id
+      })
     },
 
     getAllUserChecklist: state => {
@@ -38,7 +57,7 @@ const checklistModule = {
 
     fiterUserChecklistById: state => {
       return id => state.user_checklist.filter(checklist => {
-        return checklist.list_id === id
+        return checklist.checklist_user_id === id
       })
     }
   },
@@ -47,6 +66,27 @@ const checklistModule = {
     fetchCheckList ({ commit }) {
       Checklist.getChecklists(
         (data) => commit(SET_CHECKLISTS, data),
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    fetchCheckListResult ({ commit }, { id, byshop = 0, view = 'month' }) {
+      Checklist.getChecklistResult({ id, byshop, view },
+        (data) => commit(SET_CHECKLIST_RESULT, data),
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    fetchCheckListResultDetails ({ commit }, id) {
+      Checklist.getChecklistResultDetails(id,
+        (data) => commit(SET_CHECKLIST_RESULT_DETAILS, { id, data }),
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    fetchCheckListResultDetailsExcel ({ commit }, { id, view = 'month' }) {
+      Checklist.getChecklistResultDetailsExcel({ id, view },
+        (data) => commit(SET_CHECKLIST_RESULT_DETAILS_EXCEL, data),
         (err) => commit(API_FAILURE, err)
       )
     },
@@ -106,6 +146,19 @@ const checklistModule = {
       if (Vue.router.history.current.path !== '/checklist') {
         Vue.router.push('/checklist')
       }
+    },
+
+    [SET_CHECKLIST_RESULT] (state, result) {
+      state.checklist_results = result
+    },
+
+    [SET_CHECKLIST_RESULT_DETAILS] (state, { id, data }) {
+      const foundIndex = state.checklist_results.findIndex(x => x.checklist_user_id === id)
+      Vue.set(state.checklist_results[foundIndex], 'details', data)
+    },
+
+    [SET_CHECKLIST_RESULT_DETAILS_EXCEL] (state, data) {
+      state.checklist_results_excel = data
     },
 
     [SET_USER_CHECKLIST] (state, checklists) {
