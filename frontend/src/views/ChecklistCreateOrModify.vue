@@ -560,8 +560,12 @@ export default {
 
     onItemRemove (item, index) {
       // if (!confirm('항목을 삭제하시겠습니까?')) return false
-      // this.form.items.splice(index, 1)
-      item.active = 0
+
+      if (!item.id) {
+        this.form.items.splice(index, 1)
+      } else {
+        item.active = 0
+      }
     },
 
     onItemRemoveCancel (item, index) {
@@ -671,8 +675,10 @@ export default {
       }
     },
 
-    onInputItemTitleKeyEnter () {
-      this.addNewItem()
+    onInputItemTitleKeyEnter (evt) {
+      if (this.inputOptions.itemTitle) {
+        this.addNewItem()
+      }
     }
   },
 

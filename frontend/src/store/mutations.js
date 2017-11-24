@@ -4,7 +4,7 @@ import {
 import router from '../router'
 
 export default {
-  [API_FAILURE] (state, message) {
-    router.push('/error')
+  [API_FAILURE] (state, error) {
+    router.push({name: 'error', params: { response: error.response }})
   }
 }

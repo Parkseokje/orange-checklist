@@ -94,8 +94,10 @@ export default new Router({
       ]
     },
     {
+      name: 'error',
       path: '/error',
-      component: Page500
+      component: Page500,
+      props: true
     },
     {
       path: '*',

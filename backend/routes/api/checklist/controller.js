@@ -1,6 +1,13 @@
 const pool = require('../../../database')
 const async = require('async')
 
+const fs = require('fs')
+const join = require('path').join
+const aws = require('aws-sdk')
+const s3Client = new aws.S3({ apiVersion: '2012-10-17', region: 'ap-northeast-2' })
+// const AWSConfig = require('../../../aws.config.json')
+// const s3Zip = require('s3-zip')
+
 // 체크리스트 목록 조회
 exports.list = (req, res) => {
   pool.getConnection((err, connection) => {
@@ -172,6 +179,7 @@ exports.resultDetailExcel = (req, res) => {
       SELECT ci.title, ia.score
            , example1_title, ia.example1_answer
            , example2_title, ia.example2_answer
+           , notice1, notice2
            , s.name AS shop_name
            , u.name AS user_name
            , cu.id AS checklist_user_id
@@ -240,7 +248,7 @@ exports.userList = (req, res) => {
           ON cu.list_id = c.id
        WHERE cu.user_id = ?
          AND cu.active = 1
-       ORDER BY cu.from_date DESC;
+       ORDER BY cu.updated_dt DESC;
       `
 
     connection.query(sql, [ req.decoded.id ], (err, rows) => {

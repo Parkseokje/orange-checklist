@@ -8,7 +8,7 @@ export default {
           cb(response.data.info.list)
         }
       })
-      .catch(error => errorCb(error))
+      .catch(error => errorCb({error}))
   },
 
   getShopById (id) {

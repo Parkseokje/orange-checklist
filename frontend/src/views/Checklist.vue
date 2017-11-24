@@ -2,38 +2,39 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <b-card header="체크리스트 목록">
-        <b-btn variant="primary" to="/checklist/create">체크리스트 등록</b-btn>
-        <b-btn v-b-toggle.collapseCategory :variant="collapseCategoryVariant" :pressed.sync="collapseCategoryPressed">{{ collapseCategoryPressed ? '분류등록 취소' : '분류등록' }}</b-btn>
+        <div class="header-group" v-if="isAdmin">
+          <b-btn variant="primary" to="/checklist/create">체크리스트 등록</b-btn>
+          <b-btn v-b-toggle.collapseCategory :variant="collapseCategoryVariant" :pressed.sync="collapseCategoryPressed">{{ collapseCategoryPressed ? '분류등록 취소' : '분류등록' }}</b-btn>
 
-        <b-card border-variant="light" v-show="collapseCategoryPressed">
-          <!-- 분류 등록 -->
-          <b-collapse id="collapseCategory" class="mt-2">
-            <b-tabs pills id="collapseCategory" v-model="tabIndex">
-              <b-tab :title="categoryTypes.big.value" active>
-                <category :category-type="categoryTypes.big"
-                  @show-children="moveToMiddleCategory"></category>
-              </b-tab>
-              <b-tab :title="categoryTypes.middle.value">
-                <category :category-type="categoryTypes.middle"
-                  @show-children="moveToSmallCategory"
-                  @clear-selected="dropdown1PassedVal = null"
-                  :dropdown1-passed-val="dropdown1PassedVal"
-                >
-                </category>
-              </b-tab>
-              <b-tab :title="categoryTypes.small.value">
-                <category :category-type="categoryTypes.small"
-                  :dropdown1-passed-val="dropdown1PassedVal"
-                  :dropdown2-passed-val="dropdown2PassedVal"
-                  @clear-selected="dropdown1PassedVa2 = null"
-                >
-                </category>
-              </b-tab>
-            </b-tabs>
-          </b-collapse>
-        </b-card>
-
-        <br><br>
+          <b-card border-variant="light" v-show="collapseCategoryPressed">
+            <!-- 분류 등록 -->
+            <b-collapse id="collapseCategory" class="mt-2">
+              <b-tabs pills id="collapseCategory" v-model="tabIndex">
+                <b-tab :title="categoryTypes.big.value" active>
+                  <category :category-type="categoryTypes.big"
+                    @show-children="moveToMiddleCategory"></category>
+                </b-tab>
+                <b-tab :title="categoryTypes.middle.value">
+                  <category :category-type="categoryTypes.middle"
+                    @show-children="moveToSmallCategory"
+                    @clear-selected="dropdown1PassedVal = null"
+                    :dropdown1-passed-val="dropdown1PassedVal"
+                  >
+                  </category>
+                </b-tab>
+                <b-tab :title="categoryTypes.small.value">
+                  <category :category-type="categoryTypes.small"
+                    :dropdown1-passed-val="dropdown1PassedVal"
+                    :dropdown2-passed-val="dropdown2PassedVal"
+                    @clear-selected="dropdown1PassedVa2 = null"
+                  >
+                  </category>
+                </b-tab>
+              </b-tabs>
+            </b-collapse>
+          </b-card>
+          <br><br>
+        </div>
         <!-- 테이블 toolbox -->
         <div class="row">
           <div class="col-md-3">
@@ -70,8 +71,8 @@
           </template>
           <template slot="actions" scope="row">
             <b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">결과보기</b-btn>
-            <b-btn variant="outline-secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
-            <b-btn variant="outline-danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
+            <b-btn variant="outline-secondary" size="sm" v-if="isAdmin"@click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
+            <b-btn variant="outline-danger" size="sm" v-if="isAdmin" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
           </template>
         </b-table>
       </b-card>
@@ -185,11 +186,16 @@ export default {
       allUsers: 'getAllUsers',
       modalVariants: 'modalVariants',
       checkListTypeByValue: 'checkListTypeByValue',
-      messages: 'messages'
+      messages: 'messages',
+      profile: 'getProfile'
     }),
 
     collapseCategoryVariant () {
       return this.collapseCategoryPressed ? 'danger' : 'primary'
+    },
+
+    isAdmin () {
+      return this.profile.role === 'admin'
     }
   }
 }

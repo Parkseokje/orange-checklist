@@ -3,27 +3,32 @@ export default {
     {
       name: '대시보드',
       url: '/dashboard',
-      icon: 'icon-speedometer'
+      icon: 'icon-speedometer',
+      roles: ['admin']
     },
     {
       name: '점포관리',
       url: '/shop',
-      icon: 'icon-puzzle'
+      icon: 'icon-puzzle',
+      roles: ['admin']
     },
     {
       name: '사용자관리',
       url: '/user',
-      icon: 'icon-puzzle'
+      icon: 'icon-puzzle',
+      roles: ['admin']
     },
     {
       name: '체크리스트 관리',
       url: '/checklist',
-      icon: 'icon-puzzle'
+      icon: 'icon-puzzle',
+      roles: ['admin', 'supervisor', 'agent']
     },
     {
       name: '체크리스트 진행',
       url: '/user-checklist',
-      icon: 'icon-puzzle'
+      icon: 'icon-puzzle',
+      roles: 'all'
     }
   ]
 }

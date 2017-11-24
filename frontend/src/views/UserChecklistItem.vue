@@ -19,6 +19,7 @@
           button-variant="outline-dark"
           v-model="form.score"
           :options="info.scoring"
+          @change="onScoreChange"
         />
       </b-col>
     </b-row>
@@ -195,6 +196,12 @@ export default {
       // this.form.file.push(data)
       this.fileInputPressed = false
       this.saveCard()
+    },
+
+    onScoreChange (value) {
+      setTimeout(() => {
+        this.saveCard()
+      }, 1000)
     },
 
     ...mapActions([

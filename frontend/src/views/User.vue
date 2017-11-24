@@ -40,6 +40,7 @@
               <template slot="actions" scope="row">
                 <!--<b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>-->
                 <b-btn variant="outline-secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
+                <b-btn variant="outline-warning" size="sm" @click.stop="initPassword(row.item,row.index,$event.target)">초기화</b-btn>
                 <b-btn variant="outline-danger" size="sm" @click.stop="remove(row.item,row.index,$event.target)">삭제</b-btn>
               </template>
             </b-table>
@@ -232,17 +233,33 @@ export default {
       return Validator.value(value).required('필수입력')
     },
     'form.email' (value) {
-      return Validator.value(value).email('잘못된 형식입니다.')
+      return Validator.value(value).required('필수입력').email('잘못된 형식입니다.')
     },
     'form.phone' (value) {
       return Validator.value(value).required('필수입력').digit('숫자만 입력').length(11, '11자리 이상')
     },
     'form.password' (value) {
-      return Validator.value(value).required('필수입력').minLength(6, '6자리 이상')
+      if (this.form.id) {
+        return Validator.custom(() => {
+          if (!Validator.isEmpty(value)) {
+            return '암호를 수정할 수 없습니다.'
+          }
+        })
+      } else {
+        return Validator.value(value).required('필수입력').minLength(6, '6자리 이상')
+      }
     },
     'form.password_confirm, form.password' (repeat, password) {
-      if (this.validation.isTouched('form.password_confirm')) {
-        return Validator.value(repeat).required('필수입력').match(password, '암호 불일치')
+      if (this.form.id) {
+        return Validator.custom(() => {
+          if (!Validator.isEmpty(repeat) || !Validator.isEmpty(password)) {
+            return '암호를 수정할 수 없습니다.'
+          }
+        })
+      } else {
+        if (this.validation.isTouched('form.password_confirm')) {
+          return Validator.value(repeat).required('필수입력').match(password, '암호 불일치')
+        }
       }
     },
     'form.memo' (value) {
@@ -256,7 +273,8 @@ export default {
       'fetchShopList',
       'createUser',
       'updateUser',
-      'deleteUser'
+      'deleteUser',
+      'requestPasswordInit'
     ]),
 
     details (item, index, button) {
@@ -345,6 +363,12 @@ export default {
     onFiltered (filteredItems) {
       this.totalRows = filteredItems.length
       this.currentPage = 1
+    },
+
+    initPassword (item, index, button) {
+      if (!confirm('비밀번호를 초기화 하시겠습니까?')) return false
+
+      this.requestPasswordInit(item.id)
     }
   },
 

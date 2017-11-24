@@ -45,17 +45,24 @@ const userModule = {
       )
     },
 
-    updateUser ({ commit, dispatch }, user) {
+    updateUser ({ commit }, user) {
       User.updateUser(user,
         (data) => commit(UPDATE_USER, user),
         (err) => commit(API_FAILURE, err)
       )
     },
 
-    deleteUser ({ dispatch, commit }, id) {
+    deleteUser ({ commit }, id) {
       User.deleteUserById(id,
         (data) => commit(DELETE_USER, id),
         (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    requestPasswordInit ({ commit }, id) {
+      User.initPassword(id,
+        data => true,
+        err => commit(API_FAILURE, err)
       )
     }
   },

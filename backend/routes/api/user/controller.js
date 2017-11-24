@@ -7,7 +7,18 @@ exports.list = (req, res) => {
       console.log(error)
     };
 
-    const sql = 'SELECT * FROM `users` WHERE `company_id` = ? AND `active` = 1; '
+    const sql = `
+      SELECT id
+           , company_id
+           , role
+           , name
+           , email
+           , phone
+           , memo
+        FROM users
+       WHERE company_id = ?
+         AND active = 1;
+    `
     connection.query(sql, [ req.decoded.company_id ], (err, rows) => {
       connection.release()
 
@@ -106,6 +117,40 @@ exports.update = (req, res) => {
     })
   })
 }
+
+exports.initPassword = (req, res) => {
+  const secret = req.app.get('pwd-secret')
+  const { id: user_id } = req.body
+
+  const encryptedPassword =
+    crypto.createHmac('sha1', secret)
+      .update('111111')
+      .digest('base64')
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const sql =
+      'UPDATE `users` SET password = ? ' +
+      ' WHERE id = ?; '
+
+    connection.query(sql, [ encryptedPassword, user_id ], (err, rows) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        res.sendStatus(400)
+      } else {
+        res.send({
+          success: true
+        })
+      }
+    })
+  })
+}
+
 
 exports.delete = (req, res) => {
   const {

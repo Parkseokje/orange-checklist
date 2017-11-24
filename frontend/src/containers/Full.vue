@@ -2,7 +2,7 @@
   <div class="app">
     <AppHeader/>
     <div class="app-body">
-      <Sidebar :navItems="nav"/>
+      <Sidebar :navItems="navItems"/>
       <main class="main">
         <breadcrumb :list="list"/>
         <div class="container-fluid">
@@ -47,7 +47,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      spinner: 'spinner'
+      spinner: 'spinner',
+      profile: 'getProfile'
     }),
 
     name () {
@@ -56,6 +57,22 @@ export default {
 
     list () {
       return this.$route.matched
+    },
+
+    navItems () {
+      let result = nav.items.filter(obj => {
+        if (obj.roles === 'all') {
+          return obj
+        } else {
+          let index = obj.roles.findIndex(role => role === this.profile.role)
+
+          if (index > -1) {
+            return obj
+          }
+        }
+      })
+
+      return result
     }
   },
 

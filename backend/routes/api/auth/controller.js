@@ -22,7 +22,7 @@ exports.signin = (req, res) => {
   const pwdSecret = req.app.get('pwd-secret')
 
   const encryptedPassword =
-    crypto.createHmac('sha256', pwdSecret)
+    crypto.createHmac('sha1', pwdSecret)
       .update(password)
       .digest('base64')
 

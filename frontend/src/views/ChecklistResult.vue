@@ -16,6 +16,9 @@
         :name= "checklist ? checklist.title : '체크리스트결과'">
         <i class="fa fa-download"></i>  엑셀
       </download-excel>
+      <b-btn variant="outline-primary" size="sm" @click="downloadImages">
+        <i class="fa fa-download"></i>  이미지
+      </b-btn>
       <br><br>
       <!-- 테이블 toolbox -->
       <div class="row">
@@ -123,7 +126,10 @@
                 <ul class="list-unstyled">
                   <li class="news-item" :key="item.checklist_user_id" v-for="item in excelDataFiltered(row.item.checklist_user_id)">
                     <span class="score">{{ item.score }}점</span>
-                    <span class="title">{{ item.title }}</span><br>
+                    <span class="title">{{ item.title }}
+                      <b-badge v-if="item.notice1" variant="dark" v-b-tooltip.hover.html="returnHtml(item.notice1)">{{checklist.notice1_title}}</b-badge>
+                      <b-badge v-if="item.notice2" variant="danger" v-b-tooltip.hover.html="returnHtml(item.notice2)">{{checklist.notice2_title}}</b-badge>
+                    </span><br>
                     <span class="meta" v-if="item.example1_title || item.example2_title">
                       <span v-if="item.example1_title">
                         <b>{{item.example1_title}}</b>: {{item.example1_answer}}
@@ -242,6 +248,9 @@ export default {
   },
 
   methods: {
+    returnHtml (value) {
+      if (value) return value
+    },
     onFiltered (filteredItems) {
       this.totalRows = filteredItems.length
       this.currentPage = 1
@@ -253,6 +262,22 @@ export default {
     },
 
     download (item, index, button) {
+    },
+
+    downloadImages () {
+      // lambda.getImagesToZipFile([])
+      //   .then(data => {
+      //     console.log('image download:', data)
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
+
+      // Vue.axios.get('/api/checklist/download-images')
+      //   .then(res => {
+      //     console.log(res)
+      //   })
+      //   .catch(err => console.log(err))
     },
 
     convertOpinionsToArray (opinions) {
@@ -370,6 +395,8 @@ export default {
             item_title: obj.title,
             item_score: obj.score,
             item_example_answers: exampleAnswers
+            // notice1: obj.notice1,
+            // notice2: obj.notice2
           })
         })
       }

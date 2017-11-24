@@ -21,16 +21,19 @@ import moment from 'moment'
 import lambdaConfig from './lambda.config'
 
 axios.interceptors.request.use(config => {
-  if (config.url !== lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT) {
+  if (config.url !== (lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT || lambdaConfig.AWS_LAMBDA_DOWNLOAD_ZIP_ENDPOINT)) {
     config.headers.common['X-access-token'] = localStorage.getItem('token')
-    store.dispatch('startLoader')
+
+    if (config.url !== ('/api/checklist/answer')) {
+      store.dispatch('startLoader')
+    }
   }
 
   return config
 }, error => {
-  if (error.url !== lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT) {
-    store.dispatch('endLoader')
-  }
+  // if (error.url !== (lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT || lambdaConfig.AWS_LAMBDA_DOWNLOAD_ZIP_ENDPOINT)) {
+  store.dispatch('endLoader')
+  // }
 
   return Promise.reject(error)
 })
