@@ -10,6 +10,7 @@ router.get('/result-detail-excel/:id', controller.resultDetailExcel)
 router.get('/:id', controller.detail)
 router.post('', controller.create)
 router.put('', controller.update)
+router.get('/zip-images/:id', controller.zipImages)
 router.put('/answer', controller.updateAnswer)
 router.delete('/:id', controller.delete)
 

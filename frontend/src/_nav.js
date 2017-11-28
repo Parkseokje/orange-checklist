@@ -29,6 +29,18 @@ export default {
       url: '/user-checklist',
       icon: 'icon-puzzle',
       roles: 'all'
+    },
+    {
+      name: '게시판 관리',
+      url: '/board',
+      icon: 'icon-puzzle',
+      roles: ['admin']
+    },
+    {
+      name: '나의 게시판',
+      url: '/user-board',
+      icon: 'icon-puzzle',
+      roles: 'all'
     }
   ]
 }

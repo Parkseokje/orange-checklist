@@ -1,176 +1,186 @@
 <template>
-  <div class="animated fadeIn">
-    <b-card :header="checklist ? checklist.title : ''">
-      <!-- <b-btn v-if="isShopView" @click="onViewResult(checklist.id)" variant="primary" size="sm">전체보기</b-btn> -->
-      <b-form-radio-group v-model="viewSelected"
-        buttons button-variant="outline-primary" size="sm"
-        @change="onViewChange"
-        :options="viewOptions">
-      </b-form-radio-group>
-      <download-excel
-        v-if="excelDataAll"
-        class="btn btn-outline-primary btn-sm"
-        :data= "excelDataAll"
-        :fields="excelFields"
-        :meta="excelMeta"
-        :name= "checklist ? checklist.title : '체크리스트결과'">
-        <i class="fa fa-download"></i>  엑셀
-      </download-excel>
-      <b-btn variant="outline-primary" size="sm" @click="downloadImages">
-        <i class="fa fa-download"></i>  이미지
-      </b-btn>
-      <br><br>
-      <!-- 테이블 toolbox -->
-      <div class="row">
-        <div class="col-md-3">
-          <b-form-group horizontal label="페이지당 줄수" :label-cols="6">
-            <b-form-select :options="pageOptions" v-model="perPage" />
-          </b-form-group>
+  <div class="wrapper">
+    <div class="animated fadeIn">
+      <b-card :header="checklist ? checklist.title : ''">
+        <!-- <b-btn v-if="isShopView" @click="onViewResult(checklist.id)" variant="primary" size="sm">전체보기</b-btn> -->
+        <b-form-radio-group v-model="viewSelected"
+          buttons button-variant="outline-primary" size="sm"
+          @change="onViewChange"
+          :options="viewOptions">
+        </b-form-radio-group>
+        <download-excel
+          v-if="excelDataAll"
+          class="btn btn-outline-primary btn-sm"
+          :data= "excelDataAll"
+          :fields="excelFields"
+          :meta="excelMeta"
+          :name= "checklist ? checklist.title : '체크리스트결과'">
+          <i class="fa fa-download"></i>  엑셀
+        </download-excel>
+        <b-btn variant="outline-primary" size="sm" @click="downloadImages">
+          <i class="fa fa-download"></i>  이미지
+        </b-btn>
+        <br><br>
+        <!-- 테이블 toolbox -->
+        <div class="row">
+          <div class="col-md-3">
+            <b-form-group horizontal label="페이지당 줄수" :label-cols="6">
+              <b-form-select :options="pageOptions" v-model="perPage" />
+            </b-form-group>
+          </div>
+          <div class="col-md-3">
+            <b-form-group horizontal label="필터" :label-cols="3">
+              <b-input-group>
+                <b-form-input v-model="filter" placeholder="검색어 입력" />
+                <b-input-group-button slot="right" v-if="filter">
+                  <b-btn @click="filter = null" variant="secondary"><i class="fa fa-remove"></i></b-btn>
+                </b-input-group-button>
+              </b-input-group>
+            </b-form-group>
+          </div>
+          <div class="col-md-2">
+            <b-button :disabled="!sortBy" @click="sortBy = null">기본정렬</b-button>
+          </div>
+          <div class="col-md-4">
+            <b-pagination align="right" :total-rows="totalRows" :per-page="perPage" v-model="currentPage" />
+          </div>
         </div>
-        <div class="col-md-3">
-          <b-form-group horizontal label="필터" :label-cols="3">
-            <b-input-group>
-              <b-form-input v-model="filter" placeholder="검색어 입력" />
-              <b-input-group-button slot="right" v-if="filter">
-                <b-btn @click="filter = null" variant="secondary"><i class="fa fa-remove"></i></b-btn>
-              </b-input-group-button>
-            </b-input-group>
-          </b-form-group>
-        </div>
-        <div class="col-md-2">
-          <b-button :disabled="!sortBy" @click="sortBy = null">기본정렬</b-button>
-        </div>
-        <div class="col-md-4">
-          <b-pagination align="right" :total-rows="totalRows" :per-page="perPage" v-model="currentPage" />
-        </div>
-      </div>
-      <!-- 테이블 -->
-      <b-table striped hover show-empty responsive
-        :empty-text="messages.emptyText"
-        :items="items"
-        :fields="fields"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :filter="filter"
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        @filtered="onFiltered"
-      >
-        <template slot="from_date" scope="row">
-          {{ row.item.from_date | moment('YYYY-MM-DD')  }}
-        </template>
-        <template slot="to_date" scope="row">
-          {{ row.item.to_date | moment('YYYY-MM-DD')  }}
-        </template>
-        <template slot="shop_name" scope="row">
-          <b-link @click.prevent="onViewShopResult(row.item.shop_name)"
-            v-b-tooltip.hover title="이 점포의 결과만 보시려면 클릭하세요."
-          >{{ row.item.shop_name }}</b-link>
-        </template>
-        <template slot="row-details" scope="row">
-          <b-card class="animated fadeIn">
-            <b-row class="mb-2" :key="item.key" v-for="item in convertOpinionsToArray(row.item.opinions)">
-              <b-col sm="2" class="text-sm-left"><b>{{item.key}}:</b></b-col>
-              <b-col><p>{{item.value}}</p></b-col>
-            </b-row>
-            <b-row v-if="row.item.files">
-              <b-col sm="2" class="text-sm-left pb-2"><b>사진:</b></b-col>
-              <b-col>
-                <!-- <b-container fluid class="p-4"> -->
-                  <b-row>
-                    <b-col lg="2" class="pb-1" :key="item.key" v-for="item in convertFilesToArray(row.item.files)">
-                      <a :href="item.value" target="_blank">
-                        <b-img thumbnail rounded :src="item.value" alt="Thumbnail" />
-                      </a>
-                    </b-col>
-                  </b-row>
-                <!-- </b-container> -->
-              </b-col>
-            </b-row>
-            <b-row class="pb-2">
-              <b-col>
-                <!-- <b-btn variant="outline-info" size="sm" @click.stop="detail(row.item,row.index,$event.target)"><i class="icon-magnifier"></i> 상세보기</b-btn> -->
-                <!-- <download-excel v-if="row.item.details ? row.item.details.length : 0 > 0"
-                  class="btn btn-outline-primary btn-sm"
-                  :data= "getExcelData(row.item)"
-                  :fields="excelFields"
-                  :meta="excelMeta"
-                  name= "data.xls">
-                  <i class="fa fa-download"></i>  엑셀
-                </download-excel> -->
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <!-- <b-card no-body> -->
-                <!-- <b-table show-empty outlined bordered responsive class="bg-light"
-                  :empty-text="messages.emptyText"
-                  :items="excelDataFiltered(row.item.checklist_user_id)"
-                  :fields="detailFields"
-                >
-                  <template slot="example_answers" scope="row">
-                    <div v-if="row.item.example1_title || row.item.example2_title ">
-                      <span v-if="row.item.example1_title">
-                        <b>{{row.item.example1_title}}</b>: {{row.item.example1_answer}}
+        <!-- 테이블 -->
+        <b-table striped hover show-empty responsive
+          :empty-text="messages.emptyText"
+          :items="items"
+          :fields="fields"
+          :current-page="currentPage"
+          :per-page="perPage"
+          :filter="filter"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          @filtered="onFiltered"
+        >
+          <template slot="from_date" scope="row">
+            {{ row.item.from_date | moment('YYYY-MM-DD')  }}
+          </template>
+          <template slot="to_date" scope="row">
+            {{ row.item.to_date | moment('YYYY-MM-DD')  }}
+          </template>
+          <template slot="shop_name" scope="row">
+            <b-link @click.prevent="onViewShopResult(row.item.shop_name)"
+              v-b-tooltip.hover title="이 점포의 결과만 보시려면 클릭하세요."
+            >{{ row.item.shop_name }}</b-link>
+          </template>
+          <template slot="row-details" scope="row">
+            <b-card class="animated fadeIn">
+              <b-row class="mb-2" :key="item.key" v-for="item in convertOpinionsToArray(row.item.opinions)">
+                <b-col sm="2" class="text-sm-left"><b>{{item.key}}:</b></b-col>
+                <b-col><p>{{item.value}}</p></b-col>
+              </b-row>
+              <b-row v-if="row.item.files">
+                <b-col sm="2" class="text-sm-left pb-2"><b>사진:</b></b-col>
+                <b-col>
+                  <!-- <b-container fluid class="p-4"> -->
+                    <b-row>
+                      <b-col lg="2" class="pb-1" :key="item.key" v-for="item in convertFilesToArray(row.item.files)">
+                        <a :href="item.value" target="_blank">
+                          <b-img thumbnail rounded :src="item.value" alt="Thumbnail" />
+                        </a>
+                      </b-col>
+                    </b-row>
+                  <!-- </b-container> -->
+                </b-col>
+              </b-row>
+              <b-row class="pb-2">
+                <b-col>
+                  <!-- <b-btn variant="outline-info" size="sm" @click.stop="detail(row.item,row.index,$event.target)"><i class="icon-magnifier"></i> 상세보기</b-btn> -->
+                  <!-- <download-excel v-if="row.item.details ? row.item.details.length : 0 > 0"
+                    class="btn btn-outline-primary btn-sm"
+                    :data= "getExcelData(row.item)"
+                    :fields="excelFields"
+                    :meta="excelMeta"
+                    name= "data.xls">
+                    <i class="fa fa-download"></i>  엑셀
+                  </download-excel> -->
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <!-- <b-card no-body> -->
+                  <!-- <b-table show-empty outlined bordered responsive class="bg-light"
+                    :empty-text="messages.emptyText"
+                    :items="excelDataFiltered(row.item.checklist_user_id)"
+                    :fields="detailFields"
+                  >
+                    <template slot="example_answers" scope="row">
+                      <div v-if="row.item.example1_title || row.item.example2_title ">
+                        <span v-if="row.item.example1_title">
+                          <b>{{row.item.example1_title}}</b>: {{row.item.example1_answer}}
+                        </span>
+                        <span v-if="row.item.example2_title">
+                          <br><b>{{row.item.example2_title}}</b>: {{row.item.example2_answer}}
+                        </span>
+                      </div>
+                      <div v-else>
+                        없음
+                      </div>
+                    </template>
+                  </b-table> -->
+                  <!-- </b-card> -->
+                  <ul class="list-unstyled">
+                    <li class="news-item" :key="item.checklist_user_id" v-for="item in excelDataFiltered(row.item.checklist_user_id)">
+                      <span class="score">{{ item.score }}점</span>
+                      <span class="title">{{ item.title }}
+                        <b-link><b-badge v-if="item.notice1" variant="dark" @click="showNotice(checklist.notice1_title, item.notice1)">{{checklist.notice1_title}}</b-badge></b-link>
+                        <b-link><b-badge v-if="item.notice2" variant="danger" @click="showNotice(checklist.notice2_title, item.notice2)">{{checklist.notice2_title}}</b-badge></b-link>
+                      </span><br>
+                      <span class="meta" v-if="item.example1_title || item.example2_title">
+                        <span v-if="item.example1_title">
+                          <b>{{item.example1_title}}</b>: {{item.example1_answer}}
+                        </span>
+                        <span v-if="item.example2_title">
+                          <br><b>{{item.example2_title}}</b>: {{item.example2_answer}}
+                        </span>
                       </span>
-                      <span v-if="row.item.example2_title">
-                        <br><b>{{row.item.example2_title}}</b>: {{row.item.example2_answer}}
-                      </span>
-                    </div>
-                    <div v-else>
-                      없음
-                    </div>
-                  </template>
-                </b-table> -->
-                <!-- </b-card> -->
-                <ul class="list-unstyled">
-                  <li class="news-item" :key="item.checklist_user_id" v-for="item in excelDataFiltered(row.item.checklist_user_id)">
-                    <span class="score">{{ item.score }}점</span>
-                    <span class="title">{{ item.title }}
-                      <b-badge v-if="item.notice1" variant="dark" v-b-tooltip.hover.html="returnHtml(item.notice1)">{{checklist.notice1_title}}</b-badge>
-                      <b-badge v-if="item.notice2" variant="danger" v-b-tooltip.hover.html="returnHtml(item.notice2)">{{checklist.notice2_title}}</b-badge>
-                    </span><br>
-                    <span class="meta" v-if="item.example1_title || item.example2_title">
-                      <span v-if="item.example1_title">
-                        <b>{{item.example1_title}}</b>: {{item.example1_answer}}
-                      </span>
-                      <span v-if="item.example2_title">
-                        <br><b>{{item.example2_title}}</b>: {{item.example2_answer}}
-                      </span>
-                    </span>
-                  </li>
-                </ul>
-              </b-col>
-            </b-row>
-          </b-card>
-        </template>
-        <template slot="updated_dt" scope="row">
-          <span v-if="row.item.updated_dt">
-            {{ row.item.updated_dt | moment('YYYY-MM-DD HH:mm')  }}
-          </span>
-        </template>
-        <template slot="show_details" scope="row">
-          <b-form-checkbox buttons v-model="row.item._showDetails"></b-form-checkbox>
-        </template>
-        <!-- <template slot="actions" scope="row">
-          <download-excel
-            class="btn btn-outline-primary btn-sm"
-            :data= "getExcelData(row.item)"
-            :fields="excelFields"
-            :meta="excelMeta"
-            name= "data.xls">
-            다운로드
-          </download-excel>
-          <b-btn variant="outline-info" size="sm" @click.stop="download(row.item,row.index,$event.target)">다운로드</b-btn>
-        </template> -->
-      </b-table>
-    </b-card>
+                    </li>
+                  </ul>
+                </b-col>
+              </b-row>
+            </b-card>
+          </template>
+          <template slot="updated_dt" scope="row">
+            <span v-if="row.item.updated_dt">
+              {{ row.item.updated_dt | moment('YYYY-MM-DD HH:mm')  }}
+            </span>
+          </template>
+          <template slot="show_details" scope="row">
+            <b-form-checkbox buttons v-model="row.item._showDetails"></b-form-checkbox>
+          </template>
+          <!-- <template slot="actions" scope="row">
+            <download-excel
+              class="btn btn-outline-primary btn-sm"
+              :data= "getExcelData(row.item)"
+              :fields="excelFields"
+              :meta="excelMeta"
+              name= "data.xls">
+              다운로드
+            </download-excel>
+            <b-btn variant="outline-info" size="sm" @click.stop="download(row.item,row.index,$event.target)">다운로드</b-btn>
+          </template> -->
+        </b-table>
+      </b-card>
+    </div>
+
+    <!-- 점포 정보 보기 모달 -->
+    <b-modal id="modalShowInfo" ok-only ok-title="확인">
+      <h4 slot="modal-header">{{ modalDetails.title }}</h4>
+      <b-alert show v-html="modalDetails.content"></b-alert>
+    </b-modal>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import downloadExcel from 'vue-json-excel'
+import download from 'downloadjs'
 
 const excelFields = {
   shop_name: '점포',
@@ -215,6 +225,7 @@ export default {
 
   data () {
     return {
+      modalDetails: { title: null, content: null },
       viewOptions: [
         { text: '이번 달', value: 'month' },
         { text: '전체', value: 'whole' }
@@ -248,9 +259,17 @@ export default {
   },
 
   methods: {
+    showNotice (title, content) {
+      this.modalDetails.title = title
+      this.modalDetails.content = content
+
+      this.$root.$emit('bv::show::modal', 'modalShowInfo')
+    },
+
     returnHtml (value) {
       if (value) return value
     },
+
     onFiltered (filteredItems) {
       this.totalRows = filteredItems.length
       this.currentPage = 1
@@ -265,19 +284,13 @@ export default {
     },
 
     downloadImages () {
-      // lambda.getImagesToZipFile([])
-      //   .then(data => {
-      //     console.log('image download:', data)
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //   })
-
-      // Vue.axios.get('/api/checklist/download-images')
-      //   .then(res => {
-      //     console.log(res)
-      //   })
-      //   .catch(err => console.log(err))
+      Vue.axios.get(`/api/checklist/zip-images/${this.checklist.id}`, {
+        responseType: 'blob'
+      })
+        .then(response => {
+          download(response.data, 'download.zip')
+        })
+        .catch(err => console.log(err))
     },
 
     convertOpinionsToArray (opinions) {
@@ -356,7 +369,7 @@ export default {
           })
         })
 
-        console.log(excelData)
+        // console.log(excelData)
       }
 
       return excelData
@@ -424,6 +437,11 @@ export default {
 </script>
 
 <style scoped>
+  .news {
+    position:relative;
+    height:300px;
+    overflow-y:scroll;
+  }
   .result-details {
     background-color: #fff;
   }

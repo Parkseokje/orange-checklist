@@ -13,6 +13,8 @@ import ChecklistCreateOrModify from '@/views/ChecklistCreateOrModify'
 import UserChecklistStart from '@/views/UserChecklistStart'
 import UserChecklist from '@/views/UserChecklist'
 import ChecklistResult from '@/views/ChecklistResult'
+import Board from '@/views/Board'
+import UserBoard from '@/views/UserBoard'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
@@ -90,6 +92,16 @@ export default new Router({
           path: 'user-checklist/:id',
           name: '체크리스트 시작',
           component: UserChecklistStart
+        },
+        {
+          path: 'board',
+          name: '게시판 관리',
+          component: Board
+        },
+        {
+          path: 'user-board',
+          name: '나의 게시판',
+          component: UserBoard
         }
       ]
     },

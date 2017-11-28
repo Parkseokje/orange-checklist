@@ -366,7 +366,7 @@ export default {
     },
 
     initPassword (item, index, button) {
-      if (!confirm('비밀번호를 초기화 하시겠습니까?')) return false
+      if (!confirm('비밀번호를 초기화 하시겠습니까? \n(111111 로 초기화 됩니다.)')) return false
 
       this.requestPasswordInit(item.id)
     }

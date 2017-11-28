@@ -1,6 +1,7 @@
 const pool = require('../../../database')
 const async = require('async')
-
+const request = require('request')
+const archiver = require('archiver')
 const fs = require('fs')
 const join = require('path').join
 const aws = require('aws-sdk')
@@ -1104,4 +1105,78 @@ exports.delete = (req, res) => {
       }) // async.series
     }) // beginTransaction
   }) // getConnection
+}
+
+exports.zipImages = (req, res, next) => {
+  const { id: list_id } = req.params
+  const zipUrls = (name, rows, output) => {
+    output.attachment(name + '.zip')
+
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Sets the compression level.
+    })
+
+    archive.on('error', (err) => {
+      archive.abort()
+      console.log('Archive error:', err)
+      return output.status(500).send('Error while zipping')
+    })
+
+    archive.on('end', () => {
+      console.log('Archive finished')
+    })
+
+    archive.pipe(output)
+
+    async.each(rows, (row, done) => {
+      let stream = request.get(row.url)
+
+      stream.on('error', (err) => {
+        console.log('Stream error:', err)
+        return done(err)
+      })
+      .on('end', () => {
+        return done()
+      })
+
+      // 폴더규칙: /download/체크리스트명/담당자명-점포명/파일명
+      archive.append(stream, { name: `/download/${row.title}/${row.user_name}-${row.shop_name}/` + row.url.replace(/^.*\//g, '') }) // 파일명만 추출한다.
+    }, (err) => {
+      if (err) {
+        console.log('Async error:', err)
+      }
+
+      archive.finalize()
+    })
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const sql = `
+      SELECT c.title, s.name AS shop_name, u.name AS user_name, uif.access_url AS url
+        FROM checklist_user_item_files AS uif
+       INNER JOIN checklist_users AS cu
+          ON uif.checklist_user_id = cu.id
+       INNER JOIN checklists AS c
+          ON cu.list_id = c.id
+       INNER JOIN users AS u
+          ON cu.user_id = u.id
+       INNER JOIN shops AS s
+          ON cu.shop_id = s.id
+       WHERE uif.list_id = ?
+    `
+    connection.query(sql, [ list_id ], (err, rows) => {
+      connection.release()
+
+      if (err) {
+        console.log(err)
+        res.sendStatus(400)
+      } else {
+        zipUrls('download', rows, res)
+      }
+    })
+  })
 }
