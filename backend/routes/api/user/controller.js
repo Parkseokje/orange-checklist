@@ -10,11 +10,13 @@ exports.list = (req, res) => {
     const sql = `
       SELECT id
            , company_id
+           , shop_id
            , role
            , name
            , email
            , phone
            , memo
+           , 'false' AS write_access
         FROM users
        WHERE company_id = ?
          AND active = 1;
@@ -41,6 +43,7 @@ exports.create = (req, res) => {
   const secret = req.app.get('pwd-secret')
   const {
     company_id,
+    shop_id,
     role,
     name,
     password,
@@ -60,10 +63,10 @@ exports.create = (req, res) => {
     };
 
     const sql =
-      'INSERT INTO `users` (company_id, role, name, password, email, phone, memo) ' +
+      'INSERT INTO `users` (company_id, shop_id, role, name, password, email, phone, memo) ' +
       'VALUES (?, ?, ?, ?, ?, ?, ?); '
 
-    connection.query(sql, [ company_id, role, name, encryptedPassword, email, phone, memo ], (err, rows) => {
+    connection.query(sql, [ company_id, shop_id, role, name, encryptedPassword, email, phone, memo ], (err, rows) => {
       connection.release()
 
       if (err) {
@@ -81,6 +84,7 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
   const {
     id,
+    shop_id,
     role,
     name,
     email,
@@ -95,7 +99,8 @@ exports.update = (req, res) => {
 
     const sql =
       'UPDATE `users` SET ' +
-      '   role = ? ' +
+      '   shop_id = ? ' +
+      ' , role = ? ' +
       ' , name = ? ' +
       ' , email = ? ' +
       ' , phone = ? ' +
@@ -103,7 +108,7 @@ exports.update = (req, res) => {
       ' , updated_dt = NOW() ' +
       ' WHERE id = ?; '
 
-    connection.query(sql, [ role, name, email, phone, memo, id ], (err, rows) => {
+    connection.query(sql, [ shop_id, role, name, email, phone, memo, id ], (err, rows) => {
       connection.release()
 
       if (err) {

@@ -37,6 +37,12 @@
               :sort-desc.sync="sortDesc"
               @filtered="onFiltered"
             >
+              <template slot="role" scope="row">
+                {{ userTypeByValue(row.item.role)[0].text  }}
+              </template>
+              <template slot="shop_name" scope="row">
+                <span v-if="row.item.shop_id">{{ fiterShopById(row.item.shop_id)[0].name }}</span>
+              </template>
               <template slot="actions" scope="row">
                 <!--<b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>-->
                 <b-btn variant="outline-secondary" size="sm" @click.stop="modify(row.item,row.index,$event.target)">수정</b-btn>
@@ -77,7 +83,7 @@
           <b-form-select id="userTypeInput" :options="userTypes"
             :state="!validation.firstError('form.role')"
             v-model="form.role"
-            required placeholder="이름을 입력하세요"></b-form-select>
+            required placeholder="구분을 선택하세요"></b-form-select>
         </b-form-group>
         <b-form-group
           label="점포"
@@ -289,6 +295,7 @@ export default {
       this.form.role = item.role
       this.form.shop_id = item.shop_id
       this.form.shop_name = item.shop_name
+      this.selectedShop = this.fiterShopById(this.form.shop_id)[0]
       this.form.name = item.name
       this.form.phone = item.phone
       this.form.email = item.email
@@ -388,10 +395,12 @@ export default {
     ...mapGetters({
       items: 'getAllUsers',
       shops: 'getAllShops',
+      fiterShopById: 'fiterShopById',
       userTypes: 'userTypes',
       modalVariants: 'modalVariants',
       messages: 'messages',
-      spinner: 'spinner'
+      spinner: 'spinner',
+      userTypeByValue: 'userTypeByValue'
     }),
 
     displayShopSelect () {

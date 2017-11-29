@@ -1,4 +1,10 @@
 const userTypes = state => state.userTypes
+const userTypeByValue = state => {
+  return value => state.userTypes.filter(userType => {
+    return userType.value === value
+  })
+}
+
 const modalVariants = state => state.modalVariants
 const categoryTypes = state => state.categoryTypes
 const messages = state => state.messages
@@ -15,6 +21,7 @@ const datePickerOptions = state => state.datePickerOptions
 
 export {
   userTypes,
+  userTypeByValue,
   modalVariants,
   categoryTypes,
   messages,

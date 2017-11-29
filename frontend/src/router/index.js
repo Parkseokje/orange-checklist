@@ -112,6 +112,7 @@ export default new Router({
       props: true
     },
     {
+      name: '404',
       path: '*',
       component: Page404
       // redirect: '/'

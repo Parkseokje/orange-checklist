@@ -6,6 +6,7 @@ const user = require('./user')
 const shop = require('./shop')
 const category = require('./category')
 const checklist = require('./checklist')
+const board = require('./board')
 
 router.use('/auth', auth)
 
@@ -20,5 +21,8 @@ router.use('/category', category)
 
 router.use('/checklist', authMiddleware)
 router.use('/checklist', checklist)
+
+router.use('/board', authMiddleware)
+router.use('/board', board)
 
 module.exports = router

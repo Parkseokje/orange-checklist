@@ -29,12 +29,24 @@ export default {
 
   props: ['response'],
 
+  data () {
+    return {
+      from: null
+    }
+  },
+
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.from = from.path
+    })
+  },
+
   methods: {
     goBack () {
       if (this.data.status === 401) {
         this.logout()
       } else {
-        this.$router.push('/')
+        this.$router.push(this.from)
       }
     },
 
