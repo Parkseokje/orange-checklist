@@ -38,9 +38,55 @@ const boardModule = {
       return state.user_posts
     },
 
+    getAllUserRootPosts: state => {
+      return state.user_posts.filter(post => {
+        return post.depth === 0
+      })
+    },
+
+    getAllUserSubPosts: state => {
+      return (parent) => {
+        let result = []
+
+        for (const post of state.user_posts) {
+          if (
+            post.depth === parent.depth + 1 &&
+            post.board_id === parent.board_id &&
+            post.group_id === parent.group_id &&
+            post.group_seq > parent.group_seq
+          ) {
+            result.push(post)
+          } else if (
+            post.content_id !== parent.content_id &&
+            post.group_seq > parent.group_seq &&
+            post.depth === parent.depth
+          ) {
+            break
+          }
+        }
+
+        return result
+        // return (parent) => state.user_posts.filter(post => {
+        //   if (post.depth < parent.depth + 1) {}
+        //   return (
+        //     post.depth === parent.depth + 1 &&
+        //     post.board_id === parent.board_id &&
+        //     post.group_id === parent.group_id &&
+        //     post.group_seq > parent.group_seq
+        //   )
+        // })
+      }
+    },
+
     filterBoardById: state => {
       return id => state.boards.filter(board => {
         return board.id === id
+      })
+    },
+
+    filterUserPost: state => {
+      return id => state.user_posts.filter(post => {
+        return post.content_id === id
       })
     }
   },
@@ -89,7 +135,7 @@ const boardModule = {
     },
 
     createUserPost ({ dispatch, commit }, post) {
-      Board.createBoard(post,
+      Board.createUserPost(post,
         (data) => dispatch('fetchUserPosts'),
         (err) => commit(API_FAILURE, err)
       )

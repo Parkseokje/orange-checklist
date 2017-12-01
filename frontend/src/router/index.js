@@ -15,6 +15,7 @@ import UserChecklist from '@/views/UserChecklist'
 import ChecklistResult from '@/views/ChecklistResult'
 import Board from '@/views/Board'
 import UserBoard from '@/views/UserBoard'
+import UserBoardDetails from '@/views/UserBoardDetails'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
@@ -102,6 +103,12 @@ export default new Router({
           path: 'user-board',
           name: '나의 게시판',
           component: UserBoard
+        },
+        {
+          path: 'user-board-details/:board_id/:content_id',
+          name: '게시글 보기',
+          component: UserBoardDetails,
+          props: true
         }
       ]
     },

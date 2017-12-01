@@ -3,6 +3,7 @@
     <div class="animated fadeIn">
       <b-card header="게시판 목록">
         <b-btn class="mb-2"
+          size="sm"
           :variant="collapseCreateVariant"
           @click="showCollapse = !showCollapse"
           :class="showCollapse ? 'collapsed' : null"

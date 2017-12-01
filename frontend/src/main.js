@@ -19,6 +19,7 @@ import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import VueScrollTo from 'vue-scrollto'
 import moment from 'moment'
 import lambdaConfig from './lambda.config'
+import * as filters from './util/filters'
 
 axios.interceptors.request.use(config => {
   if (config.url !== (lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT || lambdaConfig.AWS_LAMBDA_DOWNLOAD_ZIP_ENDPOINT)) {
@@ -44,6 +45,11 @@ axios.interceptors.response.use(config => {
 }, error => {
   store.dispatch('endLoader')
   return Promise.reject(error)
+})
+
+// register global utility filters.
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
 })
 
 Vue.use(VueAxios, axios)

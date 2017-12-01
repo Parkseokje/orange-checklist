@@ -367,9 +367,12 @@ exports.userList = (req, res) => {
     };
 
     const sql = `
-    SELECT *
+    SELECT @id := b.id AS board_id
+         , b.title, b.memo
+         , bu.*
+         , (SELECT COUNT(*) FROM board_contents WHERE board_id = @id) AS content_cnt
       FROM boards AS b
-     INNER JOIN boards_users AS bu
+     INNER JOIN board_users AS bu
         ON b.id = bu.board_id
        AND bu.user_id = ?
      WHERE b.active = 1
@@ -449,16 +452,30 @@ exports.selectUserPosts = (req, res) => {
     };
 
     const sql = `
-    SELECT b.title, b.memo
-         , bc.*
+    SELECT b.title AS board_title, b.memo AS board_memo
+         , u.name AS creator
+         , @board_id := b.id AS board_id
+         , @group_id := bc.group_id AS group_id
+         , bc.group_seq
+         , bc.depth
+         , bc.title
+         , bc.content
+         , bu.write_access
+         , bc.id AS content_id
+         , bc.user_id
+         , (SELECT COUNT(*) FROM board_contents WHERE board_id = @board_id AND group_id = @group_id AND id <> bc.id) AS reply_cnt
+         , bc.created_dt
+         , bc.updated_dt
       FROM boards AS b
      INNER JOIN board_users AS bu
         ON b.id = bu.board_id
        AND bu.user_id = ?
-     INNER JOIN boards_contents AS bc
-        ON bu.id = bc.board_user_id
+     INNER JOIN users AS u
+        on bu.user_id = u.id
+     INNER JOIN board_contents AS bc
+        ON b.id = bc.board_id
      WHERE b.active = 1
-     ORDER BY b.created_dt DESC, bc.group_id DESC, bc.group_seq; `
+     ORDER BY bc.created_dt DESC, bc.board_id, bc.group_id DESC, bc.group_seq; `
 
     connection.query(sql, [ req.decoded.id ], (err, rows) => {
       connection.release()
@@ -521,21 +538,21 @@ exports.createUserPost = (req, res) => {
         }
       }
 
-      const insertBoardContent = callback => {
+      const insertBoardContent = (data, callback) => {
         if (parent_group_id) {
           const sql = `
           INSERT INTO board_contents (board_id, user_id, group_id, group_seq, depth, title, content)
           SELECT ?, ?, ?, ?, ?, ?, ?; `
 
-          connection.query(sql, [ board_id, req.decoded.id, parent_group_id, parent_group_seq + 1, parent_depth + 1 ], (err, result) => {
+          connection.query(sql, [ board_id, req.decoded.id, parent_group_id, parent_group_seq + 1, parent_depth + 1, title, content ], (err, result) => {
             callback(err, result.insertId)
           })
         } else {
           const sql = `
             INSERT INTO board_contents (board_id, user_id, group_id, group_seq, depth, title, content)
-            SELECT ?, ?, (SELECT last_insert_id() + 1), 0, ?, ?; `
+            SELECT ?, ?, (SELECT IFNULL(MAX(group_id), 0) + 1 FROM board_contents WHERE board_id = ?), 1, 0, ?, ?; `
 
-          connection.query(sql, [ board_id, req.decoded.id, title, content ], (err, result) => {
+          connection.query(sql, [ board_id, req.decoded.id, board_id, title, content ], (err, result) => {
             callback(err, result.insertId)
           })
         }
@@ -554,7 +571,7 @@ exports.createUserPost = (req, res) => {
               file_name,
               access_url
             )
-            VALUES (?,?,?,?,?,?);
+            VALUES (?,?,?,?,?);
           `
 
           connection.query(sql, [
@@ -570,6 +587,7 @@ exports.createUserPost = (req, res) => {
       }
 
       async.waterfall([
+        updateBoardContent,
         insertBoardContent,
         insertBoardContentFile
       ], (err, results) => {
