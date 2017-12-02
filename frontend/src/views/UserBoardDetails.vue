@@ -7,6 +7,7 @@
           <div v-html="post.content"></div>
           <div class="by">
             {{post.creator}} ·
+            {{post.created_dt | moment('YYYY-MM-DD HH:mm')  }} ·
             {{post.created_dt | timeAgo }}전 ·
             <b-link @click.prevent="triggerShowInput">{{showInput ? '취소' : '답글달기'}}</b-link>
           </div>

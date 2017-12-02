@@ -58,6 +58,7 @@ const boardModule = {
             result.push(post)
           } else if (
             post.content_id !== parent.content_id &&
+            post.group_id === parent.group_id &&
             post.group_seq > parent.group_seq &&
             post.depth === parent.depth
           ) {

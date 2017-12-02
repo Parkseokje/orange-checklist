@@ -1,8 +1,11 @@
+// import moment from 'moment'
+
 export function timeAgo (datetime) {
+  // console.log(datetime, ' | ', new Date())
+  // console.log(datetime, moment(datetime))
+
   const time = new Date(datetime).getTime()
   const between = (new Date().getTime() - time) / 1000
-
-  console.log(datetime, time, between)
 
   if (between < 3600) {
     return pluralize(~~(between / 60), '분')
