@@ -4,7 +4,7 @@
     <div class="text" v-html="comment.content"></div>
     <div class="by">
       {{comment.creator}} ·
-      {{comment.created_dt | timeAgo }} 경과 ·
+      {{comment.created_dt | timeAgo }}전 ·
       <b-link @click.prevent="triggerShowInput">{{showInput ? '취소' : '답글달기'}}</b-link>
     </div>
     <div v-if="showInput">

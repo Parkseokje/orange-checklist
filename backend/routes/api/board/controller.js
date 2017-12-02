@@ -475,7 +475,8 @@ exports.selectUserPosts = (req, res) => {
      INNER JOIN board_contents AS bc
         ON b.id = bc.board_id
      WHERE b.active = 1
-     ORDER BY bc.created_dt DESC, bc.board_id, bc.group_id DESC, bc.group_seq; `
+     ORDER BY bc.board_id, bc.group_id DESC, bc.group_seq;
+    `
 
     connection.query(sql, [ req.decoded.id ], (err, rows) => {
       connection.release()
