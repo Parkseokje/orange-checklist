@@ -4,8 +4,6 @@
     <div class="text" v-html="comment.content"></div>
     <div class="by">
       {{comment.creator}} ·
-      {{comment.created_dt}} ·
-      {{comment.created_dt | moment('YYYY-MM-DD HH:mm')}} ·
       {{comment.created_dt | timeAgo}}전 ·
       <b-link @click.prevent="triggerShowInput">{{showInput ? '취소' : '답글달기'}}</b-link>
     </div>
