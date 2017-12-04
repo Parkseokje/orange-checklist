@@ -481,7 +481,7 @@ exports.selectUserPosts = (req, res) => {
     connection.query(sql, [ req.decoded.id ], (err, rows) => {
       connection.release()
 
-      // console.log(rows)
+      console.log(rows)
 
       if (err) {
         console.log(err)
