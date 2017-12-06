@@ -54,7 +54,7 @@ exports.create = (req, res) => {
     alarm_type,
     title: memo_param,
     users = [],
-    send_message = true
+    send_message = false
   } = req.body
 
   let userIds = users.map(a => a.user_id);
