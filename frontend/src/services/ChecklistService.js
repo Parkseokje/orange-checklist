@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Alarm from './AlarmService'
 
 export default {
   getChecklists (cb, errorCb) {
@@ -96,6 +97,17 @@ export default {
     })
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'checklist',
+            title: checklist.title,
+            users: checklist.users
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })
@@ -106,6 +118,17 @@ export default {
     return axios.put(`/api/checklist`, checklist)
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'checklist',
+            title: checklist.title,
+            users: checklist.users
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })

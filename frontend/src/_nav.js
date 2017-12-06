@@ -25,7 +25,7 @@ export default {
       roles: ['admin', 'supervisor', 'agent']
     },
     {
-      name: '체크리스트 진행',
+      name: '나의 체크리스트',
       url: '/user-checklist',
       icon: 'icon-puzzle',
       roles: 'all'
@@ -39,6 +39,12 @@ export default {
     {
       name: '나의 게시판',
       url: '/user-board',
+      icon: 'icon-puzzle',
+      roles: 'all'
+    },
+    {
+      name: '나의 알림',
+      url: '/user-alarm',
       icon: 'icon-puzzle',
       roles: 'all'
     }

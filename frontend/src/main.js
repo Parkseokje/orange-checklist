@@ -22,7 +22,7 @@ import lambdaConfig from './lambda.config'
 import * as filters from './util/filters'
 
 axios.interceptors.request.use(config => {
-  if (config.url !== (lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT || lambdaConfig.AWS_LAMBDA_DOWNLOAD_ZIP_ENDPOINT)) {
+  if (config.url !== (lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_ENDPOINT && lambdaConfig.AWS_LAMBDA_GETSIGNEDURL_FILE_UPLOAD_ENDPOINT)) {
     config.headers.common['X-access-token'] = localStorage.getItem('token')
 
     if (config.url !== ('/api/checklist/answer')) {

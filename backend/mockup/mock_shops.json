@@ -1,5 +1,0 @@
-[
-  { "id": 1, "company_id": 1, "active": 1, "name": "오렌지나무시스템1", "tel": "021231234", "address": "서울특별시 서초구 양재동 351-3", "memo": "blah blah" },
-  { "id": 2, "company_id": 1, "active": 1, "name": "오렌지나무시스템2", "tel": "021231234", "address": "서울특별시 서초구 양재동 351-3", "memo": "blah blah" },
-  { "id": 3, "company_id": 1, "active": 1, "name": "오렌지나무시스템3", "tel": "021231234", "address": "서울특별시 서초구 양재동 351-3", "memo": "blah blah" }
-]

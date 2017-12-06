@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Alarm from './AlarmService'
 
 export default {
   getBoards (cb, errorCb) {
@@ -59,6 +60,17 @@ export default {
     })
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'board-new',
+            title: board.title,
+            users: board.users
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })
@@ -70,13 +82,27 @@ export default {
       board_id: post.board_id,
       title: post.title,
       content: post.content,
-      file: post.file,
-      parent_group_id: post.parent_group_id,
-      parent_group_seq: post.parent_group_seq,
-      parent_depth: post.parent_depth
+      file_name: post.file_name,
+      access_url: post.access_url,
+      parent_group_id: post.group_id,
+      parent_group_seq: post.group_seq,
+      parent_depth: post.depth
     })
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'board-reply',
+            title: `${post.board_title} 게시판의 ${post.title}`,
+            users: [{
+              user_id: post.user_id
+            }]
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })
@@ -87,6 +113,17 @@ export default {
     return axios.put(`/api/board`, board)
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'board-new',
+            title: board.title,
+            users: board.users
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })
@@ -97,6 +134,19 @@ export default {
     return axios.put(`/api/board/user/post`, post)
       .then(response => {
         if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'board-reply',
+            title: `${post.board_title} 게시판의 ${post.title}`,
+            users: [{
+              user_id: post.user_id
+            }]
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => console.log(data),
+            err => console.log(err)
+          )
+
           cb(response.data)
         }
       })

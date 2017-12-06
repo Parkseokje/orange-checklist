@@ -1,19 +1,16 @@
 <template>
   <div class="animated fadeIn">
+    <div class="item-view">
+      <div class="item-view-header">
+        <h4>{{post.board_title}}</h4>
+        <p v-html="post.board_memo"></p>
+        <b-btn variant="primary" :to="'/user-board'" class="mt-2 mb-2">목록보기</b-btn>
+      </div>
+    </div>
     <div class="item-view" v-if="post">
       <template v-if="post">
         <div class="item-view-header comment">
-          <h1>{{ post.title }}</h1>
-          <div v-html="post.content"></div>
-          <div class="by">
-            {{post.creator}} ·
-            {{post.created_dt | moment('YYYY-MM-DD HH:mm')  }} ·
-            {{post.created_dt | timeAgo }}전 ·
-            <b-link @click.prevent="triggerShowInput">{{showInput ? '취소' : '답글달기'}}</b-link>
-          </div>
-          <div v-if="showInput">
-            <comment-input @cancel="triggerShowInput" @save="onCommentInputSave" :comment="post"></comment-input>
-          </div>
+          <comment :key="post.content_id" :comment="post" :ispost="true"></comment>
         </div>
         <div class="item-view-comments">
           <p class="item-view-comments-header">
@@ -29,17 +26,14 @@
 </template>
 
 <script>
-// import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import Comment from './Comment'
-import CommentInput from './CommentInput'
 
 export default {
   name: 'user-board-details',
 
   components: {
-    Comment,
-    CommentInput
+    Comment
   },
 
   created () {
@@ -57,14 +51,6 @@ export default {
   },
 
   methods: {
-    triggerShowInput () {
-      this.showInput = !this.showInput
-    },
-
-    onCommentInputSave () {
-      this.triggerShowInput()
-    },
-
     ...mapActions([
       'fetchUserPosts'
     ])
@@ -72,8 +58,11 @@ export default {
 
   computed: {
     post () {
-      const result = this.filterUserPost(parseInt(this.$route.params.content_id))[0]
-      return result
+      if (this.allUserPosts.length !== 0) {
+        return this.filterUserPost(parseInt(this.$route.params.content_id))[0]
+      } else {
+        return {}
+      }
     },
 
     comments () {

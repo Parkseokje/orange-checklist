@@ -16,6 +16,7 @@ import ChecklistResult from '@/views/ChecklistResult'
 import Board from '@/views/Board'
 import UserBoard from '@/views/UserBoard'
 import UserBoardDetails from '@/views/UserBoardDetails'
+import UserAlarm from '@/views/UserAlarm'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
@@ -86,7 +87,7 @@ export default new Router({
         },
         {
           path: 'user-checklist',
-          name: '체크리스트 진행',
+          name: '나의 체크리스트',
           component: UserChecklist
         },
         {
@@ -108,6 +109,12 @@ export default new Router({
           path: 'user-board-details/:board_id/:content_id',
           name: '게시글 보기',
           component: UserBoardDetails,
+          props: true
+        },
+        {
+          path: 'user-alarm',
+          name: '나의 알림',
+          component: UserAlarm,
           props: true
         }
       ]

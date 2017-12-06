@@ -3,7 +3,7 @@
     <!-- Not displayed, just for Dropzone's `dictDefaultMessage` option -->
     <div id="dropzone-message" style="display: none">
       <span class="dropzone-title">파일선택</span>
-      <span class="dropzone-info">{{options.maxFilesize}}MB 이하</span>
+      <span class="dropzone-info">{{maxFilesize}}MB 이하</span>
     </div>
     <div v-if="fileToUpload">
       <b-btn size="sm" variant="primary" @click="uploadFile">전송</b-btn>
@@ -22,7 +22,32 @@ Dropzone.autoDiscover = false
 export default {
   name: 'dropzone',
 
-  props: ['clickSave'],
+  props: {
+    maxFilesize: {
+      type: Number,
+      default: 6
+    },
+
+    maxFiles: {
+      type: Number,
+      default: 1
+    },
+
+    acceptedFiles: {
+      type: String,
+      default: 'image/*'
+    },
+
+    clickSave: {
+      type: Boolean,
+      default: false
+    },
+
+    isImageUpload: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   watch: {
     clickSave (value) {
@@ -40,8 +65,8 @@ export default {
         // The URL will be changed for each new file being processing
         url: '/',
         method: 'put',
-        maxFilesize: 6,
-        maxFiles: 1,
+        maxFilesize: this.maxFilesize,
+        maxFiles: this.maxFiles,
 
         // resizeWidth: 800,
         // resizeHeight: 600,
@@ -68,15 +93,15 @@ export default {
         // dictDefaultMessage: document.querySelector('#dropzone-message').innerHTML,
         // We're going to process each file manually (see `accept` below)
         autoProcessQueue: false,
-        acceptedFiles: 'image/*',
+        acceptedFiles: this.acceptedFiles,
         // Here we request a signed upload URL when a file being accepted
         accept (file, done) {
-          lambda.getSignedURL(file)
-            .then(({ url, keyResized, accessUrl }) => {
-              file.key = keyResized
+          lambda.getSignedURL(file, this.isImageUpload)
+            .then(({ url, keyResized, fullkey, accessUrl }) => {
+              file.key = keyResized || fullkey
               file.accessUrl = accessUrl
-
               file.uploadURL = url
+
               done()
 
               // Manually process each file
@@ -110,7 +135,7 @@ export default {
 
     this.dropzone.on('complete', (file) => {
       this.dropzone.removeFile(file)
-      this.$emit('complete', { file_name: file.key, access_url: file.accessUrl })
+      this.$emit('complete', { file_name: file.name, access_url: file.accessUrl })
     })
   },
 

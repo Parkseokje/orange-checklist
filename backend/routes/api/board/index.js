@@ -12,8 +12,10 @@ router.delete('/:id', controller.delete)
 router.get('/user', controller.userList)
 router.get('/user/posts', controller.selectUserPosts)
 router.post('/user/post', controller.createUserPost)
-router.put('/user/post/:id', controller.updateUserPost)
+router.put('/user/post', controller.updateUserPost)
 router.delete('/user/post/:id', controller.deleteUserPost)
 router.get('/posts', controller.selectAllPosts)
+
+router.post('/zip-urls', controller.zipUrls)
 
 module.exports = router

@@ -2,8 +2,9 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <b-card header="나의 게시판 목록">
-        <b-btn class="mb-2"
+        <b-btn class="mb-3"
           size="sm"
+          v-if="userWritableBoards.length >= 1"
           :variant="collapseCreateVariant"
           @click="showCollapse = !showCollapse"
           :class="showCollapse ? 'collapsed' : null"
@@ -16,7 +17,7 @@
           <b-collapse id="collapseCreate" class="mt-2" v-model="showCollapse">
             <v-select label="title" placeholder="선택하세요"
               v-model="selectedBoard"
-              :options="userBoards"
+              :options="userWritableBoards"
               :reset-on-options-change="true"
             ></v-select>
             <comment-input
@@ -35,14 +36,12 @@
           </div>
           <div class="col-md-3">
             <b-form-group horizontal label="필터" :label-cols="3">
-              <b-form-group horizontal label="필터" :label-cols="3">
-                <b-input-group>
-                  <b-form-input v-model="filter" placeholder="검색어 입력" />
-                  <b-input-group-button slot="right" v-if="filter">
-                    <b-btn @click="filter = null" variant="secondary"><i class="fa fa-remove"></i></b-btn>
-                  </b-input-group-button>
-                </b-input-group>
-              </b-form-group>
+              <b-input-group>
+                <b-form-input v-model="filter" placeholder="검색어 입력" />
+                <b-input-group-button slot="right" v-if="filter">
+                  <b-btn @click="filter = null" variant="secondary"><i class="fa fa-remove"></i></b-btn>
+                </b-input-group-button>
+              </b-input-group>
             </b-form-group>
           </div>
           <div class="col-md-2">
@@ -202,7 +201,8 @@ export default {
       allUserPosts: 'getAllUserPosts',
       allUserRootPosts: 'getAllUserRootPosts',
       filterUserGroupPosts: 'getAllUserGroupPosts',
-      userBoards: 'getAllUserBoards'
+      userBoards: 'getAllUserBoards',
+      userWritableBoards: 'getAllUserWritableBoards'
     })
   }
 }

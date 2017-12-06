@@ -16,6 +16,7 @@ const categoryModule = {
     getAllCategories: state => {
       return state.categories
     },
+
     // 대분류
     getBigCategories: state => {
       if (state.categories.length > 0) {
@@ -24,12 +25,14 @@ const categoryModule = {
         return []
       }
     },
+
     // 중분류
     getMiddleCategories: state => {
       return parentId => state.categories.filter(category => {
         return category.parent_id === parentId && category.depth === 2
       })
     },
+
     // 소분류
     getSmallCategories: state => {
       return parentId => state.categories.filter(category => {

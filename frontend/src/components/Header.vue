@@ -5,6 +5,7 @@
     <button class="navbar-toggler sidebar-toggler d-md-down-none mr-auto" type="button" @click="sidebarMinimize">&#9776;</button>
     <!-- nav -->
     <b-navbar-nav class="ml-auto">
+      <message-dropdown :alarms="allAlarms" />
       <b-nav-item-dropdown right class="header-item-dropdown">
         <template slot="button-content">
           <!--<img src="static/img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">-->
@@ -14,18 +15,30 @@
         <b-dropdown-item @click="logout"><i class="fa fa-lock fa-2"></i> 로그아웃</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
-    <!--<button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" @click="asideToggle">&#9776;</button>-->
+    <!-- <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" @click="asideToggle">&#9776;</button> -->
   </header>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import MessageDropdown from './MessageDropdown.vue'
 
 export default {
   name: 'header',
 
+  created () {
+    if (this.allAlarms.length === 0) {
+      this.fetchAlarmList()
+    }
+  },
+
+  components: {
+    MessageDropdown
+  },
+
   methods: {
     ...mapActions([
-      'logout'
+      'logout',
+      'fetchAlarmList'
     ]),
 
     sidebarToggle (e) {
@@ -48,7 +61,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      profile: 'getProfile'
+      profile: 'getProfile',
+      allAlarms: 'getAllAlarms'
     })
   }
 }

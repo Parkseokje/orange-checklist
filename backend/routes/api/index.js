@@ -7,6 +7,7 @@ const shop = require('./shop')
 const category = require('./category')
 const checklist = require('./checklist')
 const board = require('./board')
+const alarm = require('./alarm')
 
 router.use('/auth', auth)
 
@@ -24,5 +25,8 @@ router.use('/checklist', checklist)
 
 router.use('/board', authMiddleware)
 router.use('/board', board)
+
+router.use('/alarm', authMiddleware)
+router.use('/alarm', alarm)
 
 module.exports = router

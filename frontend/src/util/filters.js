@@ -16,6 +16,10 @@ export function timeAgo (datetime) {
   }
 }
 
+export function truncate (string, value) {
+  return string.substring(0, value) + '...'
+}
+
 function pluralize (time, label) {
   return time + label
 }

@@ -30,6 +30,12 @@ const boardModule = {
       return state.user_boards
     },
 
+    getAllUserWritableBoards: state => {
+      return state.user_boards.filter(board => {
+        return board.write_access === 1
+      })
+    },
+
     getAllPosts: state => {
       return state.posts
     },
@@ -40,7 +46,7 @@ const boardModule = {
 
     getAllUserRootPosts: state => {
       return state.user_posts.filter(post => {
-        return post.depth === 0
+        return post.depth === 0 && post.active === 1
       })
     },
 
@@ -150,7 +156,7 @@ const boardModule = {
     },
 
     updateUserPost ({ commit }, post) {
-      Board.updateBoard(post,
+      Board.updateUserPost(post,
         (data) => commit(UPDATE_USER_POST, post),
         (err) => commit(API_FAILURE, err)
       )
@@ -163,9 +169,9 @@ const boardModule = {
       )
     },
 
-    deleteUserPost ({ dispatch, commit }, id) {
-      Board.deleteUserPostById(id,
-        (data) => commit(DELETE_USER_POST, id),
+    deleteUserPost ({ dispatch, commit }, post) {
+      Board.deleteUserPostById(post.content_id,
+        (data) => commit(DELETE_USER_POST, post),
         (err) => commit(API_FAILURE, err)
       )
     }
@@ -199,7 +205,7 @@ const boardModule = {
     },
 
     [UPDATE_USER_POST] (state, post) {
-      const foundIndex = state.user_posts.findIndex(x => x.id === post.id)
+      const foundIndex = state.user_posts.findIndex(x => x.content_id === post.content_id)
       Vue.set(state.user_posts, foundIndex, post)
     },
 
@@ -208,9 +214,14 @@ const boardModule = {
       state.boards.splice(foundIndex, 1)
     },
 
-    [DELETE_USER_POST] (state, id) {
-      const foundIndex = state.user_posts.findIndex(x => x.id === id)
-      state.user_posts.splice(foundIndex, 1)
+    [DELETE_USER_POST] (state, post) {
+      const foundIndex = state.user_posts.findIndex(x => x.id === post.content_id)
+
+      post.active = 0
+      post.file_name = null
+      post.access_url = null
+
+      Vue.set(state.user_posts, foundIndex, post)
     }
   }
 }
