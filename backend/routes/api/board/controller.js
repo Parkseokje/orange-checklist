@@ -475,10 +475,10 @@ exports.selectUserPosts = (req, res) => {
      INNER JOIN board_users AS bu
         ON b.id = bu.board_id
        AND bu.user_id = ?
-     INNER JOIN users AS u
-        on bu.user_id = u.id
      INNER JOIN board_contents AS bc
         ON b.id = bc.board_id
+     INNER JOIN users AS u
+        on bc.user_id = u.id
       LEFT JOIN board_content_files AS bcf
         ON bc.id = bcf.board_content_id
      WHERE b.active = 1

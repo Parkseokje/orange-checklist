@@ -18,6 +18,9 @@
         <div class="text" v-html="comment.content"></div>
       </div>
     </template>
+    <b-btn variant="link" size="sm" class="mb-2" @click="downloadAttachment" v-if="comment.file_name">
+      <i class="fa fa-download"></i>  <span v-b-tooltip.hover :title="comment.file_name">{{comment.file_name | truncate('10')}}</span>
+    </b-btn>
     <div class="by">
       {{comment.creator}} ·
       {{comment.created_dt | timeAgo}}전
@@ -25,9 +28,6 @@
       <b-link class="pl-1" v-if="canModify" @click.prevent="updateComment">수정</b-link>
       <b-link class="pl-1" v-if="canModify" @click.prevent="deleteComment">삭제</b-link>
     </div>
-    <b-btn variant="link" size="sm" class="mb-2" @click="downloadAttachment" v-if="comment.file_name">
-      <i class="fa fa-download"></i>  <span v-b-tooltip.hover :title="comment.file_name">{{comment.file_name | truncate('10')}}</span>
-    </b-btn>
     <div v-if="showInput">
       <comment-input @cancel="triggerShowInput" @save="onCommentInputSave" :comment="comment" :ismodify="isModify"></comment-input>
     </div>
