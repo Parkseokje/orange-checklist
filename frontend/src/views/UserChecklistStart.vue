@@ -80,12 +80,6 @@ export default {
   // },
 
   methods: {
-    onFilter () {
-      this.filteredNumbers = this.numbers.filter(value => {
-        return value.toString() === this.searchText
-      })
-    },
-
     getWrappedInfo (item) {
       const info = {
         list_id: this.checklist.list_id,
@@ -109,7 +103,7 @@ export default {
     filteredItems () {
       if (this.searchText) {
         return this.items.filter(item => {
-          return item.category2_name.concat(item.category3_name).toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+          return (item.category2_name || '').concat(item.category3_name || '').concat(item.title).toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
         })
       } else {
         return this.items
