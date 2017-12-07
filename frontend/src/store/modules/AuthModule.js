@@ -5,6 +5,7 @@ import {
   API_FAILURE
 } from '../mutation-types'
 import Auth from '../../services/AuthService'
+import { resetState } from '../'
 
 const AuthModule = {
   state: {
@@ -46,8 +47,10 @@ const AuthModule = {
 
     [LOGOUT] (state) {
       localStorage.removeItem('token')
-      state.isAuthenticated = false
-      state.profile = null
+      // state.isAuthenticated = false
+      // state.profile = null
+
+      resetState()
 
       Vue.router.push('/login')
     }

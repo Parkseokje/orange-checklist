@@ -15,7 +15,7 @@
         <!-- 게시글 등록 -->
         <b-card border-variant="light" v-show="showCollapse">
           <b-collapse id="collapseCreate" class="mt-2" v-model="showCollapse">
-            <v-select label="title" placeholder="선택하세요"
+            <v-select label="title" placeholder="게시판을 선택하세요"
               v-model="selectedBoard"
               :options="userWritableBoards"
               :reset-on-options-change="true"
@@ -169,9 +169,9 @@ export default {
   computed: {
     newPost () {
       if (!this.selectedBoard) {
-        return { board_id: null, isNew: true }
+        return { board_title: null, board_id: null, isNew: true }
       } else {
-        return { board_id: this.selectedBoard.board_id, isNew: true }
+        return { board_title: this.selectedBoard.title, board_id: this.selectedBoard.board_id, isNew: true }
       }
     },
 

@@ -518,8 +518,6 @@ exports.createUserPost = (req, res) => {
     parent_depth
   } = req.body
 
-  console.log(req.body)
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.log(error)

@@ -51,6 +51,7 @@ export default {
   watch: {
     comment (obj) {
       this.form.board_id = obj.board_id
+      this.form.board_title = obj.board_title
     }
   },
 
@@ -70,19 +71,8 @@ export default {
       this.form.content = null
       this.form.file_name = null
       this.form.access_url = null
+      this.form.group_post = null
     }
-
-    // this.form.board_id = this.comment.board_id
-
-    // if (this.ismodify) {
-    //   this.form.content_id = this.comment.content_id
-    //   this.form.title = this.comment.title
-    //   this.form.content = this.comment.content
-    // }
-
-    // this.form.parent_group_id = this.comment.group_id
-    // this.form.parent_group_seq = this.comment.group_seq
-    // this.form.parent_depth = this.comment.depth
   },
 
   data () {
@@ -93,10 +83,9 @@ export default {
         file_name: null,
         access_url: null,
         board_id: null,
+        board_title: null,
         content_id: null,
-        parent_group_id: null,
-        parent_group_seq: null,
-        parent_depth: null
+        group_post: null
       }
     }
   },
@@ -121,6 +110,14 @@ export default {
         // this.$refs.inputContent.focus()
         return false
       }
+
+      if (!this.form.board_id) {
+        alert('게시판을 선택하세요.')
+        return false
+      }
+
+      // 알림 생성을 위해 첫번 째 포스트에 대한 정보를 넘긴다.
+      this.form.group_post = this.getGroupRootPost(this.comment.group_id)[0]
 
       if (!this.form.content_id) {
         this.createUserPost(this.form)
@@ -148,7 +145,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      editorOption: 'editorOption'
+      editorOption: 'editorOption',
+      getGroupRootPost: 'getGroupRootPost'
     })
   }
 }

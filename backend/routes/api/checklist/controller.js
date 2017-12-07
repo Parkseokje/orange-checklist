@@ -35,9 +35,9 @@ exports.list = (req, res) => {
 // 체크리스트 결과 조회
 exports.result = (req, res) => {
   const {
-    id,
-    byshop = parseInt(byshop),
-    view = 'month',
+    id: checklist_id,
+    view,
+    checklist_user_id = null,
     company_id = req.decoded.company_id
   } = req.query
 
@@ -81,20 +81,20 @@ exports.result = (req, res) => {
           ON cu.shop_id = s.id
        INNER JOIN users AS u
           ON cu.user_id = u.id
-       WHERE cu.company_id = ? `
+       WHERE cu.company_id = ?
+         AND cu.list_id = ? `
+
+    if (checklist_user_id) {
+      sql += `  AND cu.id = ${checklist_user_id} `
+    }
 
     if (view === 'month') {
       sql += `  AND DATE_FORMAT(NOW(), \'%Y-%m\') BETWEEN DATE_FORMAT(cu.from_date, \'%Y-%m\') AND DATE_FORMAT(cu.to_date,\'%Y-%m\') `
     }
 
-    if (byshop == 1) {
-      sql += `  AND cu.shop_id = ? `
-    } else {
-      sql += `  AND cu.list_id = ? `
-    }
     sql += ` ORDER BY shop_name, from_date; `
 
-    connection.query(sql, [ company_id, id ], (err, rows) => {
+    connection.query(sql, [ company_id, checklist_id ], (err, rows) => {
       connection.release()
 
       if (err) {
@@ -160,12 +160,10 @@ exports.resultDetail = (req, res) => {
 // 엑셀다운로드용 체크리스트 상세결과 조회
 exports.resultDetailExcel = (req, res) => {
   const {
-    id: list_id,
+    id: checklist_id,
+    view = 'month',
+    checklist_user_id = null,
     company_id = req.decoded.company_id
-  } = req.params
-
-  const {
-    view = 'month'
   } = req.query
 
   pool.getConnection((err, connection) => {
@@ -196,12 +194,16 @@ exports.resultDetailExcel = (req, res) => {
           ON ia.list_id = c.id
        WHERE cu.list_id = ? `
 
+    if (checklist_user_id) {
+      sql += `  AND cu.id = ${checklist_user_id} `
+    }
+
     if (view === 'month') {
       sql += `  AND DATE_FORMAT(NOW(), \'%Y-%m\') BETWEEN DATE_FORMAT(cu.from_date, \'%Y-%m\') AND DATE_FORMAT(cu.to_date,\'%Y-%m\') `
     }
     sql += ` ORDER BY shop_name, user_name, cu.id, ci.turn; `
 
-    connection.query(sql, [ list_id ], (err, rows) => {
+    connection.query(sql, [ checklist_id ], (err, rows) => {
       connection.release()
 
       if (err) {

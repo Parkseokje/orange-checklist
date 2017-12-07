@@ -12,12 +12,28 @@ export default {
       .catch(error => errorCb(error))
   },
 
-  getChecklistResult ({ id, byshop, view }, cb, errorCb) {
+  getChecklistResult ({ id, view, checklistUserId }, cb, errorCb) {
     axios.get(`/api/checklist/result`, {
       params: {
         id,
-        byshop,
-        view
+        view,
+        checklist_user_id: checklistUserId
+      }
+    })
+      .then(response => {
+        if (response.status === 200) {
+          cb(response.data.info.list)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  getChecklistResultDetailsExcel ({ id, view, checklistUserId }, cb, errorCb) {
+    axios.get(`/api/checklist/result-detail-excel`, {
+      params: {
+        id,
+        view,
+        checklist_user_id: checklistUserId
       }
     })
       .then(response => {
@@ -30,20 +46,6 @@ export default {
 
   getChecklistResultDetails (id, cb, errorCb) {
     axios.get(`/api/checklist/result-detail/${id}`)
-      .then(response => {
-        if (response.status === 200) {
-          cb(response.data.info.list)
-        }
-      })
-      .catch(error => errorCb(error))
-  },
-
-  getChecklistResultDetailsExcel ({ id, view }, cb, errorCb) {
-    axios.get(`/api/checklist/result-detail-excel/${id}`, {
-      params: {
-        view
-      }
-    })
       .then(response => {
         if (response.status === 200) {
           cb(response.data.info.list)
@@ -104,7 +106,7 @@ export default {
           }
 
           Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
+            data => {},
             err => console.log(err)
           )
 
@@ -125,7 +127,7 @@ export default {
           }
 
           Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
+            data => {},
             err => console.log(err)
           )
 

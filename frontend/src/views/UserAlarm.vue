@@ -37,7 +37,7 @@
             {{ row.item.created_dt | moment('YYYY-MM-DD HH:mm')  }}
           </template>
           <template slot="actions" scope="row">
-            <b-btn variant="outline-info" size="sm" @click.stop="details(row.item,row.index,$event.target)">보기</b-btn>
+            <b-btn variant="outline-info" size="sm" @click.stop="updateAlarm(row.item)">확인</b-btn>
           </template>
         </b-table>
       </b-card>
@@ -56,8 +56,9 @@ import { mapGetters, mapActions } from 'vuex'
 
 const fields = {
   // alarm_type: { label: '구분', sortable: true, 'class': 'text-center' },
-  title: { label: '제목', sortable: true, 'class': 'text-center' },
-  creator_name: { label: '전송자', sortable: true, 'class': 'text-center' },
+  memo: { label: '알림', sortable: true },
+  // title: { label: '제목', sortable: true, 'class': 'text-center' },
+  // creator_name: { label: '전송자', sortable: true, 'class': 'text-center' },
   created_dt: { label: '전송일시', sortable: true, 'class': 'text-center' },
   actions: { label: '행동' }
 }

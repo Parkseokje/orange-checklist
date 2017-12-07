@@ -50,6 +50,12 @@ const boardModule = {
       })
     },
 
+    getGroupRootPost: state => {
+      return groupId => state.user_posts.filter(post => {
+        return post.group_id === groupId && post.depth === 0 && post.active === 1
+      })
+    },
+
     getAllUserSubPosts: state => {
       return (parent) => {
         let result = []

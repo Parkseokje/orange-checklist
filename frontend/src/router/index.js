@@ -91,6 +91,12 @@ export default new Router({
           component: UserChecklist
         },
         {
+          path: 'user-checklist-result/:id',
+          name: '나의 체크리스트 결과',
+          component: ChecklistResult,
+          props: true
+        },
+        {
           path: 'user-checklist/:id',
           name: '체크리스트 시작',
           component: UserChecklistStart

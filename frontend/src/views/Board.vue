@@ -226,9 +226,10 @@ export default {
         this.fetchBoardUsers(item.id)
       }
 
-      this.form.id = item.id
-      this.form.title = item.title
-      this.form.memo = item.memo
+      this.form = Object.assign({}, this.form, item)
+      // this.form.id = item.id
+      // this.form.title = item.title
+      // this.form.memo = item.memo
 
       if (!item.users || item.users.length === 0) {
         setTimeout(() => {

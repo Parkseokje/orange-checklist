@@ -1,5 +1,7 @@
 const pool = require('../../../database')
 const crypto = require('crypto')
+const MessageService = require('../../../services/MessageService')
+const async = require('async')
 
 exports.list = (req, res) => {
   pool.getConnection((err, connection) => {
@@ -126,7 +128,6 @@ exports.update = (req, res) => {
 exports.initPassword = (req, res) => {
   const secret = req.app.get('pwd-secret')
   const { id: user_id } = req.body
-
   const encryptedPassword =
     crypto.createHmac('sha1', secret)
       .update('111111')
@@ -137,11 +138,26 @@ exports.initPassword = (req, res) => {
       console.log(error)
     };
 
-    const sql =
+    const updateUserPassword = callback => {
+      const sql =
       'UPDATE `users` SET password = ? ' +
       ' WHERE id = ?; '
 
-    connection.query(sql, [ encryptedPassword, user_id ], (err, rows) => {
+      connection.query(sql, [ encryptedPassword, user_id ], (err, result) => {
+        callback(err, result)
+      })
+    }
+
+    const sendMessage = callback => {
+      MessageService.sendMessage({ phones: req.decoded.phone, msg: '비밀번호가 111111 로 초기화 되었습니다.' }, result => {
+        callback(null, result)
+      })
+    }
+
+    async.series([
+      updateUserPassword,
+      sendMessage
+    ], (err, result) => {
       connection.release()
 
       if (err) {
@@ -155,7 +171,6 @@ exports.initPassword = (req, res) => {
     })
   })
 }
-
 
 exports.delete = (req, res) => {
   const {

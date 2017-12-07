@@ -4,7 +4,7 @@
       <div class="item-view-header">
         <h4>{{post.board_title}}</h4>
         <p v-html="post.board_memo"></p>
-        <b-btn variant="primary" :to="'/user-board'" class="mt-2 mb-2">목록보기</b-btn>
+        <b-btn variant="primary" size="sm" :to="'/user-board'" class="mt-2 mb-2">목록보기</b-btn>
       </div>
     </div>
     <div class="item-view" v-if="post">

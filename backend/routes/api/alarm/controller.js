@@ -53,8 +53,9 @@ exports.create = (req, res) => {
   const {
     alarm_type,
     title: memo_param,
+    board_id = null,
     users = [],
-    send_message = false
+    send_message = false // SMS 사용 시 true 로 변경할 것
   } = req.body
 
   let userIds = users.map(a => a.user_id);
@@ -68,17 +69,42 @@ exports.create = (req, res) => {
       break
 
     case 'board-new':
-      title = '게시판 추가/변경 알림'
-      memo = `'${memo_param}' 게시판이 추가 또는 변경되었습니다.`
+      title = '게시판 추가 알림'
+      memo = `'${memo_param}' 게시판이 추가되었습니다.`
       break
 
-    case 'board-reply':
-      title = '게시판 답글 추가/변경 알림'
-      memo = `'${memo_param}' 글에 답글이 추가 또는 변경되었습니다.`
+    case 'board-modify':
+      title = '게시판 수정 알림'
+      memo = `'${memo_param}' 게시판이 수정되었습니다.`
+      break
+
+    case 'board-new-post':
+      title = '게시판 게시글 등록 알림'
+      memo = `'${memo_param}' 글이 추가되었습니다.`
+      break
+
+    case 'board-modify-post':
+      title = '게시판 게시글 수정 알림'
+      memo = `'${memo_param}' 글이 수정되었습니다.`
+      break
+
+    case 'board-new-reply':
+      title = '게시판 답글 추가 알림'
+      memo = `'${memo_param}' 글에 답글이 추가되었습니다.`
+      break
+
+    case 'board-modify-reply':
+      title = '게시판 답글 수정 알림'
+      memo = `'${memo_param}' 글에 답글이 수정되었습니다.`
       break
 
     default:
       break
+  }
+
+  const filterPhones = (users) => {
+    let phones = users.map(a => a.phone)
+    return phones.join(',')
   }
 
   pool.getConnection((err, connection) => {
@@ -94,6 +120,28 @@ exports.create = (req, res) => {
         })
       }
 
+      const selectBoardUsers = callback => {
+        if (board_id) {
+          const sql = `
+          SELECT u.id AS user_id
+               , u.phone
+            FROM boards AS b
+           INNER JOIN board_users AS bu
+              ON b.id = bu.board_id
+           INNER JOIN users AS u
+              ON bu.user_id = u.id
+             AND u.active = 1
+             AND u.id <> ?
+           WHERE b.id = ? `
+
+          connection.query(sql, [ req.decoded.id, board_id ], (err, rows) => {
+            callback(err, rows)
+          })
+        } else {
+          callback(err, users)
+        }
+      }
+
       const insertAlarm = (user, callback) => {
         const sql =
           'INSERT INTO `alarms` (company_id, alarm_type, title, memo, creator, receiver) ' +
@@ -104,40 +152,47 @@ exports.create = (req, res) => {
         })
       }
 
-      const insertAlarmMap = callback => {
-        async.map(users, insertAlarm, (err, result) => {
-          callback(err, result)
+      const insertAlarmMap = (alarmUsers, callback) => {
+        async.map(alarmUsers, insertAlarm, (err, result) => {
+          callback(err, alarmUsers)
         })
       }
 
-      const sendMessage = callback => {
-        if (!send_message) {
-          callback(null, null)
+      const selectUserPhones = (receivers, callback) => {
+        let userPhones
+
+        if (board_id) {
+          userPhones = filterPhones(receivers)
+          callback(err, userPhones)
         } else {
           const sql = `
             SELECT phone
               FROM users
-             WHERE id IN (${userIds})
+              WHERE id IN (${userIds})
           `
 
-          connection.query(sql, [], (err, result) => {
-            let userPhones = result.map(a => a.phone);
-            userPhones = userPhones.join(',')
-
-            if (userPhones) {
-              MessageService.sendMessage({ phones: userPhones, msg: '알림이 도착하였습니다.' }, result => {
-                callback(null, null)
-              })
-            } else {
-              callback(err, null)
-            }
+          connection.query(sql, [], (err, rows) => {
+            userPhones = filterPhones(rows)
+            callback(err, userPhones)
           })
         }
       }
 
-      async.series([
+      const sendMessages = (phones, callback) => {
+        if (send_message && phones !== '') {
+          MessageService.sendMessage({ phones, msg: '알림이 도착하였습니다.' }, result => {
+            callback(null, null)
+          })
+        } else {
+          callback(err, null)
+        }
+      }
+
+      async.waterfall([
+        selectBoardUsers,
         insertAlarmMap,
-        sendMessage
+        selectUserPhones,
+        sendMessages
       ], (err, results) => {
         connection.release()
 

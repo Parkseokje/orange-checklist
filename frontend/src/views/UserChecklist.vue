@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import ShopDetail from './ShopDetail'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -116,6 +117,10 @@ export default {
 
     startChecklist (item, index, button) {
       this.$router.push({name: '체크리스트 시작', params: { id: item.checklist_user_id }})
+    },
+
+    showResult (item, index, button) {
+      Vue.router.push({name: '나의 체크리스트 결과', params: { id: item.list_id, checklist: item }})
     },
 
     ...mapActions([

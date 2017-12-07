@@ -32,7 +32,7 @@ exports.signin = (req, res) => {
     };
 
     const verifyCredetials = (callback) => {
-      const sql = 'SELECT `id`, `name`, `role`, `company_id`, `password` FROM `users` WHERE `email` = ?; '
+      const sql = 'SELECT `id`, `name`, `phone`, `role`, `company_id`, `password` FROM `users` WHERE `email` = ?; '
       connection.query(sql, [ email, password ], (err, row) => {
         connection.release()
 
@@ -50,6 +50,7 @@ exports.signin = (req, res) => {
           {
             id: user.id,
             name: user.name,
+            phone: user.phone,
             role: user.role,
             company_id: user.company_id
           },

@@ -67,10 +67,41 @@ export default {
           }
 
           Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
+            data => {},
             err => console.log(err)
           )
 
+          cb(response.data)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  updateBoard (board, cb, errorCb) {
+    return axios.put(`/api/board`, board)
+      .then(response => {
+        if (response.status === 200) {
+          const alarmInfo = {
+            alarm_type: 'board-modify',
+            title: board.title,
+            users: board.users
+          }
+
+          Alarm.createAlarm(alarmInfo,
+            data => {},
+            err => console.log(err)
+          )
+
+          cb(response.data)
+        }
+      })
+      .catch(error => errorCb(error))
+  },
+
+  deleteBoardById (id, cb, errorCb) {
+    return axios.delete(`/api/board/${id}`)
+      .then(response => {
+        if (response.status === 200) {
           cb(response.data)
         }
       })
@@ -90,37 +121,24 @@ export default {
     })
       .then(response => {
         if (response.status === 200) {
-          const alarmInfo = {
-            alarm_type: 'board-reply',
-            title: `${post.board_title} 게시판의 ${post.title}`,
-            users: [{
-              user_id: post.user_id
-            }]
+          let alarmInfo
+
+          if (!post.group_post) {
+            alarmInfo = {
+              alarm_type: 'board-new-post',
+              title: `${post.board_title} 게시판의 ${post.title}`,
+              board_id: post.board_id
+            }
+          } else {
+            alarmInfo = {
+              alarm_type: 'board-new-reply',
+              title: `${post.board_title} 게시판의 ${post.group_post.title}`,
+              board_id: post.board_id
+            }
           }
 
           Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
-            err => console.log(err)
-          )
-
-          cb(response.data)
-        }
-      })
-      .catch(error => errorCb(error))
-  },
-
-  updateBoard (board, cb, errorCb) {
-    return axios.put(`/api/board`, board)
-      .then(response => {
-        if (response.status === 200) {
-          const alarmInfo = {
-            alarm_type: 'board-new',
-            title: board.title,
-            users: board.users
-          }
-
-          Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
+            data => {},
             err => console.log(err)
           )
 
@@ -134,29 +152,27 @@ export default {
     return axios.put(`/api/board/user/post`, post)
       .then(response => {
         if (response.status === 200) {
-          const alarmInfo = {
-            alarm_type: 'board-reply',
-            title: `${post.board_title} 게시판의 ${post.title}`,
-            users: [{
-              user_id: post.user_id
-            }]
+          let alarmInfo
+
+          if (!post.group_post) {
+            alarmInfo = {
+              alarm_type: 'board-modify-post',
+              title: `${post.board_title} 게시판의 ${post.title}`,
+              board_id: post.board_id
+            }
+          } else {
+            alarmInfo = {
+              alarm_type: 'board-modify-reply',
+              title: `${post.board_title} 게시판의 ${post.group_post.title}`,
+              board_id: post.board_id
+            }
           }
 
           Alarm.createAlarm(alarmInfo,
-            data => console.log(data),
+            data => {},
             err => console.log(err)
           )
 
-          cb(response.data)
-        }
-      })
-      .catch(error => errorCb(error))
-  },
-
-  deleteBoardById (id, cb, errorCb) {
-    return axios.delete(`/api/board/${id}`)
-      .then(response => {
-        if (response.status === 200) {
           cb(response.data)
         }
       })

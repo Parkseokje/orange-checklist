@@ -70,9 +70,16 @@ const checklistModule = {
       )
     },
 
-    fetchCheckListResult ({ commit }, { id, byshop = 0, view = 'month' }) {
-      Checklist.getChecklistResult({ id, byshop, view },
+    fetchCheckListResult ({ commit }, { id, view = 'month', checklistUserId = null }) {
+      Checklist.getChecklistResult({ id, view, checklistUserId },
         (data) => commit(SET_CHECKLIST_RESULT, data),
+        (err) => commit(API_FAILURE, err)
+      )
+    },
+
+    fetchCheckListResultDetailsExcel ({ commit }, { id, view = 'month', checklistUserId = null }) {
+      Checklist.getChecklistResultDetailsExcel({ id, view, checklistUserId },
+        (data) => commit(SET_CHECKLIST_RESULT_DETAILS_EXCEL, data),
         (err) => commit(API_FAILURE, err)
       )
     },
@@ -80,13 +87,6 @@ const checklistModule = {
     fetchCheckListResultDetails ({ commit }, id) {
       Checklist.getChecklistResultDetails(id,
         (data) => commit(SET_CHECKLIST_RESULT_DETAILS, { id, data }),
-        (err) => commit(API_FAILURE, err)
-      )
-    },
-
-    fetchCheckListResultDetailsExcel ({ commit }, { id, view = 'month' }) {
-      Checklist.getChecklistResultDetailsExcel({ id, view },
-        (data) => commit(SET_CHECKLIST_RESULT_DETAILS_EXCEL, data),
         (err) => commit(API_FAILURE, err)
       )
     },

@@ -2,8 +2,8 @@ import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
-import { sync } from 'vuex-router-sync'
-import store from './store'
+// import { sync } from 'vuex-router-sync'
+import { store } from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
@@ -94,7 +94,7 @@ Vue.component('v-select', vSelect)
 Vue.component('input-tag', InputTag)
 Vue.component('pulse-loader', PulseLoader)
 
-sync(store, router)
+// sync(store, router)
 
 router.beforeEach((to, from, next) => {
   if (to.meta.needsAuth && !localStorage.getItem('token')) {

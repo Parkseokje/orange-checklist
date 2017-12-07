@@ -2,7 +2,6 @@
   <div class="wrapper">
     <div class="animated fadeIn">
       <b-card :header="checklist ? checklist.title : ''">
-        <!-- <b-btn v-if="isShopView" @click="onViewResult(checklist.id)" variant="primary" size="sm">전체보기</b-btn> -->
         <b-form-radio-group v-model="viewSelected"
           buttons button-variant="outline-primary" size="sm"
           @change="onViewChange"
@@ -20,6 +19,7 @@
         <b-btn variant="outline-primary" size="sm" @click="downloadImages">
           <i class="fa fa-download"></i>  이미지
         </b-btn>
+        <b-btn variant="primary" size="sm" :to="moveToList" class="mt-2 mb-2">목록보기</b-btn>
         <br><br>
         <!-- 테이블 toolbox -->
         <div class="row">
@@ -77,53 +77,17 @@
               <b-row v-if="row.item.files">
                 <b-col sm="2" class="text-sm-left pb-2"><b>사진:</b></b-col>
                 <b-col>
-                  <!-- <b-container fluid class="p-4"> -->
-                    <b-row>
-                      <b-col lg="2" class="pb-1" :key="item.key" v-for="item in convertFilesToArray(row.item.files)">
-                        <a :href="item.value" target="_blank">
-                          <b-img thumbnail rounded :src="item.value" alt="Thumbnail" />
-                        </a>
-                      </b-col>
-                    </b-row>
-                  <!-- </b-container> -->
-                </b-col>
-              </b-row>
-              <b-row class="pb-2">
-                <b-col>
-                  <!-- <b-btn variant="outline-info" size="sm" @click.stop="detail(row.item,row.index,$event.target)"><i class="icon-magnifier"></i> 상세보기</b-btn> -->
-                  <!-- <download-excel v-if="row.item.details ? row.item.details.length : 0 > 0"
-                    class="btn btn-outline-primary btn-sm"
-                    :data= "getExcelData(row.item)"
-                    :fields="excelFields"
-                    :meta="excelMeta"
-                    name= "data.xls">
-                    <i class="fa fa-download"></i>  엑셀
-                  </download-excel> -->
+                  <b-row>
+                    <b-col lg="2" class="pb-1" :key="item.key" v-for="item in convertFilesToArray(row.item.files)">
+                      <a :href="item.value" target="_blank">
+                        <b-img thumbnail rounded :src="item.value" alt="Thumbnail" />
+                      </a>
+                    </b-col>
+                  </b-row>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col>
-                  <!-- <b-card no-body> -->
-                  <!-- <b-table show-empty outlined bordered responsive class="bg-light"
-                    :empty-text="messages.emptyText"
-                    :items="excelDataFiltered(row.item.checklist_user_id)"
-                    :fields="detailFields"
-                  >
-                    <template slot="example_answers" scope="row">
-                      <div v-if="row.item.example1_title || row.item.example2_title ">
-                        <span v-if="row.item.example1_title">
-                          <b>{{row.item.example1_title}}</b>: {{row.item.example1_answer}}
-                        </span>
-                        <span v-if="row.item.example2_title">
-                          <br><b>{{row.item.example2_title}}</b>: {{row.item.example2_answer}}
-                        </span>
-                      </div>
-                      <div v-else>
-                        없음
-                      </div>
-                    </template>
-                  </b-table> -->
-                  <!-- </b-card> -->
                   <ul class="list-unstyled">
                     <li class="news-item" :key="item.checklist_user_id" v-for="item in excelDataFiltered(row.item.checklist_user_id)">
                       <span class="score">{{ item.score }}점</span>
@@ -153,17 +117,6 @@
           <template slot="show_details" scope="row">
             <b-form-checkbox buttons v-model="row.item._showDetails"></b-form-checkbox>
           </template>
-          <!-- <template slot="actions" scope="row">
-            <download-excel
-              class="btn btn-outline-primary btn-sm"
-              :data= "getExcelData(row.item)"
-              :fields="excelFields"
-              :meta="excelMeta"
-              name= "data.xls">
-              다운로드
-            </download-excel>
-            <b-btn variant="outline-info" size="sm" @click.stop="download(row.item,row.index,$event.target)">다운로드</b-btn>
-          </template> -->
         </b-table>
       </b-card>
     </div>
@@ -202,10 +155,7 @@ const fields = {
   user_name: { label: '담당자', sortable: true, 'class': 'text-center' },
   total_score: { label: '평가점수', sortable: true, 'class': 'text-center' },
   updated_dt: { label: '마지막 평가일시', sortable: true, 'class': 'text-center' },
-  // opinions: { label: '평가의견', sortable: true, 'class': 'text-center' },
-  // files: { label: '사진', sortable: true, 'class': 'text-center' },
   show_details: { label: '더보기' }
-  // actions: { label: '행동' }
 }
 
 const detailFields = {
@@ -276,11 +226,7 @@ export default {
     },
 
     onViewChange (value) {
-      this.fetchCheckListResult({ id: this.$route.params.id, view: value })
-      this.fetchCheckListResultDetailsExcel({ id: this.checklist.id, view: value })
-    },
-
-    download (item, index, button) {
+      this.fetchData()
     },
 
     downloadImages () {
@@ -334,13 +280,29 @@ export default {
       this.$router.push({name: '체크리스트 결과', params: { id: listId, checklist: this.checklist }})
     },
 
-    fetchData (route) {
-      if (route.name === '점포별 체크리스트 결과') {
-        this.isShopView = true
-        this.fetchCheckListResult({ id: route.params.id, view: this.viewSelected, byshop: 1 })
-      } else {
-        this.isShopView = false
-        this.fetchCheckListResult({ id: route.params.id, view: this.viewSelected })
+    fetchData (route = this.$route) {
+      if (route.name === '체크리스트 결과') {
+        this.fetchCheckListResult({
+          id: route.params.id,
+          view: this.viewSelected
+        })
+
+        this.fetchCheckListResultDetailsExcel({
+          id: route.params.checklist.id,
+          view: this.viewSelected
+        })
+      } else if (route.name === '나의 체크리스트 결과') {
+        this.fetchCheckListResult({
+          id: route.params.id,
+          view: this.viewSelected,
+          checklistUserId: route.params.checklist.checklist_user_id
+        })
+
+        this.fetchCheckListResultDetailsExcel({
+          id: route.params.checklist.list_id,
+          view: this.viewSelected,
+          checklistUserId: route.params.checklist.checklist_user_id
+        })
       }
     },
 
@@ -368,8 +330,6 @@ export default {
             item_example_answers: exampleAnswers
           })
         })
-
-        // console.log(excelData)
       }
 
       return excelData
@@ -408,13 +368,19 @@ export default {
             item_title: obj.title,
             item_score: obj.score,
             item_example_answers: exampleAnswers
-            // notice1: obj.notice1,
-            // notice2: obj.notice2
           })
         })
       }
 
       return result
+    },
+
+    moveToList () {
+      if (this.$route.name === '체크리스트 결과') {
+        return '/checklist'
+      } else if (this.$route.name === '나의 체크리스트 결과') {
+        return '/user-checklist'
+      }
     },
 
     ...mapGetters({
@@ -426,11 +392,17 @@ export default {
   },
 
   created () {
-    if (this.$route.params.id && this.checklist) {
-      this.fetchData(this.$route)
-      this.fetchCheckListResultDetailsExcel({ id: this.checklist.id })
+    const route = this.$route
+
+    if (route.params.id && this.checklist) {
+      if (route.name === '나의 체크리스트 결과') this.viewSelected = 'whole'
+      this.fetchData()
     } else {
-      this.$router.push('/checklist')
+      if (route.name === '체크리스트 결과') {
+        this.$router.push('/checklist')
+      } else if (route.name === '나의 체크리스트 결과') {
+        this.$router.push('/user-checklist')
+      }
     }
   }
 }
