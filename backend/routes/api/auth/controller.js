@@ -227,7 +227,7 @@ exports.resetPassword = (req, res) => {
       SELECT id, name, email
         FROM users
        WHERE reset_password_token = ?
-         AND NOW() > reset_password_expires
+         AND NOW() <= reset_password_expires
       `
       connection.query(sql, [ reset_password_token ], (err, row) => {
         callback(err, row[0])
@@ -260,7 +260,8 @@ exports.resetPassword = (req, res) => {
         template: 'reset-password-email',
         subject: '암호 변경 확인',
         context: {
-          name: user.name
+          name: user.name,
+          url: `${req.headers.host}/login`
         }
       }
 
