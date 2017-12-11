@@ -121,6 +121,11 @@ exports.signin = (req, res) => {
 }
 
 exports.forgotPassword = (req, res) => {
+  const {
+    email,
+    send = false
+  } = req.body
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.log(error)
@@ -128,7 +133,7 @@ exports.forgotPassword = (req, res) => {
 
     const findEmail = callback => {
       const sql = `SELECT id, name, email FROM users WHERE email = ?; `
-      connection.query(sql, [ req.body.email ], (err, row) => {
+      connection.query(sql, [ email ], (err, row) => {
         if (row[0]) {
           callback(err, row[0])
         } else {
@@ -160,20 +165,24 @@ exports.forgotPassword = (req, res) => {
     }
 
     const sendEmail = (user, token, callback) => {
-      const email = {
-        to: user.email,
-        from: config.mailer.email,
-        template: 'forgot-password-email',
-        subject: '암호 재설정',
-        context: {
-          url: `${req.protocol}://${req.headers.host}/reset-password?token=${token}`,
-          name: user.name
+      if (!send) {
+        callback(null, token)
+      } else {
+        const email = {
+          to: user.email,
+          from: config.mailer.email,
+          template: 'forgot-password-email',
+          subject: '암호 재설정',
+          context: {
+            url: `${req.protocol}://${req.headers.host}/reset-password?token=${token}`,
+            name: user.name
+          }
         }
-      }
 
-      transporter.sendMail(email, err => {
-        callback(err, token)
-      })
+        transporter.sendMail(email, err => {
+          callback(err, token)
+        })
+      }
     }
 
     async.waterfall([
@@ -207,7 +216,8 @@ exports.resetPassword = (req, res) => {
   const {
     token: reset_password_token,
     newPassword,
-    verifyPassword
+    verifyPassword,
+    send = false
   } = req.body
 
   if (newPassword !== verifyPassword) {
@@ -262,20 +272,24 @@ exports.resetPassword = (req, res) => {
     }
 
     const sendEmail = (user, callback) => {
-      const email = {
-        to: user.email,
-        from: config.mailer.email,
-        template: 'reset-password-email',
-        subject: '암호 변경 확인',
-        context: {
-          name: user.name,
-          url: `${req.protocol}://${req.headers.host}/login`
+      if (!send) {
+        callback(null, null)
+      } else {
+        const email = {
+          to: user.email,
+          from: config.mailer.email,
+          template: 'reset-password-email',
+          subject: '암호 변경 확인',
+          context: {
+            name: user.name,
+            url: `${req.protocol}://${req.headers.host}/login`
+          }
         }
-      }
 
-      transporter.sendMail(email, err => {
-        callback(err, null)
-      })
+        transporter.sendMail(email, err => {
+          callback(err, null)
+        })
+      }
     }
 
     async.waterfall([

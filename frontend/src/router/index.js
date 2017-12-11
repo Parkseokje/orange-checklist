@@ -49,7 +49,8 @@ export default new Router({
       name: 'Reset-Password',
       meta: { needsAuth: false },
       component: ResetPassword,
-      props: route => ({ query: route.query.token })
+      props: true
+      // props: route => ({ query: route.query.token })
     },
     {
       path: '/',

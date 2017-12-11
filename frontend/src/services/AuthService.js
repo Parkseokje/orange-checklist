@@ -14,9 +14,9 @@ export default {
       .catch(error => errorCb(error))
   },
 
-  forgotPassword ({ email }, cb, errorCb) {
+  forgotPassword ({ email, send = false }, cb, errorCb) {
     Vue.axios.post('/api/auth/forgot-password', {
-      email: email
+      email, send
     })
       .then(response => {
         if (response.status === 200) {

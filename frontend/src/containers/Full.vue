@@ -45,6 +45,22 @@ export default {
     }
   },
 
+  methods: {
+    checkRedirect () {
+      // 로그인 후 디폴트 라우터에 대한 접근권한이 없을 경우, 첫 번째 라우트로 리다이렉트
+      // created 시 role 이 없을 경우는 redirect 제외
+      if (this.profile.role === undefined) {
+        return false
+      }
+
+      const foundIndex = this.navItems.findIndex(x => x.url === this.$route.path)
+
+      if (foundIndex < 0) {
+        this.$router.push(this.navItems[0].url)
+      }
+    }
+  },
+
   computed: {
     ...mapGetters({
       spinner: 'spinner',
@@ -76,8 +92,16 @@ export default {
     }
   },
 
+  watch: {
+    'profile.role' (val) {
+      this.checkRedirect()
+    }
+  },
+
   created () {
     this.$Progress.start()
+
+    this.checkRedirect()
   },
 
   mounted () {

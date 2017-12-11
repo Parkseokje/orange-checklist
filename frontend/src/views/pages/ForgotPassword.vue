@@ -45,7 +45,8 @@ export default {
   data () {
     return {
       credentials: {
-        email: null
+        email: null,
+        send: true
       }
     }
   },

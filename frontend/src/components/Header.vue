@@ -12,8 +12,8 @@
           <i class="fa fa-user-circle"></i>
           <span class="d-md-down-none">{{profile.name}}</span>
         </template>
-        <b-dropdown-item @click="logout"><i class="fa fa-lock fa-2"></i> 로그아웃</b-dropdown-item>
         <b-dropdown-item @click="changePassword"><i class="fa fa-lock fa-2"></i> 암호 변경</b-dropdown-item>
+        <b-dropdown-item @click="logout"><i class="fa fa-lock fa-2"></i> 로그아웃</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
     <!-- <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" @click="asideToggle">&#9776;</button> -->
