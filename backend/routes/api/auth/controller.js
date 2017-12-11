@@ -6,15 +6,16 @@ const path = require('path')
 
 const hbs = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer')
+const smtpTransport = require('nodemailer-smtp-transport')
 const config = require('../../../config')
 
-const smtpTransport = nodemailer.createTransport({
+const transporter = nodemailer.createTransport(smtpTransport({
   service: config.mailer.provider,
   auth: {
-    user: config.mailer.email,
-    pass: config.mailer.password
+    user: config.mailer.auth.user,
+    pass: config.mailer.auth.pass
   }
-})
+}))
 
 const handlebarsOptions = {
   viewEngine: 'handlebars',
@@ -22,7 +23,7 @@ const handlebarsOptions = {
   extName: '.html'
 }
 
-smtpTransport.use('compile', hbs(handlebarsOptions))
+transporter.use('compile', hbs(handlebarsOptions))
 
 exports.verify = (req, res) => {
   res.json({
@@ -155,7 +156,7 @@ exports.forgotPassword = (req, res) => {
     const sendEmail = (user, token, callback) => {
       const email = {
         to: user.email,
-        from: config.mailer.email,
+        from: 'lucas@orangenamu.kr',
         template: 'forgot-password-email',
         subject: '새로운 암호가 도착하였습니다!',
         context: {
@@ -164,7 +165,7 @@ exports.forgotPassword = (req, res) => {
         }
       }
 
-      smtpTransport.sendMail(email, err => {
+      transporter.sendMail(email, err => {
         callback(err, null)
       })
     }
@@ -265,7 +266,7 @@ exports.resetPassword = (req, res) => {
         }
       }
 
-      smtpTransport.sendMail(email, err => {
+      transporter.sendMail(email, err => {
         callback(err, null)
       })
     }
