@@ -160,7 +160,7 @@ exports.forgotPassword = (req, res) => {
         template: 'forgot-password-email',
         subject: '새로운 암호가 도착하였습니다!',
         context: {
-          url: `${req.headers.host}/reset-password?token=${token}`,
+          url: `${req.protocol}://${req.headers.host}/reset-password?token=${token}`,
           name: user.name
         }
       }
@@ -262,7 +262,7 @@ exports.resetPassword = (req, res) => {
         subject: '암호 변경 확인',
         context: {
           name: user.name,
-          url: `${req.headers.host}/login`
+          url: `${req.protocol}://${req.headers.host}/login`
         }
       }
 

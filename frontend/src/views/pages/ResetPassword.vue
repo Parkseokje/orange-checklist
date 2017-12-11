@@ -7,7 +7,7 @@
             <div class="card p-4">
               <div class="card-body">
                 <h2>비밀번호 재설정</h2>
-                <p class="text-muted">올바른 이메일을 입력해주세요.</p>
+                <p class="text-muted">올바른 암호를 입력해주세요.</p>
                 <b-form @submit.prevent="onSubmit">
                   <b-input-group class="mb-2">
                     <b-input-group-addon><i class="icon-lock"></i></b-input-group-addon>
