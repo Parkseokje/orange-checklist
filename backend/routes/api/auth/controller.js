@@ -39,6 +39,7 @@ exports.signup = (req, res) => {
 }
 
 exports.signin = (req, res) => {
+  console.log(req.subdomains)
   const { email, password } = req.body
   const jwtSecret = req.app.get('jwt-secret')
   const pwdSecret = req.app.get('pwd-secret')
