@@ -1,11 +1,11 @@
 export default {
   items: [
-    {
-      name: '대시보드',
-      url: '/dashboard',
-      icon: 'icon-speedometer',
-      roles: ['admin']
-    },
+    // {
+    //   name: '대시보드',
+    //   url: '/dashboard',
+    //   icon: 'icon-speedometer',
+    //   roles: ['admin']
+    // },
     {
       name: '점포관리',
       url: '/shop',
