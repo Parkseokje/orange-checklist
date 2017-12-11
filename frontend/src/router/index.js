@@ -20,6 +20,8 @@ import UserAlarm from '@/views/UserAlarm'
 
 // Views - Pages
 import Login from '@/views/pages/Login'
+import ForgotPassword from '@/views/pages/ForgotPassword'
+import ResetPassword from '@/views/pages/ResetPassword'
 import Page404 from '@/views/pages/Page404'
 import Page500 from '@/views/pages/Page500'
 
@@ -35,6 +37,19 @@ export default new Router({
       name: 'Login',
       meta: { needsAuth: false },
       component: Login
+    },
+    {
+      path: '/forgot-password',
+      name: 'Forgot-Password',
+      meta: { needsAuth: false },
+      component: ForgotPassword
+    },
+    {
+      path: '/reset-password',
+      name: 'Reset-Password',
+      meta: { needsAuth: false },
+      component: ResetPassword,
+      props: route => ({ query: route.query.token })
     },
     {
       path: '/',

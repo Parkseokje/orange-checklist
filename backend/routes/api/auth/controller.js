@@ -2,6 +2,27 @@ const pool = require('../../../database')
 const jwt = require("jsonwebtoken");
 const async = require('async')
 const crypto = require('crypto')
+const path = require('path')
+
+const hbs = require('nodemailer-express-handlebars')
+const nodemailer = require('nodemailer')
+const config = require('../../../config')
+
+const smtpTransport = nodemailer.createTransport({
+  service: config.mailer.provider,
+  auth: {
+    user: config.mailer.email,
+    pass: config.mailer.password
+  }
+})
+
+const handlebarsOptions = {
+  viewEngine: 'handlebars',
+  viewPath: path.resolve('views/'),
+  extName: '.html'
+}
+
+smtpTransport.use('compile', hbs(handlebarsOptions))
 
 exports.verify = (req, res) => {
   res.json({
@@ -91,6 +112,181 @@ exports.signin = (req, res) => {
             email: results.user.email,
             role: results.user.role,
             token: results.token
+          }
+        })
+      }
+    })
+  })
+}
+
+exports.forgotPassword = (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const findEmail = callback => {
+      const sql = `SELECT id, name, email FROM users WHERE email = ?; `
+      connection.query(sql, [ req.body.email ], (err, row) => {
+        callback(err, row[0])
+      })
+    }
+
+    const createToken = (user, callback) => {
+      crypto.randomBytes(20, (err, buffer) => {
+        const token = buffer.toString('hex');
+
+        callback(err, user, token)
+      })
+    }
+
+    const updateUserToken = (user, token, callback) => {
+      const sql = `
+      UPDATE users SET
+             reset_password_token = ?,
+             reset_password_expires = DATE_ADD(NOW(), INTERVAL 1 DAY)
+      WHERE id = ?; `
+
+      connection.query(sql, [ token, user.id ], (err, result) => {
+        callback(err, user, token)
+      })
+    }
+
+    const sendEmail = (user, token, callback) => {
+      const email = {
+        to: user.email,
+        from: config.mailer.email,
+        template: 'forgot-password-email',
+        subject: '새로운 암호가 도착하였습니다!',
+        context: {
+          url: `${req.headers.host}/reset-password?token=${token}`,
+          name: user.name
+        }
+      }
+
+      smtpTransport.sendMail(email, err => {
+        callback(err, null)
+      })
+    }
+
+    async.waterfall([
+      findEmail,
+      createToken,
+      updateUserToken,
+      sendEmail
+    ], (err) => {
+      if (err) {
+        console.log(err)
+        res.status(422).json({
+          success: false,
+          info: {
+            message: err.message
+          }
+        })
+      } else {
+        res.send({
+          success: true,
+          info: {
+            message: '이메일을 확인하세요.'
+          }
+        })
+      }
+    })
+  })
+}
+
+exports.resetPassword = (req, res) => {
+  const {
+    token: reset_password_token,
+    newPassword,
+    verifyPassword
+  } = req.body
+
+  if (newPassword !== verifyPassword) {
+    return res.status(422).send({
+      success: false,
+      info: {
+        message: '암호가 일치하지 않습니다.'
+      }
+    })
+  }
+
+  const secret = req.app.get('pwd-secret')
+  const encryptedPassword =
+  crypto.createHmac('sha1', secret)
+    .update(newPassword)
+    .digest('base64')
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(error)
+    };
+
+    const findUser = callback => {
+      const sql = `
+      SELECT id, name, email
+        FROM users
+       WHERE reset_password_token = ?
+         AND NOW() > reset_password_expires
+      `
+      connection.query(sql, [ reset_password_token ], (err, row) => {
+        callback(err, row[0])
+      })
+    }
+
+    const updateUserToken = (user, callback) => {
+      if (!user) {
+        callback({
+          message: '토큰이 잘못되었거나 유효기간이 만료되었습니다.'
+        }, user)
+      } else {
+        const sql = `
+        UPDATE users SET
+               password = ?,
+               reset_password_token = NULL,
+               reset_password_expires = NULL
+         WHERE id = ?; `
+
+        connection.query(sql, [ encryptedPassword, user.id ], (err, result) => {
+          callback(err, user)
+        })
+      }
+    }
+
+    const sendEmail = (user, token) => {
+      const email = {
+        to: user.email,
+        from: config.mailer.email,
+        template: 'reset-password-email',
+        subject: '암호 변경 확인',
+        context: {
+          name: user.name
+        }
+      }
+
+      smtpTransport.sendMail(email, err => {
+        callback(err, null)
+      })
+    }
+
+    async.waterfall([
+      findUser,
+      updateUserToken,
+      sendEmail
+    ], (err) => {
+      if (err) {
+        console.log(err)
+        res.status(400).json({
+          success: false,
+          info: {
+            message: err.message
+          }
+        })
+      } else {
+        res.send({
+          success: true,
+          info: {
+            message: '이메일을 확인하세요.'
           }
         })
       }
