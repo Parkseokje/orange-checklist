@@ -6,7 +6,7 @@
           <div class="card-group mb-0">
             <div class="card p-4">
               <div class="card-body">
-                <h2>비밀번호 변경</h2>
+                <h2>암호 복구</h2>
                 <p class="text-muted">올바른 이메일을 입력해주세요.</p>
                 <b-form @submit.prevent="onSubmit">
                   <b-input-group class="mb-2">
@@ -56,8 +56,16 @@ export default {
         .then(success => {
           if (success) {
             Auth.forgotPassword(this.credentials,
-              data => console.log(data),
-              err => console.error(err)
+              data => {
+                alert('이메일을 확인해주세요!')
+                this.$router.push('/login')
+              },
+              err => {
+                console.error(err)
+
+                this.credentials.email = null
+                alert('이메일이 존재하지 않습니다!')
+              }
             )
           } else {
             alert('이메일을 다시 확인해주세요.')

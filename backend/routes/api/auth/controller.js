@@ -54,7 +54,7 @@ exports.signin = (req, res) => {
     };
 
     const verifyCredetials = (callback) => {
-      const sql = 'SELECT `id`, `name`, `phone`, `role`, `company_id`, `password` FROM `users` WHERE `email` = ?; '
+      const sql = 'SELECT `id`, `name`, `email`, `phone`, `role`, `company_id`, `password` FROM `users` WHERE `email` = ?; '
       connection.query(sql, [ email, password ], (err, row) => {
         connection.release()
 
@@ -129,7 +129,13 @@ exports.forgotPassword = (req, res) => {
     const findEmail = callback => {
       const sql = `SELECT id, name, email FROM users WHERE email = ?; `
       connection.query(sql, [ req.body.email ], (err, row) => {
-        callback(err, row[0])
+        if (row[0]) {
+          callback(err, row[0])
+        } else {
+          callback({
+            message: '존재하지 않는 이메일입니다.'
+          }, null)
+        }
       })
     }
 
@@ -158,7 +164,7 @@ exports.forgotPassword = (req, res) => {
         to: user.email,
         from: config.mailer.email,
         template: 'forgot-password-email',
-        subject: '새로운 암호가 도착하였습니다!',
+        subject: '암호 재설정',
         context: {
           url: `${req.protocol}://${req.headers.host}/reset-password?token=${token}`,
           name: user.name
@@ -166,7 +172,7 @@ exports.forgotPassword = (req, res) => {
       }
 
       transporter.sendMail(email, err => {
-        callback(err, null)
+        callback(err, token)
       })
     }
 
@@ -175,10 +181,10 @@ exports.forgotPassword = (req, res) => {
       createToken,
       updateUserToken,
       sendEmail
-    ], (err) => {
+    ], (err, result) => {
       if (err) {
         console.log(err)
-        res.status(422).json({
+        res.status(400).json({
           success: false,
           info: {
             message: err.message
@@ -188,7 +194,8 @@ exports.forgotPassword = (req, res) => {
         res.send({
           success: true,
           info: {
-            message: '이메일을 확인하세요.'
+            message: '이메일을 확인하세요.',
+            token: result
           }
         })
       }

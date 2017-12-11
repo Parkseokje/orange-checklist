@@ -13,6 +13,7 @@
           <span class="d-md-down-none">{{profile.name}}</span>
         </template>
         <b-dropdown-item @click="logout"><i class="fa fa-lock fa-2"></i> 로그아웃</b-dropdown-item>
+        <b-dropdown-item @click="changePassword"><i class="fa fa-lock fa-2"></i> 암호 변경</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
     <!-- <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" @click="asideToggle">&#9776;</button> -->
@@ -21,6 +22,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import MessageDropdown from './MessageDropdown.vue'
+import Auth from '../services/AuthService'
 
 export default {
   name: 'header',
@@ -40,6 +42,19 @@ export default {
       'logout',
       'fetchAlarmList'
     ]),
+
+    changePassword () {
+      Auth.forgotPassword(this.profile,
+        data => {
+          this.$router.push({path: 'reset-password', query: { token: data.token }})
+        },
+        err => {
+          console.error(err)
+
+          alert('이메일이 존재하지 않습니다!')
+        }
+      )
+    },
 
     sidebarToggle (e) {
       e.preventDefault()

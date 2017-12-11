@@ -6,16 +6,16 @@
           <div class="card-group mb-0">
             <div class="card p-4">
               <div class="card-body">
-                <h2>비밀번호 재설정</h2>
-                <p class="text-muted">올바른 암호를 입력해주세요.</p>
+                <h2>암호 재설정</h2>
+                <p class="text-muted">올바른 암호(6자리 이상)를 입력해주세요.</p>
                 <b-form @submit.prevent="onSubmit">
                   <b-input-group class="mb-2">
                     <b-input-group-addon><i class="icon-lock"></i></b-input-group-addon>
-                    <b-form-input v-model="credentials.newPassword" type="text" placeholder="새로운 암호를 입력하세요" autofocus="true"></b-form-input>
+                    <b-form-input v-model="credentials.newPassword" type="password" placeholder="새로운 암호를 입력하세요" autofocus="true"></b-form-input>
                   </b-input-group>
                   <b-input-group class="mb-2">
                     <b-input-group-addon><i class="icon-lock"></i></b-input-group-addon>
-                    <b-form-input v-model="credentials.verifyPassword" type="text" placeholder="다시 암호를 입력하세요" autofocus="true"></b-form-input>
+                    <b-form-input v-model="credentials.verifyPassword" type="password" placeholder="다시 암호를 입력하세요" autofocus="true"></b-form-input>
                   </b-input-group>
                   <b-row>
                     <b-col>
@@ -72,8 +72,17 @@ export default {
         .then(success => {
           if (success) {
             Auth.resetPassword(this.credentials,
-              data => console.log(data),
-              err => console.error(err)
+              data => {
+                // alert('이메일을 확인해주세요!')
+                this.$router.push('/login')
+              },
+              err => {
+                console.error(err)
+
+                if (confirm('토큰이 잘못되었거나 유효기간이 만료되었습니다. \n다시 요청하시겠습니까?')) {
+                  this.$router.push('/forgot-password')
+                }
+              }
             )
           } else {
             alert('암호를 다시 확인해주세요.')
