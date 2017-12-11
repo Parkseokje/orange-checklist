@@ -28,8 +28,7 @@ import Page500 from '@/views/pages/Page500'
 Vue.use(Router)
 
 export default new Router({
-  // mode: 'history',
-  history: true,
+  mode: 'history',
   linkActiveClass: 'open active',
   scrollBehavior: () => ({ y: 0 }),
   routes: [
