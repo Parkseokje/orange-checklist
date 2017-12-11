@@ -120,7 +120,7 @@ exports.signin = (req, res) => {
 }
 
 exports.forgotPassword = (req, res) => {
-  console.log(config.mailer)
+  console.log(config.mailer.email, config.mailer.password)
   pool.getConnection((err, connection) => {
     if (err) {
       console.log(error)
