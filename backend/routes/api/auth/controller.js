@@ -156,7 +156,7 @@ exports.forgotPassword = (req, res) => {
     const sendEmail = (user, token, callback) => {
       const email = {
         to: user.email,
-        from: 'lucas@orangenamu.kr',
+        from: config.mailer.email,
         template: 'forgot-password-email',
         subject: '새로운 암호가 도착하였습니다!',
         context: {
@@ -254,7 +254,7 @@ exports.resetPassword = (req, res) => {
       }
     }
 
-    const sendEmail = (user, token) => {
+    const sendEmail = (user, callback) => {
       const email = {
         to: user.email,
         from: config.mailer.email,
