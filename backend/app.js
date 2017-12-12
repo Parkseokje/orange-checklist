@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config')
+var history = require('connect-history-api-fallback')
 
 var index = require('./routes/index');
 // var users = require('./routes/users');
@@ -12,7 +13,7 @@ var index = require('./routes/index');
 // var categories = require('./routes/categories');
 
 var app = express();
-app.use(require('connect-history-api-fallback')())
+app.use(history())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

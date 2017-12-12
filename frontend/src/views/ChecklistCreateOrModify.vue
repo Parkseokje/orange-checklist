@@ -73,7 +73,7 @@
                 </b-form-radio-group>
               </b-form-group>
               <div v-show="showCategoryChoice">
-                <b-form-group label="류 (선택)" horizontal>
+                <b-form-group label="대분류 (선택)" horizontal>
                   <v-select label="name" placeholder="선택하세요"
                     v-model="dropdown1Selected"
                     :options="dropDown1Items"
@@ -802,8 +802,8 @@ export default {
         },
         (err) => API_FAILURE(err)
       )
-    } else if (this.allChecklists.length === 0) {
-      Vue.router.push('/checklist')
+    // } else if (this.allChecklists.length === 0) {
+    //   Vue.router.push('/checklist')
     }
 
     this.inputOptions.userFromDate = moment().format()
