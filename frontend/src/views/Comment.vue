@@ -106,7 +106,8 @@ export default {
 
       Vue.axios({
         method: 'post',
-        url: '/api/board/zip-urls',
+        url: '/api/board/s3-download',
+        // url: '/api/board/zip-urls',
         data: files,
         responseType: 'blob'
       })

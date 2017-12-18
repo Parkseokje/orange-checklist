@@ -4,6 +4,9 @@ const fs = require('fs')
 const request = require('request')
 const archiver = require('archiver')
 
+const aws = require('aws-sdk');
+aws.config.loadFromPath('./aws.config.json');
+
 /**
  * 게시판 관리 > 게시판 목록 조회
  */
@@ -902,4 +905,17 @@ exports.zipUrls = (req, res) => {
   //     }
   //   })
   // })
+}
+
+exports.s3Download = (req, res) => {
+  const { file_name, access_url } = req.body[0];
+  const params = {
+    Bucket: 'orange-checklist',
+    Key: `uploads/${access_url.split('/').pop()}`
+  };
+  const s3 = new aws.S3();
+
+  res.attachment(file_name);
+  var fileStream = s3.getObject(params).createReadStream();
+  fileStream.pipe(res);
 }

@@ -17,5 +17,6 @@ router.delete('/user/post/:id', controller.deleteUserPost)
 router.get('/posts', controller.selectAllPosts)
 
 router.post('/zip-urls', controller.zipUrls)
+router.post('/s3-download', controller.s3Download)
 
 module.exports = router
