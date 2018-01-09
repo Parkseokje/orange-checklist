@@ -219,7 +219,8 @@ export default {
     },
 
     showTextInput () {
-      return this.info.example1_title || this.info.example2_title
+      // return this.info.example1_title || this.info.example2_title
+      return this.info.item.example1 || this.info.item.example2
     },
 
     showHelpMessages () {
