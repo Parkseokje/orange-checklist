@@ -37,10 +37,10 @@ const AuthModule = {
   },
 
   mutations: {
-    [LOGIN_SUCCESS] (state, { name, email, token, role }) {
+    [LOGIN_SUCCESS] (state, { name, email, token, role, company_name }) {
       localStorage.setItem('token', token)
       state.isAuthenticated = true
-      state.profile = { name, email, role }
+      state.profile = { name, email, role, company_name }
 
       Vue.router.push('/dashboard')
     },

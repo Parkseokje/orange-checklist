@@ -41,10 +41,10 @@
 
 .navbar-brand {
   display: inline-block;
-  padding-top: $navbar-brand-padding-y;
+  padding-top: $navbar-brand-padding-y; // header 에서 scoped css 에서 변경됨
   padding-bottom: $navbar-brand-padding-y;
   margin-right: $navbar-padding-x;
-  font-size: $navbar-brand-font-size;
+  font-size: $navbar-brand-font-size; // header 에서 scoped css 에서 변경됨
   line-height: inherit;
   white-space: nowrap;
 

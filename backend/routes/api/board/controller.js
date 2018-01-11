@@ -417,12 +417,13 @@ exports.selectAllPosts = (req, res) => {
     SELECT b.title, b.memo
          , bc.*
       FROM boards AS b
-     INNER JOIN boards_contents AS bc
+     INNER JOIN board_contents AS bc
         ON b.id = bc.board_id
-     WHERE b.board_id = ?
+     WHERE b.id = 1
        AND b.company_id = ?
        AND b.active = 1
-     ORDER BY bc.group_id DESC, bc.group_seq; `
+     ORDER BY bc.group_id DESC, bc.group_seq;
+    `
 
     connection.query(sql, [ board_id, req.decoded.company_id ], (err, rows) => {
       connection.release()
@@ -485,6 +486,7 @@ exports.selectUserPosts = (req, res) => {
       LEFT JOIN board_content_files AS bcf
         ON bc.id = bcf.board_content_id
      WHERE b.active = 1
+       -- AND b.id = 7
      ORDER BY bc.board_id, bc.group_id DESC, bc.group_seq;
     `
 

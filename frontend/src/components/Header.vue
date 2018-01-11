@@ -1,7 +1,8 @@
 <template>
   <header class="app-header navbar">
     <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button" @click="mobileSidebarToggle">&#9776;</button>
-    <b-link class="navbar-brand" to="#"></b-link>
+    <!-- <b-link class="navbar-brand" to="#"></b-link> -->
+    <b-navbar-brand class="navbar-brand-text" to="#">{{profile.company_name}}</b-navbar-brand>
     <button class="navbar-toggler sidebar-toggler d-md-down-none mr-auto" type="button" @click="sidebarMinimize">&#9776;</button>
     <!-- nav -->
     <b-navbar-nav class="ml-auto">
@@ -86,5 +87,11 @@ export default {
 <style scoped>
 .header-item-dropdown {
   padding-right: 10px;
+}
+
+.navbar-brand-text {
+  text-align: center;
+  padding-top: 15px !important;
+  font-size: 1.0rem;
 }
 </style>

@@ -54,7 +54,15 @@ exports.signin = (req, res) => {
     };
 
     const verifyCredetials = (callback) => {
-      const sql = 'SELECT `id`, `name`, `email`, `phone`, `role`, `company_id`, `password` FROM `users` WHERE `email` = ?; '
+      const sql = `
+      SELECT u.id, u.name, u.email, u.phone, u.role
+           , u.company_id, u.password
+           , c.name AS company_name
+        FROM users AS u
+       INNER JOIN companies AS c
+          ON c.id = u.company_id
+       WHERE u.email = ?;
+      `
       connection.query(sql, [ email, password ], (err, row) => {
         connection.release()
 
@@ -112,7 +120,8 @@ exports.signin = (req, res) => {
             name: results.user.name,
             email: results.user.email,
             role: results.user.role,
-            token: results.token
+            token: results.token,
+            company_name: results.user.company_name
           }
         })
       }
