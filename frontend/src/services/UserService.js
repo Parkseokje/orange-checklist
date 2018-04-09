@@ -18,6 +18,7 @@ export default {
   createUser (user, cb, errorCb) {
     return Vue.axios.post(`/api/user`, {
       company_id: 1,
+      shop_id: null,
       role: user.role,
       name: user.name,
       phone: user.phone,

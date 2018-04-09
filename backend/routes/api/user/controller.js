@@ -66,7 +66,7 @@ exports.create = (req, res) => {
 
     const sql =
       'INSERT INTO `users` (company_id, shop_id, role, name, password, email, phone, memo) ' +
-      'VALUES (?, ?, ?, ?, ?, ?, ?); '
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?); '
 
     connection.query(sql, [ company_id, shop_id, role, name, encryptedPassword, email, phone, memo ], (err, rows) => {
       connection.release()

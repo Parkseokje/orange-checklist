@@ -340,6 +340,9 @@ export default {
     },
 
     onSubmit () {
+      this.form.shop_id = null
+      this.form.shop_name = null
+
       if (this.displayShopSelect) {
         if (this.selectedShop === null) {
           alert('점포를 선택하세요.')
